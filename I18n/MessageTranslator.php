@@ -1,16 +1,19 @@
 <?php
 
-namespace UserFrosting\I18n;
-
 /**
  * MessageTranslator Class
  *
  * Translate message ids to a message in a specified language. 
  *
- * @package Fortress
- * @author Alex Weissman
- * @link https://alexanderweissman.com
+ * @package   userfrosting/i18n
+ * @link      https://github.com/userfrosting/i18n
+ * @author    Alexander Weissman
+ * @license   https://github.com/userfrosting/UserFrosting/blob/master/licenses/UserFrosting.md (MIT License)
  */
+namespace UserFrosting\I18n;
+
+use UserFrosting\Support\Exception\FileNotFoundException;
+
 class MessageTranslator {
 
     /**
@@ -28,7 +31,11 @@ class MessageTranslator {
      *
      * @param string $path The full path to the translation file.
      */
-    public function setTranslationTable($path){
+    public function setTranslationTable($path)
+    {
+        if (!(file_exists($path) && is_readable($path)))
+            throw new FileNotFoundException("The language file '$path' could not be found or is not readable.");
+            
         $this->translation_table = include($path);
     }
 
@@ -37,7 +44,11 @@ class MessageTranslator {
      *
      * @param string $path The full path to the default translation file.
      */    
-    public function setDefaultTable($path){
+    public function setDefaultTable($path)
+    {
+        if (!(file_exists($path) && is_readable($path)))
+            throw new FileNotFoundException("The language file '$path' could not be found or is not readable.");
+        
         $this->default_table = include($path);
     }
     
@@ -49,7 +60,8 @@ class MessageTranslator {
      * @param array $placeholders[optional] An optional hash of placeholder names => placeholder values to substitute.
      * @return string The translated message.  
      */
-    public function translate($message_id, $placeholders = []){
+    public function translate($message_id, $placeholders = [])
+    {
         // Get the message, translated into the currently set language
         if (isset($this->translation_table[$message_id])){
             $message = $this->translation_table[$message_id];
