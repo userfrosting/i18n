@@ -98,7 +98,7 @@ class MessageTranslator extends Repository {
      * @param string|null $base_locale
      * @param string|null $user_locale
      */
-    public function loadLocaleFiles($base_locale = 'en_US', $user_locale)
+    public function loadLocaleFiles($base_locale = 'en_US', $user_locale = null)
     {
         // Search each locale path for default and environment-specific locale files
         foreach ($this->paths as $path) {
@@ -109,7 +109,7 @@ class MessageTranslator extends Repository {
 			}
 
             // Then, merge in environment-specific locale file, if it exists
-            if ($user_locale != "") {
+            if ($user_locale !==  null) {
 	            $user_files = $this->getLocaleFiles($path, $user_locale);
 	            foreach ($user_files as $file_with_path) {
 	            	$this->mergeLocaleFile($file_with_path);
