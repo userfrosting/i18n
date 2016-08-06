@@ -22,6 +22,9 @@ class MessageTranslatorTest extends TestCase
         // Test basic functionality
         $this->assertEquals($translator->translate('ABOUT'), "About");
 
+        // Test sub keys using dot syntax
+        $this->assertEquals($translator->translate('ACCOUNT.REGISTER'), "Register");
+
         // Test basic placeholder resplacement
         $this->assertEquals($translator->translate("ME_IS", ["place" => "the beach"]), "I'm on the beach");
         $this->assertEquals($translator->translate("NAME_IS", ["name" => "Bob", "place" => "the beach"]), "Bob is on the beach");

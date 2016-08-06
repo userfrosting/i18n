@@ -5,6 +5,10 @@ $lang = array();
 $lang = array_merge($lang,array(
     "PLURAL_RULE" => 1,
 	"ABOUT" => "About",
+	"ACCOUNT" => array(
+		"SINGUP" => "Sign Up",
+		"REGISTER" => "Register"
+	),
 	"NEW_MESSAGE" => array(
 		0 => "No new message",
 		1 => "You have one new message",
