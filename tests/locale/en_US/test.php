@@ -4,21 +4,7 @@ $lang = array();
 
 $lang = array_merge($lang,array(
     "PLURAL_RULE" => 1,
-	"ABOUT" => "About",
-	"ACCOUNT" => array(
-		"SINGUP" => "Sign Up",
-		"REGISTER" => "Register"
-	),
-	"NEW_MESSAGE" => array(
-		0 => "No new message",
-		1 => "You have one new message",
-		2 => "You have {{int}} new messages",
-	),
-	"FOO" => array(
-		0 => "No foos",
-		1 => "A foo",
-		2 => "{{nb}} foos!!!",
-	),
+
 	"CAT_HERE" => array(
 		0 => "There is no {{color}} cats here",
 		1 => "There is a {{color}} cat here",
@@ -33,7 +19,29 @@ $lang = array_merge($lang,array(
 	"NAME_IS"   => "{{name}} is on {{place}}",
 	"THE_BEACH" => "the beach",
 
-	"COMPLEX_STRING" => "There's {guest} and {friend} eating {fruit} near {place}"
+	"TEST_LIMIT" => "Your test must be between {{min}} and {{max}} potatoes.",
+	"MIN" => "minimum",
+	//"MAX" => "maximum" //Leave disabled for tests
+
+	"COMPLEX_STRING" => "There's {{child}} and {{adult}} in the {{color}} {{car}}",
+	"CHILD" => array(
+		0 => "no children",
+		1 => "a child",
+		2 => "{{int}} children",
+	),
+	"NB_ADULT" => array(
+		0 => "no adults",
+		1 => "an adult",
+		2 => "{{nb_adult}} adults",
+	),
+	"COLOR_ARRAY" => array(
+		"WHITE" => "white",
+		"BLACK" => "black",
+		"RED" => "red",
+	),
+	"CAR_DATA"  => array(
+    	"FULL_MODEL" => "{{constructor}} {{model}} {{year}}"
+	)
 ));
 
 return $lang;

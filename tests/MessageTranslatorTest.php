@@ -20,14 +20,20 @@ class MessageTranslatorTest extends TestCase
         $translator->loadLocaleFiles('en_US');
 
         // Test basic functionality
-        $this->assertEquals($translator->translate('ABOUT'), "About");
+        $this->assertEquals($translator->translate('THE_BEACH'), "the beach");
 
         // Test sub keys using dot syntax
-        $this->assertEquals($translator->translate('ACCOUNT.REGISTER'), "Register");
+        $this->assertEquals($translator->translate('COLOR_ARRAY.BLACK'), "black");
 
-        // Test basic placeholder resplacement
+        // Test when specifying a master key containing subkeys (Expected error, because COLOR_ARRAY doesn't define a key)
+        $this->assertEquals($translator->translate('COLOR_ARRAY'), "COLOR_ARRAY");
+
+        // Test basic placeholder replacement
         $this->assertEquals($translator->translate("ME_IS", ["place" => "the beach"]), "I'm on the beach");
         $this->assertEquals($translator->translate("NAME_IS", ["name" => "Bob", "place" => "the beach"]), "Bob is on the beach");
+
+        // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
+        $this->assertEquals($translator->translate("TEST_LIMIT", ["min" => 4, "max" => 200]), "Your test must be between 4 and 200 potatoes.");
 
         // Test extra placeholder
         $this->assertEquals($translator->translate("ME_IS", ["place" => "the beach", "fruit" => "apple"]), "I'm on the beach");
@@ -35,49 +41,46 @@ class MessageTranslatorTest extends TestCase
         // Test missing placeholder
         $this->assertEquals($translator->translate("NAME_IS", ["place" => "the beach"]), "{{name}} is on the beach");
 
-        // Test nested placeholders
+        // Test basic nested/var placeholders
         $place = $translator->translate("THE_BEACH");
         $this->assertEquals($translator->translate("ME_IS", ["place" => $place]), "I'm on the beach");
 
         // Test basic int pluralisation
-        $this->assertEquals($translator->translate("NEW_MESSAGE", ["int" => 0]), "No new message");
-        $this->assertEquals($translator->translate("NEW_MESSAGE", ["int" => 1]), "You have one new message");
-        $this->assertEquals($translator->translate("NEW_MESSAGE", ["int" => 2]), "You have 2 new messages");
-        $this->assertEquals($translator->translate("NEW_MESSAGE", ["int" => 5]), "You have 5 new messages");
+        $this->assertEquals($translator->translate("CHILD", ["int" => 0]), "no children");
+        $this->assertEquals($translator->translate("CHILD", ["int" => 1]), "a child");
+        $this->assertEquals($translator->translate("CHILD", ["int" => 2]), "2 children");
+        $this->assertEquals($translator->translate("CHILD", ["int" => 5]), "5 children");
 
         // Test the plurialisation shortcut
-        $this->assertEquals($translator->translate("NEW_MESSAGE", 0), "No new message");
-        $this->assertEquals($translator->translate("NEW_MESSAGE", 1), "You have one new message");
-        $this->assertEquals($translator->translate("NEW_MESSAGE", 2), "You have 2 new messages");
-        $this->assertEquals($translator->translate("NEW_MESSAGE", 5), "You have 5 new messages");
+        $this->assertEquals($translator->translate("CHILD", 0), "no children");
+        $this->assertEquals($translator->translate("CHILD", 1), "a child");
+        $this->assertEquals($translator->translate("CHILD", 2), "2 children");
+        $this->assertEquals($translator->translate("CHILD", 5), "5 children");
 
         // Test missing pluralisation
-        $this->assertEquals($translator->translate("NEW_MESSAGE"), "You have {{int}} new messages");
+        $this->assertEquals($translator->translate("CHILD"), "{{int}} children");
 
         // Test custom plural key
-        $this->assertEquals($translator->translate("FOO", ["nb" => 2], "nb"), "2 foos!!!");
+        $this->assertEquals($translator->translate("NB_ADULT", ["nb_adult" => 2], "nb_adult"), "2 adults");
 
         // Test int pluralisation with other placeholders
         $this->assertEquals($translator->translate("CAT_HERE", ["int" => 3, "color" => "black"]), "There is 3 black cats here");
         $this->assertEquals($translator->translate("DOG_HERE", ["nb" => 3, "color" => "white"], "nb"), "There is 3 white dogs here");
 
-        //!TODO:
-        /*
-            translate("MAIN_STRING", {
-            	"guest" => {"GUEST_STRING", 1},
-            	"friend" => {"FRIEND_STRING", 4},
-            	"place" => "THE_BEACH",
-            	"fruit" => {$selectedFruit, 4}
-            })
+        // Test complex translations
+        $carModel = "Tesla Model S";
+        $this->assertEquals($translator->translate("COMPLEX_STRING", [
+        	"child" => 1,                            //INT SHORTCUT
+        	"adult" => ["NB_ADULT", 0, "nb_adult"],  //ADULT key with plural and custom plural_key
+        	"color" => "COLOR_ARRAY.WHITE",          //Nested translation
+        	"car" => $carModel                       //Classic string
+        ]), "There's a child and no adults in the white Tesla Model S");
 
-            translate("MAIN_STRING", {
-            	"guest" => {"HOBO", 1},
-            	"friend" => {"DRUG_DEALER", 4},
-            	"place" => "THE_ROOF",
-            	"fruit" => {$meth, 4}
-            })
-
-            main string need to stay with the place holder. We could do a shortcut where if the place holder is a number, we use "placeholder_string" convention, an array, recursion and a String classic... Well recursion too I guess.
-        */
+        $this->assertEquals($translator->translate("COMPLEX_STRING", [
+        	"child" => 0,                               //INT SHORTCUT
+        	"adult" => ["NB_ADULT", 5, "nb_adult"],     //ADULT key with plural
+        	"color" => "COLOR_ARRAY.RED",               //Nested translation
+        	"car" => ["CAR_DATA.FULL_MODEL", ["constructor" => "Honda", "model" => "Civic", "year" => 1993]]
+        ]), "There's no children and 5 adults in the red Honda Civic 1993");
     }
 }
