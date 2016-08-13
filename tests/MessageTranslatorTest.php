@@ -45,11 +45,11 @@ class MessageTranslatorTest extends TestCase
         $place = $translator->translate("THE_BEACH");
         $this->assertEquals($translator->translate("ME_IS", ["place" => $place]), "I'm on the beach");
 
-        // Test basic int pluralisation
-        $this->assertEquals($translator->translate("CHILD", ["int" => 0]), "no children");
-        $this->assertEquals($translator->translate("CHILD", ["int" => 1]), "a child");
-        $this->assertEquals($translator->translate("CHILD", ["int" => 2]), "2 children");
-        $this->assertEquals($translator->translate("CHILD", ["int" => 5]), "5 children");
+        // Test basic `plural` pluralisation
+        $this->assertEquals($translator->translate("CHILD", ["plural" => 0]), "no children");
+        $this->assertEquals($translator->translate("CHILD", ["plural" => 1]), "a child");
+        $this->assertEquals($translator->translate("CHILD", ["plural" => 2]), "2 children");
+        $this->assertEquals($translator->translate("CHILD", ["plural" => 5]), "5 children");
 
         // Test the plurialisation shortcut
         $this->assertEquals($translator->translate("CHILD", 0), "no children");
@@ -58,26 +58,26 @@ class MessageTranslatorTest extends TestCase
         $this->assertEquals($translator->translate("CHILD", 5), "5 children");
 
         // Test missing pluralisation
-        $this->assertEquals($translator->translate("CHILD"), "{{int}} children");
+        $this->assertEquals($translator->translate("CHILD"), "{{plural}} children");
 
         // Test custom plural key
         $this->assertEquals($translator->translate("NB_ADULT", ["nb_adult" => 2], "nb_adult"), "2 adults");
 
-        // Test int pluralisation with other placeholders
-        $this->assertEquals($translator->translate("CAT_HERE", ["int" => 3, "color" => "black"]), "There is 3 black cats here");
+        // Test `plural` pluralisation placeholder with other placeholders
+        $this->assertEquals($translator->translate("CAT_HERE", ["plural" => 3, "color" => "black"]), "There is 3 black cats here");
         $this->assertEquals($translator->translate("DOG_HERE", ["nb" => 3, "color" => "white"], "nb"), "There is 3 white dogs here");
 
         // Test complex translations
         $carModel = "Tesla Model S";
         $this->assertEquals($translator->translate("COMPLEX_STRING", [
-        	"child" => 1,                            //INT SHORTCUT
+        	"child" => 1,                            //PLURAL SHORTCUT
         	"adult" => ["NB_ADULT", 0, "nb_adult"],  //ADULT key with plural and custom plural_key
         	"color" => "COLOR_ARRAY.WHITE",          //Nested translation
         	"car" => $carModel                       //Classic string
         ]), "There's a child and no adults in the white Tesla Model S");
 
         $this->assertEquals($translator->translate("COMPLEX_STRING", [
-        	"child" => 0,                               //INT SHORTCUT
+        	"child" => 0,                               //PLURAL SHORTCUT
         	"adult" => ["NB_ADULT", 5, "nb_adult"],     //ADULT key with plural
         	"color" => "COLOR_ARRAY.RED",               //Nested translation
         	"car" => ["CAR_DATA.FULL_MODEL", ["constructor" => "Honda", "model" => "Civic", "year" => 1993]]

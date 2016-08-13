@@ -8,7 +8,7 @@ $lang = array_merge($lang,array(
 	"CAT_HERE" => array(
 		0 => "There is no {{color}} cats here",
 		1 => "There is a {{color}} cat here",
-		2 => "There is {{int}} {{color}} cats here",
+		2 => "There is {{plural}} {{color}} cats here",
 	),
 	"DOG_HERE" => array(
 		0 => "There is no {{color}} dogs here",
@@ -27,7 +27,7 @@ $lang = array_merge($lang,array(
 	"CHILD" => array(
 		0 => "no children",
 		1 => "a child",
-		2 => "{{int}} children",
+		2 => "{{plural}} children",
 	),
 	"NB_ADULT" => array(
 		0 => "no adults",

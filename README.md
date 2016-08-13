@@ -102,11 +102,11 @@ Strings with plural forms are defined like this in the languages files, with the
 "NEW_MESSAGE" => array(
 	0 => "No new message",
 	1 => "You have one new message",
-	2 => "You have {{int}} new messages",
+	2 => "You have {{plural}} new messages",
 )
 ```
 
-The plural value used to select the right form is defined by default in the `int` placeholder. For example, `$translator->translate("NEW_MESSAGE", {int: 5})` or using the shortcut `$translator->translate("NEW_MESSAGE", 5)` if you don't have others placeholders. The default `int` key can be overwritten using a third option like this: `$translator->translate("NEW_MESSAGE", {nb: 5}, 'nb')`. This may be useful if you pass an existing array to the translate function.
+The plural value used to select the right form is defined by default in the `plural` placeholder. For example, `$translator->translate("NEW_MESSAGE", {plural: 5})` or using the shortcut `$translator->translate("NEW_MESSAGE", 5)` if you don't have others placeholders. The default `plural` key can be overwritten using a third optional option like this: `$translator->translate("NEW_MESSAGE", {nb: 5}, 'nb')`. This may be useful if you pass an existing array to the translate function.
 
 If a localized string contain more than more plural, for example `1 guest and 4 friends currently online`, you can apply the plural rule to both `guest` and `friends` by nesting translation functions:
 ```
@@ -127,7 +127,7 @@ Complex translations can be used when faced with long sentence using multiples s
 "CHILD" => array(
 	0 => "no children",
 	1 => "a child",
-	2 => "{{int}} children",
+	2 => "{{plural}} children",
 ),
 "NB_ADULT" => array(
 	0 => "no adults",
@@ -148,7 +148,7 @@ Complex translations can be used when faced with long sentence using multiples s
 ```
 $carModel = "Honda";
 echo $translator->translate("COMPLEX_STRING", [
-	"child" => 1,                           //1° INT SHORTCUT
+	"child" => 1,                           //1° PLURAL SHORTCUT
 	"adult" => ["NB_ADULT", 0, "nb_adult"], //2° ADULT key with plural
 	"color" => "COLOR_ARRAY.WHITE",         //3° Nested translation
 	"car" => $carModel                      //4° Classic string
@@ -181,7 +181,7 @@ This will display `There's no children and 5 adults in the red Honda Civic 1993`
 In the end, the above is equivalent to this:
 
 ```
-$child = $translator->translate("CHILD", ["int" => 0]);
+$child = $translator->translate("CHILD", ["plural" => 0]);
 $adult = $translator->translate("NB_ADULT", ["nb_adult" => 0], "nb_adult");
 $color = $translator->translate("COLOR_ARRAY.RED");
 $carFullModel = $translator->translate("CAR_DATA.FULL_MODEL", [

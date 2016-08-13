@@ -143,7 +143,7 @@ class MessageTranslator extends Repository {
      * @param string $plural_key[optional] The key that associate to the plural in $placeholders
      * @return string The translated message.
      */
-    public function translate($message_id, $placeholders = [], $plural_key = 'int')
+    public function translate($message_id, $placeholders = [], $plural_key = 'plural')
     {
         // Return if language string does not exist
         if (!$this->has($message_id)) {
@@ -169,7 +169,7 @@ class MessageTranslator extends Repository {
             }
 
             // Ok great. Now get the right plural form.
-            // The `int` placeholder dictate which plural we are using. No Int = same as finding no key
+            // The `plural` placeholder dictate which plural we are using. No plural = same as finding no key
             // We also allow for a shortcut using the second argument as a numeric value for simple strings.
             $plural_value = (isset($placeholders[$plural_key]) ? (int) $placeholders[$plural_key] : (!is_array($placeholders) && is_numeric($placeholders) ? $placeholders : null));
             $key_found = false;
@@ -229,7 +229,7 @@ class MessageTranslator extends Repository {
             // We remplate the placeholder
             if (gettype($value) == "array" || gettype($value) == "object") {
 
-                // So we have an array. The key of $value is the translation key, the value of $value is either an int for shortcut int or placeholders.
+                // So we have an array. The key of $value is the translation key, the value of $value is either an int for shortcut way or placeholders.
                 // We need to go deeper... and do a recursive transalation. Make sure first the optinal param is defined to avoid error
                 $value[2] = isset($value[2]) ? $value[2] : null;
                 $replacement = $this->translate($value[0], $value[1], $value[2]);
