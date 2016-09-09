@@ -7,7 +7,7 @@ The I18n module handles translation tasks for UserFrosting.  The `MessageTransla
 ## Basic usage
 ### Step 1 - Set up language file(s).
 
-A language file returns an array mapping message tokens to messages.  Messages may optionally have placeholders, plural form and sub messages.  For example:
+A language file returns an array mapping message tokens to localized messages.  Messages may optionally have placeholders.  For example:
 
 **locale/es_ES/main.php**
 
@@ -58,142 +58,200 @@ echo $translator->translate("ACCOUNT_USER_CHAR_LIMIT", [
 ## Advanced usage
 
 ### Sub keys
-Sub keys can be defined in language files for easier navigation of lists or to distinguish two items with common keys. For example:
+Sub keys can be defined in language files for easier navigation of lists or to distinguish two items with common keys. They are identified by the `+` prefix. This prefix allow both standard key and sub key to coexist. For example:
 
 ```
-return array(
-	"COLOR" => array(
-		"WHITE" => "white",
-		"BLACK" => "black",
-		"RED" => "red"
-	)
-);
+return [
+  "COLOR"  => "Color",
+  "COLORS" => "Colors",
+  "+COLOR" => [
+    "BLACK" => "black",
+    "RED" => "red",
+    "WHITE" => "white"
+  ]
+];
 ```
 
-Sub keys can be accessed using _dot syntax_. For example, `$translator->translate('COLOR.BLACK')` will return `black`.
+Sub keys can be accessed using _dot syntax_. Note that the `+` prefix will automatically be added. So `$translator->translate('COLOR.BLACK')` will return `black` while `$translator->translate('COLOR')` will return `Color`.
 
-Be careful when defining keys names in language files. In the above example, the `COLOR` key (`$translator->translate('COLOR')`) cound't be used to display the translated word `color`! The above example should be using the `ARRAY` suffix, for example `COLOR_ARRAY`.
+**WARNING** : Omitting the `+` prefix in the languages files will result in unexpected behavior and throw errors!
 
-Sub keys become rally useful if multiple *master keys* shared the same sub keys:
+Sub keys are really useful when multiple *master keys* share the same sub keys:
 ```
-return array(
-	"METHOD_A" => array(
+return [
+	"+METHOD_A" => [
 		"TITLE" => "Scénario A",
 		"DESCRIPTION" => "..."
-	),
-	"METHOD_B" => array(
+	],
+	"+METHOD_B" => [
 		"TITLE" => "Scénario B",
 		"DESCRIPTION" => "..."
-	)
-);
+	]
+];
 
-$method = Method->get(); // return $method = "A";
-echo $translator->translate("METHOD_$method.TITLE"); // Print "Scénario A"
+$method = Method->get(); // return $method = "METHOD_A";
+echo $translator->translate("$method.TITLE"); // Print "Scénario A"
 ```
-
 
 
 ### Pluralization
 
-The plural system allow for easy pluralization of strings. This whole system is based on Mozilla plural rules (See : https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals). The rule associated with a particular language (see link) is defined in the `PLURAL_RULE` key. So in the `english` file, you should find `"PLURAL_RULE" => 1` and in the `french` file `"PLURAL_RULE" => 2`.
+The plural system allow for easy pluralization of strings. This whole system is based on Mozilla plural rules (See : https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals). For a given language, there is a grammatical rule on how to change words depending on the number qualifying the word. Different languages can have different rules. For example, in English you say `no cars` (note the plural `cars`) while in French you say `Aucune voiture` (note the singular `voiture`).
 
-Strings with plural forms are defined like this in the languages files, with the `zero` special case:
+The rule associated with a particular language ([see link above](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals))) is defined in the `PLURAL_RULE` key. So in the `english` file, you should find `"PLURAL_RULE" => 1` and in the `french` file `"PLURAL_RULE" => 2`.
+
+Strings with plural forms are defined using the `@`prefix in the languages files, with the rules defined in the sub array. The right plural form is determined by the plural value passed as the second parameter of the `translate` function :
 ```
-"NEW_MESSAGE" => array(
-	0 => "No new message",
-	1 => "You have one new message",
-	2 => "You have {{plural}} new messages",
-)
+"@HUNGRY_CATS" => [
+	0 => "hungry cats",
+	1 => "hungry cat",
+	2 => "hungry cats",
+]
+
+echo translate("HUNGRY_CATS", 0); // Return "hungry cats"
+echo translate("HUNGRY_CATS", 1); // Return "hungry cat"
+echo translate("HUNGRY_CATS", 2); // Return "hungry cats"
+echo translate("HUNGRY_CATS", 5); // Return "hungry cats"
 ```
 
-The plural value used to select the right form is defined by default in the `plural` placeholder. For example, `$translator->translate("NEW_MESSAGE", {plural: 5})` or using the shortcut `$translator->translate("NEW_MESSAGE", 5)` if you don't have others placeholders. The default `plural` key can be overwritten using a third optional option like this: `$translator->translate("NEW_MESSAGE", {nb: 5}, 'nb')`. This may be useful if you pass an existing array to the translate function.
+The plural value used to select the right form is defined by default in the `plural` placeholder. This means that `$translator->translate("HUNGRY_CATS", 5)` is equivalent to `$translator->translate("HUNGRY_CATS", ['plural': 5])`. The `plural` placeholder can also be used in the string definition:
 
-If a localized string contain more than more plural, for example `1 guest and 4 friends currently online`, you can apply the plural rule to both `guest` and `friends` by nesting translation functions:
 ```
+"@HUNGRY_CATS" => [
+	0 => "No hungry cats",
+	1 => "{{plural}} hungry cat",
+	2 => "{{plural}} hungry cats",
+]
+
+echo translate("HUNGRY_CATS", 0); // Return "No hungry cats"
+echo translate("HUNGRY_CATS", 1); // Return "1 hungry cat"
+echo translate("HUNGRY_CATS", 2); // Return "2 hungry cats"
+echo translate("HUNGRY_CATS", 5); // Return "5 hungry cats"
+echo translate("HUNGRY_CATS", ['plural': 5]); // Return "5 hungry cats" (equivalent to the previous one)
+```
+
+In this example, `0` is used as a special rules to display `No hungry cats` instead of `0 hungry cats` for prettier strings.
+
+#### Custom plural key
+The default `plural` key can be overwritten by passing a third (optional) argument to the `translate` function. This may be useful if you pass an existing array to the translate function.
+
+```
+"@HUNGRY_CATS" => [
+	0 => "No hungry cats",
+	1 => "One hungry cat",
+	2 => "{{nb}} hungry cats",
+]
+
+echo translate("HUNGRY_CATS", 2, "nb"); // Return "2 hungry cats"
+echo translate("HUNGRY_CATS", ['nb': 5], "nb"); // Return "5 hungry cats"
+```
+
+#### Plural value with placeholders
+If you have more than one placeholder, you must then pass the plural value in the placeholders (no shortcut possible).
+
+```
+"@HUNGRY_CATS" => [
+ 0 => "No {{emotion}} cats",
+ 1 => "One {{emotion}} cat",
+ 2 => "{{plural}} {{emotion}} cats",
+]
+
+echo translate("HUNGRY_CATS", ['plural': 2, 'emotion': 'hungry']); // Return "2 hungry cats"
+echo translate("HUNGRY_CATS", ['plural': 5, 'emotion': 'angry']); // Return "5 angry cats"
+```
+
+#### Multiple plural in a string
+If a localized string contain more than more plural, for example `1 guest and 4 friends currently online`, you can apply the plural rule to both `guest` and `friends` by nesting the `ONLINE_GUEST` and `ONLINE_FRIEND` keys into `ONLINE_USERS`:
+```
+"@ONLINE_GUEST" => [
+	0 => "0 guests",
+	1 => "1 guest",
+	2 => "{{plural}} guests"
+],
+
+"@ONLINE_FRIEND" => [
+	0 => "0 friends",
+	1 => "1 friend",
+	2 => "{{plural}} friends"
+],
+
+"ONLINE_USERS" => "{{guest}} and {{friend}} currently online",
+
+[...]
+
 $online_guest => translate("ONLINE_GUEST", 1);
 $online_friend => translate("ONLINE_FRIEND", 4);
-translate("ONLINE_USERS", ["guest" => online_guest, "friend" => $online_friend]);
+translate("ONLINE_USERS", ["guest" => $online_guest, "friend" => $online_friend]); // Returns "1 guest and 4 friends currently online"
 ```
 
-Where `ONLINE_USERS => "{{guest}} and {{friend}} currently online";`. You could also use *complex translation* (see below).
+Note that nested translations can be used when faced with long sentence using multiples sub strings or plural form, but those should be avoided when possible. Shorter or multiple sentences should be preferred instead.
 
-### Complex translations
+#### Numbers are rules, not limits !
+**REALLY IMPORTANT** : The **number** defined in the language files **IS NOT** related to the plural value, but to [the plural rule](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals). **So this is completely WRONG** :
 
-Complex translations can be used when faced with long sentence using multiples sub strings or plural form. This works by recursively translating placeholders. Complex translations should be avoided when possible and shorter or multiple sentences should be preferred instead. To explain complex translations, let's start with an example:
+```
+"@HUNGRY_CATS" => [
+	0 => "No hungry cats",
+	1 => "One hungry cat",
+	2 => "{{plural}} hungry cats",
+	5 => "A lot of hungry cats"
+]
 
-*Language file*
+echo translate("HUNGRY_CATS", 2); // Return "2 hungry cats"
+echo translate("HUNGRY_CATS", 5); // Return "5 hungry cats", NOT "A lot of hungry cats"!
+```
+
+#### One last thing...
+In some cases, it could be faster and easier to directly access the plural value. For example, when the string will *always* be plural. Consider the following example :
+```
+"COLOR" => "Color",
+"COLORS" => "Colors",
+"@COLOR" => [
+  0 => "colors",
+  1 => "color",
+  2 => "colors"
+]
+```
+In this example, `translate("COLOR", 2);` and `translate("COLORS");` will return the same value. Same goes for `translate("COLOR", 1);` and `translate("COLOR");`. This is true for English, but not necessarily for all languages. While languages without any form of plural definitions could define `"COLOR" => "Color"` and `"COLORS" => "Color"`, some may have even more complicated rules. That's why it's always best to avoid keys like `COLORS` if you plan to translate to more than one language. This is also true with the `0` value that can be different across different language, but can also be handle differently depending of the message you want to display (Ex.: `No colors` instead of `0 colors`).
+
+
+## One last example...
+
+### Language file
 ```
 "COMPLEX_STRING" => "There's {{child}} and {{adult}} in the {{color}} {{car}}",
-"CHILD" => array(
+"@X_CHILD" => [
 	0 => "no children",
 	1 => "a child",
 	2 => "{{plural}} children",
-),
-"NB_ADULT" => array(
+],
+"@X_ADULT" => [
 	0 => "no adults",
 	1 => "an adult",
 	2 => "{{nb_adult}} adults",
-),
-"COLOR_ARRAY" => array(
+],
+"+COLOR" => [
 	"WHITE" => "white",
 	"BLACK" => "black",
-	"RED" => "red",
-),
-"CAR_DATA"  => array(
-  	"FULL_MODEL" => "{{constructor}} {{model}} {{year}}"
-)
+	"RED" => "red"
+],
+"+CAR"  => [
+  	"FULL_MODEL" => "{{make}} {{model}} {{year}}"
+]
 ```
 
-*translate function*
+### translate function
 ```
-$carModel = "Honda";
+$carMake = "Honda";
 echo $translator->translate("COMPLEX_STRING", [
-	"child" => 1,                           //1° PLURAL SHORTCUT
-	"adult" => ["NB_ADULT", 0, "nb_adult"], //2° ADULT key with plural
-	"color" => "COLOR_ARRAY.WHITE",         //3° Nested translation
-	"car" => $carModel                      //4° Classic string
+	"child" => $translator->translate("X_CHILD", 1),
+	"adult" => $translator->translate("NB_ADULT", 0, "nb_adult")
+	"color" => $translator->translate("COLOR.WHITE")
+	"car" => $translator->translate("CAR.FULL_MODEL", ["make" => $carMake, "model" => "Civic", "year" => 1993])
 ]);
 ```
 
-*Result*
+### Result
 ```
 There's a child and no adults in the white Honda
-```			
-
-In this case:
-1. The placeholder `child` in the `COMPLEX_STRING` will be replaced by the plural form of the `CHILD` key (since no other key is defined), using `1` as the plural value (double shortcut method).
-1. The placeholder `adult` in the `COMPLEX_STRING` will be replaced by the plural form of the `NB_ADULT` key, using `0` as the plural value and `nb_adult` as the custom plural key (shortcut method + custom plural key).
-1. The placeholder `color` in the `COMPLEX_STRING` will be replaced by the value of the `COLOR_ARRAY -> WHITE` sub key (sub key method).
-1. The placeholder `car` in the `COMPLEX_STRING` will be replaced by the value of `$carModel` (Simple method).
-
-Got it? Let's try this one:
-```
-$translator->translate("COMPLEX_STRING", [
-	"child" => 0,
-	"adult" => ["NB_ADULT", 5, "nb_adult"],
-	"color" => "COLOR_ARRAY.RED",
-	"car" => ["CAR_DATA.FULL_MODEL", ["constructor" => "Honda", "model" => "Civic", "year" => 1993]]
-])
-```
-
-This will display `There's no children and 5 adults in the red Honda Civic 1993`. In this case, the `car` placeholder will be replaced using the `CAR_DATA.FULL_MODEL` key (sub key method) using 3 placeholders. Again, be careful here! The function will detect that `1993` is an integer and will try to pluralize `year`. Since the `year` key doesn't return an array of plurals, `1993` will be used as a classic placeholder. So again, be careful about the language key naming convention.
-
-In the end, the above is equivalent to this:
-
-```
-$child = $translator->translate("CHILD", ["plural" => 0]);
-$adult = $translator->translate("NB_ADULT", ["nb_adult" => 0], "nb_adult");
-$color = $translator->translate("COLOR_ARRAY.RED");
-$carFullModel = $translator->translate("CAR_DATA.FULL_MODEL", [
-	"constructor" => "Honda",
-	"model" => "Civic",
-	"year" => "1993"
-]);
-
-$translator->translate("COMPLEX_STRING", [
-	"child" => $child,
-	"adult" => $adult,
-	"color" => $color,
-	"car" => $carFullModel
-])
 ```
