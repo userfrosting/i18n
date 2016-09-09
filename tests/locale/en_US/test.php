@@ -1,47 +1,63 @@
 <?php
 
-$lang = array();
+return [
+    "PLURAL_RULE" => 1, //Required to get the right rule. French is 2, english is 1
 
-$lang = array_merge($lang,array(
-    "PLURAL_RULE" => 1,
+    // Colors
+    "COLOR" => "Color",
+    "COLORS" => "Colors",
+    "@COLOR" => [
+        0 => "colors",
+        1 => "color", // Same as calling "COLOR" without plural value
+        2 => "colors" // Same as calling "COLORS" without plural value
+    ],
+    "+COLOR" => [
+        "BLACK" => "black",
+        "RED" => "red",
+        "WHITE" => "white"
+    ],
 
-	"CAT_HERE" => array(
-		0 => "There is no {{color}} cats here",
-		1 => "There is a {{color}} cat here",
-		2 => "There is {{plural}} {{color}} cats here",
-	),
-	"DOG_HERE" => array(
-		0 => "There is no {{color}} dogs here",
-		1 => "There is a {{color}} dog here",
-		2 => "There is {{nb}} {{color}} dogs here",
-	),
-	"ME_IS"     => "I'm on {{place}}",
-	"NAME_IS"   => "{{name}} is on {{place}}",
-	"THE_BEACH" => "the beach",
+    // Cars
+    "CAR" => "car",
+    "CARS" => "cars",
+    "@X_CARS" => [
+        0 => "no cars",
+        1 => "a car",
+        2 => "{{plural}} cars"
+    ],
+    "+CAR_TYPE" => [
+        "GAS" => "gas",
+        "EV" => "electric",
+        "+EV" => [
+            "FULL" => "full electric",
+            "HYBRID" => "hybrid",
+            "PLUGIN_HYBRID" => "plug-in hybrid"
+        ],
+        "HYDROGEN" => "hydrogen"
+    ],
 
+    // Placeholder strings
+    "MY_CAR_STRING" => "I drive a {{color}} {{my_car}}",
+    "MY_CAR_MAKE" => "My car is a {{car_make}}",
+    "MY_CAR_YEAR" => "I bought my car in {{year}}",
+    "MY_CARS" => "I have {{x_cars}}",
+
+    // Plural with placeholder
+    "@MY_EV_CARS" => [
+        1 => "I have a {{car_type}} car",
+        2 => "I have {{plural}} {{car_type}} cars"
+    ],
+
+    // Custom plural key with no "zero" case.
+    // In english, "2" should be used when the plural value is zero. In french, "1" should be used
+	"@HUNGRY_CATS" => [
+		1 => "{{num}} hungry cat",
+		2 => "{{num}} hungry cats",
+	],
+
+	// Min/max placeholder where the
 	"TEST_LIMIT" => "Your test must be between {{min}} and {{max}} potatoes.",
 	"MIN" => "minimum",
 	//"MAX" => "maximum" //Leave disabled for tests
 
-	"COMPLEX_STRING" => "There's {{child}} and {{adult}} in the {{color}} {{car}}",
-	"CHILD" => array(
-		0 => "no children",
-		1 => "a child",
-		2 => "{{plural}} children",
-	),
-	"NB_ADULT" => array(
-		0 => "no adults",
-		1 => "an adult",
-		2 => "{{nb_adult}} adults",
-	),
-	"COLOR_ARRAY" => array(
-		"WHITE" => "white",
-		"BLACK" => "black",
-		"RED" => "red",
-	),
-	"CAR_DATA"  => array(
-    	"FULL_MODEL" => "{{constructor}} {{model}} {{year}}"
-	)
-));
-
-return $lang;
+];

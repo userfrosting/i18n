@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 class MessageTranslatorTest extends TestCase
 {
 
-    public function testTranslate()
+    public function testTranslateEN()
     {
 
         // Create the $translator object
@@ -19,68 +19,165 @@ class MessageTranslatorTest extends TestCase
         // Load the en_US locale files, no user locale
         $translator->loadLocaleFiles('en_US');
 
-        // Test basic functionality
-        $this->assertEquals($translator->translate('THE_BEACH'), "the beach");
+        // Test basic functionality (Colors)
+        $this->assertEquals($translator->translate('COLOR'), "Color");
+        $this->assertEquals($translator->translate('COLORS'), "Colors");
 
-        // Test sub keys using dot syntax
-        $this->assertEquals($translator->translate('COLOR_ARRAY.BLACK'), "black");
+        $this->assertEquals($translator->translate('COLOR', 0), "colors"); //Note plural in english, singular in french !
+        $this->assertEquals($translator->translate('COLOR', 1), "color");
+        $this->assertEquals($translator->translate('COLOR', 2), "colors");
+        $this->assertEquals($translator->translate('COLOR', 3), "colors");
 
-        // Test when specifying a master key containing subkeys (Expected error, because COLOR_ARRAY doesn't define a key)
-        $this->assertEquals($translator->translate('COLOR_ARRAY'), "COLOR_ARRAY");
+        $this->assertEquals($translator->translate('COLOR.BLACK'), "black");
+        $this->assertEquals($translator->translate('COLOR.WHITE'), "white");
 
-        // Test basic placeholder replacement
-        $this->assertEquals($translator->translate("ME_IS", ["place" => "the beach"]), "I'm on the beach");
-        $this->assertEquals($translator->translate("NAME_IS", ["name" => "Bob", "place" => "the beach"]), "Bob is on the beach");
+        // Test placeholders
+        $this->assertEquals($translator->translate('MY_CAR_MAKE', ["car_make" => "Toyota"]), "My car is a Toyota");
+        $this->assertEquals($translator->translate('MY_CAR_YEAR', ["year" => 2015]), "I bought my car in 2015");
 
-        // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
-        $this->assertEquals($translator->translate("TEST_LIMIT", ["min" => 4, "max" => 200]), "Your test must be between 4 and 200 potatoes.");
+        // Test plural called without a plural value
+        $this->assertEquals($translator->translate('X_CARS'), "X_CARS");
 
-        // Test extra placeholder
-        $this->assertEquals($translator->translate("ME_IS", ["place" => "the beach", "fruit" => "apple"]), "I'm on the beach");
+        // Test plural placeholder
+        $this->assertEquals($translator->translate('X_CARS', 0), "no cars");
+        $this->assertEquals($translator->translate('X_CARS', 1), "a car");
+        $this->assertEquals($translator->translate('X_CARS', 2), "2 cars");
+        $this->assertEquals($translator->translate('X_CARS', 10), "10 cars");
 
-        // Test missing placeholder
-        $this->assertEquals($translator->translate("NAME_IS", ["place" => "the beach"]), "{{name}} is on the beach");
+        // Example of a lang key in a placeholder
+        $this->assertEquals($translator->translate('MY_CARS', ["x_cars" => $translator->translate('X_CARS', 10)]), "I have 10 cars");
 
-        // Test basic nested/var placeholders
-        $place = $translator->translate("THE_BEACH");
-        $this->assertEquals($translator->translate("ME_IS", ["place" => $place]), "I'm on the beach");
+        // Test `+CAR_TYPE` called (top nested name) without "CAR_TYPE" defined
+        $this->assertEquals($translator->translate('CAR_TYPE'), "CAR_TYPE");
 
-        // Test basic `plural` pluralisation
-        $this->assertEquals($translator->translate("CHILD", ["plural" => 0]), "no children");
-        $this->assertEquals($translator->translate("CHILD", ["plural" => 1]), "a child");
-        $this->assertEquals($translator->translate("CHILD", ["plural" => 2]), "2 children");
-        $this->assertEquals($translator->translate("CHILD", ["plural" => 5]), "5 children");
+        // Test 3 levels nested with "CAR_TYPE"
+        $this->assertEquals($translator->translate('CAR_TYPE.GAS'), "gas");
+        $this->assertEquals($translator->translate('CAR_TYPE.EV'), "electric");
+        $this->assertEquals($translator->translate('CAR_TYPE.EV.HYBRID'), "hybrid");
+        $this->assertEquals($translator->translate('CAR_TYPE.HYDROGEN'), "hydrogen");
 
-        // Test the plurialisation shortcut
-        $this->assertEquals($translator->translate("CHILD", 0), "no children");
-        $this->assertEquals($translator->translate("CHILD", 1), "a child");
-        $this->assertEquals($translator->translate("CHILD", 2), "2 children");
-        $this->assertEquals($translator->translate("CHILD", 5), "5 children");
+        // Test extra placeholder (`year` not used)
+        $this->assertEquals($translator->translate("MY_CAR_MAKE", ["car_make" => "Toyota", "year" => 2014]), "My car is a Toyota");
 
-        // Test missing pluralisation
-        $this->assertEquals($translator->translate("CHILD"), "{{plural}} children");
+        // Test missing placeholder (`car_make` nor defined)
+        $this->assertEquals($translator->translate("MY_CAR_MAKE"), "My car is a {{car_make}}");
 
-        // Test custom plural key
-        $this->assertEquals($translator->translate("NB_ADULT", ["nb_adult" => 2], "nb_adult"), "2 adults");
+        // Example of a complex translation
+        $this->assertEquals($translator->translate('MY_CAR_STRING', [
+            "my_car" => $translator->translate('CAR_TYPE.EV.PLUGIN_HYBRID'),
+            "color" => $translator->translate('COLOR.RED')
+        ]), "I drive a red plug-in hybrid");
 
         // Test `plural` pluralisation placeholder with other placeholders
-        $this->assertEquals($translator->translate("CAT_HERE", ["plural" => 3, "color" => "black"]), "There is 3 black cats here");
-        $this->assertEquals($translator->translate("DOG_HERE", ["nb" => 3, "color" => "white"], "nb"), "There is 3 white dogs here");
+        $this->assertEquals($translator->translate("MY_EV_CARS", [
+            "plural" => 3,
+            "car_type" => $translator->translate("CAR_TYPE.EV", 3)
+        ]), "I have 3 electric cars");
 
-        // Test complex translations
-        $carModel = "Tesla Model S";
-        $this->assertEquals($translator->translate("COMPLEX_STRING", [
-        	"child" => 1,                            //PLURAL SHORTCUT
-        	"adult" => ["NB_ADULT", 0, "nb_adult"],  //ADULT key with plural and custom plural_key
-        	"color" => "COLOR_ARRAY.WHITE",          //Nested translation
-        	"car" => $carModel                       //Classic string
-        ]), "There's a child and no adults in the white Tesla Model S");
+         // Test pluralisation with custom plural key
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 0], "num"), "0 hungry cats");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 1], "num"), "1 hungry cat");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 2], "num"), "2 hungry cats");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5], "num"), "5 hungry cats");
 
-        $this->assertEquals($translator->translate("COMPLEX_STRING", [
-        	"child" => 0,                               //PLURAL SHORTCUT
-        	"adult" => ["NB_ADULT", 5, "nb_adult"],     //ADULT key with plural
-        	"color" => "COLOR_ARRAY.RED",               //Nested translation
-        	"car" => ["CAR_DATA.FULL_MODEL", ["constructor" => "Honda", "model" => "Civic", "year" => 1993]]
-        ]), "There's no children and 5 adults in the red Honda Civic 1993");
+        // Example of expected error because of the custom plural key
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 0), "{{num}} hungry cats");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 1), "{{num}} hungry cat");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 2), "{{num}} hungry cats");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 5), "{{num}} hungry cats");
+
+        // Test missing pluralisation
+        $this->assertEquals($translator->translate("HUNGRY_CATS"), "HUNGRY_CATS");
+
+        // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
+        // We don't want to end up with "Votre test doit être entre minimum et 200 patates"
+        $this->assertEquals($translator->translate("TEST_LIMIT", ["min" => 4, "max" => 200]), "Your test must be between 4 and 200 potatoes.");
+    }
+
+    public function testTranslateFR()
+    {
+
+        // Create the $translator object
+		$translator = new MessageTranslator();
+
+        // Add search paths for the test locale files relative to this file. We won't test setPaths with this test (yet)
+        $translator->setPaths([dirname(__FILE__)."/locale"]);
+
+        // Load the en_US locale files, no user locale
+        $translator->loadLocaleFiles('fr_FR');
+
+        // Test basic functionality (Colors)
+        $this->assertEquals($translator->translate('COLOR'), "Couleur");
+        $this->assertEquals($translator->translate('COLORS'), "Couleurs");
+
+        $this->assertEquals($translator->translate('COLOR', 0), "couleur"); //Note plural in english, singular in french !
+        $this->assertEquals($translator->translate('COLOR', 1), "couleur");
+        $this->assertEquals($translator->translate('COLOR', 2), "couleurs");
+        $this->assertEquals($translator->translate('COLOR', 3), "couleurs");
+
+        $this->assertEquals($translator->translate('COLOR.BLACK'), "noir");
+        $this->assertEquals($translator->translate('COLOR.WHITE'), "blanc");
+
+        // Test placeholders
+        $this->assertEquals($translator->translate('MY_CAR_MAKE', ["car_make" => "Toyota"]), "Ma voiture est une Toyota");
+        $this->assertEquals($translator->translate('MY_CAR_YEAR', ["year" => 2015]), "J'ai acheté ma voiture en 2015");
+
+        // Test plural called without a plural value
+        $this->assertEquals($translator->translate('X_CARS'), "X_CARS");
+
+        // Test plural placeholder
+        $this->assertEquals($translator->translate('X_CARS', 0), "aucune voiture");
+        $this->assertEquals($translator->translate('X_CARS', 1), "une voiture");
+        $this->assertEquals($translator->translate('X_CARS', 2), "2 voitures");
+        $this->assertEquals($translator->translate('X_CARS', 10), "10 voitures");
+
+        // Example of a lang key in a placeholder
+        $this->assertEquals($translator->translate('MY_CARS', ["x_cars" => $translator->translate('X_CARS', 10)]), "J'ai 10 voitures");
+
+        // Test `+CAR_TYPE` called (top nested name) without "CAR_TYPE" defined
+        $this->assertEquals($translator->translate('CAR_TYPE'), "CAR_TYPE");
+
+        // Test 3 levels nested with "CAR_TYPE"
+        $this->assertEquals($translator->translate('CAR_TYPE.GAS'), "à essence");
+        $this->assertEquals($translator->translate('CAR_TYPE.EV'), "électrique");
+        $this->assertEquals($translator->translate('CAR_TYPE.EV.HYBRID'), "hybride");
+        $this->assertEquals($translator->translate('CAR_TYPE.HYDROGEN'), "à l'hydrogène");
+
+        // Test extra placeholder (`year` not used)
+        $this->assertEquals($translator->translate("MY_CAR_MAKE", ["car_make" => "Toyota", "year" => 2014]), "Ma voiture est une Toyota");
+
+        // Test missing placeholder (`car_make` nor defined)
+        $this->assertEquals($translator->translate("MY_CAR_MAKE"), "Ma voiture est une {{car_make}}");
+
+        // Example of a complex translation
+        $this->assertEquals($translator->translate('MY_CAR_STRING', [
+            "my_car" => $translator->translate('CAR_TYPE.EV.PLUGIN_HYBRID'),
+            "color" => $translator->translate('COLOR.RED')
+        ]), "Je conduit une hybride branchable de couleur rouge");
+
+        // Test `plural` pluralisation placeholder with other placeholders
+        $this->assertEquals($translator->translate("MY_EV_CARS", [
+            "plural" => 3,
+            "car_type" => $translator->translate("CAR_TYPE.EV", 3)
+        ]), "J'ai 3 voitures électriques");
+
+         // Test pluralisation with custom plural key
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 0], "num"), "0 chat affamé");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 1], "num"), "1 chat affamé");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 2], "num"), "2 chats affamés");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5], "num"), "5 chats affamés");
+
+        // Example of expected error because of the custom plural key
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 0), "{{num}} chat affamé");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 1), "{{num}} chat affamé");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 2), "{{num}} chats affamés");
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 5), "{{num}} chats affamés");
+
+        // Test missing pluralisation
+        $this->assertEquals($translator->translate("HUNGRY_CATS"), "HUNGRY_CATS");
+
+        // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
+        // We don't want to end up with "Votre test doit être entre minimum et 200 patates"
+        $this->assertEquals($translator->translate("TEST_LIMIT", ["min" => 4, "max" => 200]), "Votre test doit être entre 4 et 200 patates.");
     }
 }
