@@ -80,11 +80,17 @@ class MessageTranslatorTest extends TestCase
         $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 2], "num"), "2 hungry cats");
         $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5], "num"), "5 hungry cats");
 
+        // Custom key can also be omited in the placeholder if it's the only placeholder even with custom plural key
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 5, "num"), "5 hungry cats");
+
         // Example of expected error because of the custom plural key
         $this->assertEquals($translator->translate("HUNGRY_CATS", 0), "{{num}} hungry cats");
         $this->assertEquals($translator->translate("HUNGRY_CATS", 1), "{{num}} hungry cat");
         $this->assertEquals($translator->translate("HUNGRY_CATS", 2), "{{num}} hungry cats");
         $this->assertEquals($translator->translate("HUNGRY_CATS", 5), "{{num}} hungry cats");
+
+        // Example : Custom key needs to be in the 3rd argument! It won't even find `@HUNGRY_CATS` without a valid plural value.
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5]), "HUNGRY_CATS");
 
         // Test missing pluralisation
         $this->assertEquals($translator->translate("HUNGRY_CATS"), "HUNGRY_CATS");
@@ -167,11 +173,17 @@ class MessageTranslatorTest extends TestCase
         $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 2], "num"), "2 chats affamés");
         $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5], "num"), "5 chats affamés");
 
+        // Custom key can also be omited in the placeholder if it's the only placeholder even with custom plural key
+        $this->assertEquals($translator->translate("HUNGRY_CATS", 5, "num"), "5 chats affamés");
+
         // Example of expected error because of the custom plural key
         $this->assertEquals($translator->translate("HUNGRY_CATS", 0), "{{num}} chat affamé");
         $this->assertEquals($translator->translate("HUNGRY_CATS", 1), "{{num}} chat affamé");
         $this->assertEquals($translator->translate("HUNGRY_CATS", 2), "{{num}} chats affamés");
         $this->assertEquals($translator->translate("HUNGRY_CATS", 5), "{{num}} chats affamés");
+
+        // Example : Custom key needs to be in the 3rd argument! It won't even find `@HUNGRY_CATS` without a valid plural value.
+        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5]), "HUNGRY_CATS");
 
         // Test missing pluralisation
         $this->assertEquals($translator->translate("HUNGRY_CATS"), "HUNGRY_CATS");
