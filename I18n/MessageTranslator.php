@@ -145,6 +145,9 @@ class MessageTranslator extends Repository {
      */
     public function translate($message_id, $placeholders = [], $plural_key = 'plural')
     {
+        // Keep a copy of the original `$message_id` before injecting stuff in it
+        $message_id_original = $message_id;
+
         // Inject the `+` prefix into "$message_id" using some regex magic
         $message_id = preg_replace("/\w+\.+/", '+$0', $message_id);
 
@@ -217,7 +220,7 @@ class MessageTranslator extends Repository {
             // - `$message_id_plural` without plural value
             // - NO match on $message_id
             // We return the original $message_id
-            return $message_id;
+            return $message_id_original;
 
         }
 
