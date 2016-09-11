@@ -3,13 +3,13 @@
 return [
     "PLURAL_RULE" => 1, //Required to get the right rule. French is 2, english is 1
 
+    "USERNAME" => 'Username',
+
     // Colors
-    "COLOR" => "Color",
-    "COLORS" => "Colors",
-    "@COLOR" => [
+    "COLOR" => [
         0 => "colors",
-        1 => "color", // Same as calling "COLOR" without plural value
-        2 => "colors" // Same as calling "COLORS" without plural value
+        1 => "color",
+        2 => "colors"
     ],
     "+COLOR" => [
         "BLACK" => "black",
@@ -18,9 +18,11 @@ return [
     ],
 
     // Cars
-    "CAR" => "car",
-    "CARS" => "cars",
-    "@X_CARS" => [
+    "CAR" => [
+        1 => "car",
+        2 => "cars"
+    ],
+    "X_CARS" => [
         0 => "no cars",
         1 => "a car",
         2 => "{{plural}} cars"
@@ -43,14 +45,14 @@ return [
     "MY_CARS" => "I have {{x_cars}}",
 
     // Plural with placeholder
-    "@MY_EV_CARS" => [
+    "MY_EV_CARS" => [
         1 => "I have a {{car_type}} car",
         2 => "I have {{plural}} {{car_type}} cars"
     ],
 
     // Custom plural key with no "zero" case.
     // In english, "2" should be used when the plural value is zero. In french, "1" should be used
-	"@HUNGRY_CATS" => [
+	"X_HUNGRY_CATS" => [
 		1 => "{{num}} hungry cat",
 		2 => "{{num}} hungry cats",
 	],

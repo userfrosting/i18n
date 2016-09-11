@@ -3,13 +3,13 @@
 return [
     "PLURAL_RULE" => 2, //Required to get the right rule. French is 2, english is 1
 
+    "USERNAME" => 'Nom d\'utilisateur', //Note the espace `\` caracter here. Won't be displayed in the test
+
     // Colors
-    "COLOR" => "Couleur",
-    "COLORS" => "Couleurs",
-    "@COLOR" => [
+    "COLOR" => [
         0 => "couleur",
-        1 => "couleur", // Same as calling "COLOR" without plural value
-        2 => "couleurs" // Same as calling "COLORS" without plural value
+        1 => "couleur",
+        2 => "couleurs"
     ],
     "+COLOR" => [
         "BLACK" => "noir",
@@ -18,17 +18,19 @@ return [
     ],
 
     // Cars
-    "CAR" => "voiture",
-    "CARS" => "voitures",
-    "@X_CARS" => [
+    "CAR" => [
+        1 => "voiture",
+        2 => "voitures"
+    ],
+    "X_CARS" => [
         0 => "aucune voiture",
         1 => "une voiture",
         2 => "{{plural}} voitures"
     ],
     "+CAR_TYPE" => [
         "GAS" => "à essence",
-        "EV" => "électrique",
-        "@EV" => [
+        "EV" => [
+            1 => "électrique",
             2 => "électriques" //Other way to pluralize for 1/2. This is NOT required in english!
         ],
         "+EV" => [
@@ -46,14 +48,14 @@ return [
     "MY_CARS" => "J'ai {{x_cars}}",
 
     // Plural with placeholder
-    "@MY_EV_CARS" => [
+    "MY_EV_CARS" => [
         1 => "J'ai une voiture {{car_type}}",
         2 => "J'ai {{plural}} voitures {{car_type}}"
     ],
 
     // Custom plural key with no "zero" case.
     // In english, "2" should be used when the plural value is zero. In french, "1" should be used
-	"@HUNGRY_CATS" => [
+	"X_HUNGRY_CATS" => [
 		1 => "{{num}} chat affamé",
 		2 => "{{num}} chats affamés",
 	],

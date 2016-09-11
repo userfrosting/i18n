@@ -145,28 +145,26 @@ class MessageTranslator extends Repository {
      */
     public function translate($message_id, $placeholders = [], $plural_key = 'plural')
     {
-        // Keep a copy of the original `$message_id` before injecting stuff in it
-        $message_id_original = $message_id;
-
         // Inject the `+` prefix into "$message_id" using some regex magic
         $message_id = preg_replace("/\w+\.+/", '+$0', $message_id);
 
-        // Get the plural form of the same key, again with some regex magic
-        $message_id_plural = preg_replace("/[^\.]*$/", '@$0', $message_id, 1);
+        // If we didn't find a match, return the $message_id
+        if (!$this->has($message_id)) {
+            return $message_id;
+        }
 
-        // We try get the plural value first. If we have one, we will try to use the plural message id
-        $plural_value = (isset($placeholders[$plural_key]) ? (int) $placeholders[$plural_key] : (!is_array($placeholders) && is_numeric($placeholders) ? $placeholders : null));
+        // Get the message
+        $message = $this->get($message_id);
 
-        // If we have a plural value and a key is matching the plural version of the specified message id
-        // we go full plural
-        if ($plural_value !== null && $this->has($message_id_plural)) {
+        // If the message is an array, we consider it's a plural definition
+        if (is_array($message)) {
 
-            // The message exist. So now we get the right form
-            $message = $this->get($message_id_plural);
-
-            // Ok great. Now get the right plural form.
+            // We try get the plural value. Default to a value of `1`
             // The `plural` placeholder dictate which plural we are using. No plural = same as finding no key
             // We also allow for a shortcut using the second argument as a numeric value for simple strings.
+            $plural_value = (isset($placeholders[$plural_key]) ? (int) $placeholders[$plural_key] : (!is_array($placeholders) && is_numeric($placeholders) ? $placeholders : 1));
+
+            // Ok great. Now we need the right plural form.
             // N.B.: Plurals is based on phpBB and Mozilla work : https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
             $key_found = false;
 
@@ -205,22 +203,6 @@ class MessageTranslator extends Repository {
             }
 
             $message = $message[$key_found];
-
-        // We either don't have a plural value or a plural form of the $message_id.
-        // We test if we have a key matching the $message_id
-        } else if ($this->has($message_id)) {
-
-            // Get the message, translated into the currently set language
-            $message = $this->get($message_id);
-
-        } else {
-
-            // We get here if:
-            // - plural value without `$message_id_plural`
-            // - `$message_id_plural` without plural value
-            // - NO match on $message_id
-            // We return the original $message_id
-            return $message_id_original;
 
         }
 

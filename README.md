@@ -63,7 +63,6 @@ Sub keys can be defined in language files for easier navigation of lists or to d
 ```
 return [
   "COLOR"  => "Color",
-  "COLORS" => "Colors",
   "+COLOR" => [
     "BLACK" => "black",
     "RED" => "red",
@@ -100,9 +99,9 @@ The plural system allow for easy pluralization of strings. This whole system is 
 
 The rule associated with a particular language ([see link above](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals))) is defined in the `PLURAL_RULE` key. So in the `english` file, you should find `"PLURAL_RULE" => 1` and in the `french` file `"PLURAL_RULE" => 2`.
 
-Strings with plural forms are defined using the `@`prefix in the languages files, with the rules defined in the sub array. The right plural form is determined by the plural value passed as the second parameter of the `translate` function :
+Strings with plural forms are defined as sub arrays with the rules as the key. The right plural form is determined by the plural value passed as the second parameter of the `translate` function :
 ```
-"@HUNGRY_CATS" => [
+"HUNGRY_CATS" => [
 	0 => "hungry cats",
 	1 => "hungry cat",
 	2 => "hungry cats",
@@ -114,62 +113,65 @@ echo translate("HUNGRY_CATS", 2); // Return "hungry cats"
 echo translate("HUNGRY_CATS", 5); // Return "hungry cats"
 ```
 
-The plural value used to select the right form is defined by default in the `plural` placeholder. This means that `$translator->translate("HUNGRY_CATS", 5)` is equivalent to `$translator->translate("HUNGRY_CATS", ['plural': 5])`. The `plural` placeholder can also be used in the string definition:
+The plural value used to select the right form is defined by default in the `plural` placeholder. This means that `$translator->translate("HUNGRY_CATS", 5)` is equivalent to `$translator->translate("HUNGRY_CATS", ['plural' => 5])`. The `plural` placeholder can also be used in the string definition. In this case, the `X_` prefix for the key is prefered to mark the plural will be displayed:
 
 ```
-"@HUNGRY_CATS" => [
+"X_HUNGRY_CATS" => [
 	0 => "No hungry cats",
 	1 => "{{plural}} hungry cat",
 	2 => "{{plural}} hungry cats",
 ]
 
-echo translate("HUNGRY_CATS", 0); // Return "No hungry cats"
-echo translate("HUNGRY_CATS", 1); // Return "1 hungry cat"
-echo translate("HUNGRY_CATS", 2); // Return "2 hungry cats"
-echo translate("HUNGRY_CATS", 5); // Return "5 hungry cats"
-echo translate("HUNGRY_CATS", ['plural': 5]); // Return "5 hungry cats" (equivalent to the previous one)
+echo translate("X_HUNGRY_CATS", 0); // Return "No hungry cats"
+echo translate("X_HUNGRY_CATS", 1); // Return "1 hungry cat"
+echo translate("X_HUNGRY_CATS", 2); // Return "2 hungry cats"
+echo translate("X_HUNGRY_CATS", 5); // Return "5 hungry cats"
+echo translate("X_HUNGRY_CATS", ['plural': 5]); // Return "5 hungry cats" (equivalent to the previous one)
 ```
 
 In this example, `0` is used as a special rules to display `No hungry cats` instead of `0 hungry cats` for prettier strings.
+
+When the first argument of the `translate` function points to a plural key in the language definition files and the second parameter is omitted, the plural value will be `1` by default. That means `translate("X_HUNGRY_CATS", 1)` is equivalent to `translate("X_HUNGRY_CATS")`.
+
 
 #### Custom plural key
 The default `plural` key can be overwritten by passing a third (optional) argument to the `translate` function. This may be useful if you pass an existing array to the translate function.
 
 ```
-"@HUNGRY_CATS" => [
+"NB_HUNGRY_CATS" => [
 	0 => "No hungry cats",
 	1 => "One hungry cat",
 	2 => "{{nb}} hungry cats",
 ]
 
-echo translate("HUNGRY_CATS", 2, "nb"); // Return "2 hungry cats"
-echo translate("HUNGRY_CATS", ['nb': 5], "nb"); // Return "5 hungry cats"
+echo translate("NB_HUNGRY_CATS", 2, "nb"); // Return "2 hungry cats"
+echo translate("NB_HUNGRY_CATS", ['nb': 5], "nb"); // Return "5 hungry cats"
 ```
 
 #### Plural value with placeholders
 If you have more than one placeholder, you must then pass the plural value in the placeholders (no shortcut possible).
 
 ```
-"@HUNGRY_CATS" => [
+"X_EMOTION_CATS" => [
  0 => "No {{emotion}} cats",
  1 => "One {{emotion}} cat",
  2 => "{{plural}} {{emotion}} cats",
 ]
 
-echo translate("HUNGRY_CATS", ['plural': 2, 'emotion': 'hungry']); // Return "2 hungry cats"
-echo translate("HUNGRY_CATS", ['plural': 5, 'emotion': 'angry']); // Return "5 angry cats"
+echo translate("X_EMOTION_CATS", ['plural': 2, 'emotion': 'hungry']); // Return "2 hungry cats"
+echo translate("X_EMOTION_CATS", ['plural': 5, 'emotion': 'angry']); // Return "5 angry cats"
 ```
 
 #### Multiple plural in a string
 If a localized string contain more than more plural, for example `1 guest and 4 friends currently online`, you can apply the plural rule to both `guest` and `friends` by nesting the `ONLINE_GUEST` and `ONLINE_FRIEND` keys into `ONLINE_USERS`:
 ```
-"@ONLINE_GUEST" => [
+"ONLINE_GUEST" => [
 	0 => "0 guests",
 	1 => "1 guest",
 	2 => "{{plural}} guests"
 ],
 
-"@ONLINE_FRIEND" => [
+"ONLINE_FRIEND" => [
 	0 => "0 friends",
 	1 => "1 friend",
 	2 => "{{plural}} friends"
@@ -190,29 +192,28 @@ Note that nested translations can be used when faced with long sentence using mu
 **REALLY IMPORTANT** : The **number** defined in the language files **IS NOT** related to the plural value, but to [the plural rule](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals). **So this is completely WRONG** :
 
 ```
-"@HUNGRY_CATS" => [
+"X_HUNGRY_CATS" => [
 	0 => "No hungry cats",
 	1 => "One hungry cat",
 	2 => "{{plural}} hungry cats",
 	5 => "A lot of hungry cats"
 ]
 
-echo translate("HUNGRY_CATS", 2); // Return "2 hungry cats"
-echo translate("HUNGRY_CATS", 5); // Return "5 hungry cats", NOT "A lot of hungry cats"!
+echo translate("X_HUNGRY_CATS", 2); // Return "2 hungry cats"
+echo translate("X_HUNGRY_CATS", 5); // Return "5 hungry cats", NOT "A lot of hungry cats"!
 ```
 
 #### One last thing...
 In some cases, it could be faster and easier to directly access the plural value. For example, when the string will *always* be plural. Consider the following example :
 ```
-"COLOR" => "Color",
-"COLORS" => "Colors",
-"@COLOR" => [
+"COLOR" => [
   0 => "colors",
   1 => "color",
   2 => "colors"
-]
+],
+"COLORS" => "Colors",
 ```
-In this example, `translate("COLOR", 2);` and `translate("COLORS");` will return the same value. Same goes for `translate("COLOR", 1);` and `translate("COLOR");`. This is true for English, but not necessarily for all languages. While languages without any form of plural definitions could define `"COLOR" => "Color"` and `"COLORS" => "Color"`, some may have even more complicated rules. That's why it's always best to avoid keys like `COLORS` if you plan to translate to more than one language. This is also true with the `0` value that can be different across different language, but can also be handle differently depending of the message you want to display (Ex.: `No colors` instead of `0 colors`).
+In this example, `translate("COLOR", 2);` and `translate("COLORS");` will return the same value. This is true for English, but not necessarily for all languages. While languages without any form of plural definitions could define `"COLOR" => "Color"` and `"COLORS" => "Color"`, some may have even more complicated rules. That's why it's always best to avoid keys like `COLORS` if you plan to translate to more than one language. This is also true with the `0` value that can be different across different language, but can also be handle differently depending of the message you want to display (Ex.: `No colors` instead of `0 colors`).
 
 
 ## One last example...
@@ -220,12 +221,12 @@ In this example, `translate("COLOR", 2);` and `translate("COLORS");` will return
 ### Language file
 ```
 "COMPLEX_STRING" => "There's {{child}} and {{adult}} in the {{color}} {{car}}",
-"@X_CHILD" => [
+"X_CHILD" => [
 	0 => "no children",
 	1 => "a child",
 	2 => "{{plural}} children",
 ],
-"@X_ADULT" => [
+"X_ADULT" => [
 	0 => "no adults",
 	1 => "an adult",
 	2 => "{{nb_adult}} adults",

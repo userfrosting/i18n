@@ -19,24 +19,25 @@ class MessageTranslatorTest extends TestCase
         // Load the en_US locale files, no user locale
         $translator->loadLocaleFiles('en_US');
 
-        // Test basic functionality (Colors)
-        $this->assertEquals($translator->translate('COLOR'), "Color");
-        $this->assertEquals($translator->translate('COLORS'), "Colors");
+        // Test most basic functionality
+        $this->assertEquals($translator->translate('USERNAME'), "Username");
 
+        // Test basic plural functionality
         $this->assertEquals($translator->translate('COLOR', 0), "colors"); //Note plural in english, singular in french !
         $this->assertEquals($translator->translate('COLOR', 1), "color");
         $this->assertEquals($translator->translate('COLOR', 2), "colors");
         $this->assertEquals($translator->translate('COLOR', 3), "colors");
 
+        // Test plural default
+        $this->assertEquals($translator->translate('COLOR'), "color");
+
+        // Test basic nested items
         $this->assertEquals($translator->translate('COLOR.BLACK'), "black");
         $this->assertEquals($translator->translate('COLOR.WHITE'), "white");
 
         // Test placeholders
         $this->assertEquals($translator->translate('MY_CAR_MAKE', ["car_make" => "Toyota"]), "My car is a Toyota");
         $this->assertEquals($translator->translate('MY_CAR_YEAR', ["year" => 2015]), "I bought my car in 2015");
-
-        // Test plural called without a plural value
-        $this->assertEquals($translator->translate('X_CARS'), "X_CARS");
 
         // Test plural placeholder
         $this->assertEquals($translator->translate('X_CARS', 0), "no cars");
@@ -45,6 +46,7 @@ class MessageTranslatorTest extends TestCase
         $this->assertEquals($translator->translate('X_CARS', 10), "10 cars");
 
         // Example of a lang key in a placeholder
+        // N.B.: In a real life situation, it's recommended to create a new Top level plural instead
         $this->assertEquals($translator->translate('MY_CARS', ["x_cars" => $translator->translate('X_CARS', 10)]), "I have 10 cars");
 
         // Test `+CAR_TYPE` called (top nested name) without "CAR_TYPE" defined
@@ -75,25 +77,26 @@ class MessageTranslatorTest extends TestCase
         ]), "I have 3 electric cars");
 
          // Test pluralisation with custom plural key
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 0], "num"), "0 hungry cats");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 1], "num"), "1 hungry cat");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 2], "num"), "2 hungry cats");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5], "num"), "5 hungry cats");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 0], "num"), "0 hungry cats");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 1], "num"), "1 hungry cat");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 2], "num"), "2 hungry cats");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 5], "num"), "5 hungry cats");
 
         // Custom key can also be omited in the placeholder if it's the only placeholder even with custom plural key
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 5, "num"), "5 hungry cats");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 5, "num"), "5 hungry cats");
 
         // Example of expected error because of the custom plural key
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 0), "{{num}} hungry cats");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 1), "{{num}} hungry cat");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 2), "{{num}} hungry cats");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 5), "{{num}} hungry cats");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 0), "{{num}} hungry cats");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 1), "{{num}} hungry cat");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 2), "{{num}} hungry cats");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 5), "{{num}} hungry cats");
 
-        // Example : Custom key needs to be in the 3rd argument! It won't even find `@HUNGRY_CATS` without a valid plural value.
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5]), "HUNGRY_CATS");
+        // Example : Custom key needs to be in the 3rd argument! Otherwise, it will replace the placeholder,
+        // but will fail to find the correct plural form (notice the absence of 's' in this result)
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 5]), "5 hungry cat");
 
-        // Test missing pluralisation
-        $this->assertEquals($translator->translate("HUNGRY_CATS"), "HUNGRY_CATS");
+        // Test missing pluralisation and placeholder (expected fail)
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS"), "{{num}} hungry cat");
 
         // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
         // We don't want to end up with "Votre test doit être entre minimum et 200 patates"
@@ -112,24 +115,25 @@ class MessageTranslatorTest extends TestCase
         // Load the en_US locale files, no user locale
         $translator->loadLocaleFiles('fr_FR');
 
-        // Test basic functionality (Colors)
-        $this->assertEquals($translator->translate('COLOR'), "Couleur");
-        $this->assertEquals($translator->translate('COLORS'), "Couleurs");
+        // Test most basic functionality
+        $this->assertEquals($translator->translate('USERNAME'), "Nom d'utilisateur");
 
+        // Test basic plural functionality
         $this->assertEquals($translator->translate('COLOR', 0), "couleur"); //Note plural in english, singular in french !
         $this->assertEquals($translator->translate('COLOR', 1), "couleur");
         $this->assertEquals($translator->translate('COLOR', 2), "couleurs");
         $this->assertEquals($translator->translate('COLOR', 3), "couleurs");
 
+        // Test plural default
+        $this->assertEquals($translator->translate('COLOR'), "couleur");
+
+        // Test basic nested items
         $this->assertEquals($translator->translate('COLOR.BLACK'), "noir");
         $this->assertEquals($translator->translate('COLOR.WHITE'), "blanc");
 
         // Test placeholders
         $this->assertEquals($translator->translate('MY_CAR_MAKE', ["car_make" => "Toyota"]), "Ma voiture est une Toyota");
         $this->assertEquals($translator->translate('MY_CAR_YEAR', ["year" => 2015]), "J'ai acheté ma voiture en 2015");
-
-        // Test plural called without a plural value
-        $this->assertEquals($translator->translate('X_CARS'), "X_CARS");
 
         // Test plural placeholder
         $this->assertEquals($translator->translate('X_CARS', 0), "aucune voiture");
@@ -138,6 +142,7 @@ class MessageTranslatorTest extends TestCase
         $this->assertEquals($translator->translate('X_CARS', 10), "10 voitures");
 
         // Example of a lang key in a placeholder
+        // N.B.: In a real life situation, it's recommended to create a new Top level plural instead
         $this->assertEquals($translator->translate('MY_CARS', ["x_cars" => $translator->translate('X_CARS', 10)]), "J'ai 10 voitures");
 
         // Test `+CAR_TYPE` called (top nested name) without "CAR_TYPE" defined
@@ -168,25 +173,26 @@ class MessageTranslatorTest extends TestCase
         ]), "J'ai 3 voitures électriques");
 
          // Test pluralisation with custom plural key
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 0], "num"), "0 chat affamé");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 1], "num"), "1 chat affamé");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 2], "num"), "2 chats affamés");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5], "num"), "5 chats affamés");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 0], "num"), "0 chat affamé");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 1], "num"), "1 chat affamé");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 2], "num"), "2 chats affamés");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 5], "num"), "5 chats affamés");
 
         // Custom key can also be omited in the placeholder if it's the only placeholder even with custom plural key
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 5, "num"), "5 chats affamés");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 5, "num"), "5 chats affamés");
 
         // Example of expected error because of the custom plural key
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 0), "{{num}} chat affamé");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 1), "{{num}} chat affamé");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 2), "{{num}} chats affamés");
-        $this->assertEquals($translator->translate("HUNGRY_CATS", 5), "{{num}} chats affamés");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 0), "{{num}} chat affamé");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 1), "{{num}} chat affamé");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 2), "{{num}} chats affamés");
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", 5), "{{num}} chats affamés");
 
-        // Example : Custom key needs to be in the 3rd argument! It won't even find `@HUNGRY_CATS` without a valid plural value.
-        $this->assertEquals($translator->translate("HUNGRY_CATS", ["num" => 5]), "HUNGRY_CATS");
+        // Example : Custom key needs to be in the 3rd argument! Otherwise, it will replace the placeholder,
+        // but will fail to find the correct plural form (notice the absence of 's' in this result)
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS", ["num" => 5]), "5 chat affamé");
 
-        // Test missing pluralisation
-        $this->assertEquals($translator->translate("HUNGRY_CATS"), "HUNGRY_CATS");
+        // Test missing pluralisation and placeholder (expected fail)
+        $this->assertEquals($translator->translate("X_HUNGRY_CATS"), "{{num}} chat affamé");
 
         // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
         // We don't want to end up with "Votre test doit être entre minimum et 200 patates"
