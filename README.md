@@ -346,11 +346,16 @@ return [
     ],
     "CAR" => [
         "FULL_MODEL" => "{{make}} {{model}} {{year}}"
+    ],
+    "COLOR" => [
+        "BLACK" => "black",
+        "RED" => "red",
+        "WHITE" => "white"
     ]
 ];
 ```
 
-### translate function
+### Translate function
 ```
 $carMake = "Honda";
 echo $translator->translate("COMPLEX_STRING", [
