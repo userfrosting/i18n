@@ -5,40 +5,50 @@ return [
 
     "USERNAME" => 'Nom d\'utilisateur', //Note the espace `\` caracter here. Won't be displayed in the test
 
+    "ACCOUNT" => [
+        "@TRANSLATION" => "Compte de l'utilisateur", //Don't need to escape if using double quote `"`
+        "ALT" => "Profil"
+    ],
+
     // Colors
     "COLOR" => [
+        //Substrings
+        "BLACK" => "noir",
+        "RED" => "rouge",
+        "WHITE" => "blanc",
+
+        //Plurals
         0 => "couleur",
         1 => "couleur",
         2 => "couleurs"
     ],
-    "+COLOR" => [
-        "BLACK" => "noir",
-        "RED" => "rouge",
-        "WHITE" => "blanc"
-    ],
 
     // Cars
     "CAR" => [
+        //Plurals
         1 => "voiture",
-        2 => "voitures"
-    ],
-    "X_CARS" => [
-        0 => "aucune voiture",
-        1 => "une voiture",
-        2 => "{{plural}} voitures"
-    ],
-    "+CAR_TYPE" => [
+        2 => "voitures",
+
+        //Substrings
         "GAS" => "à essence",
         "EV" => [
+            //"@TRANSLATION" => "électrique", //Can't work for french !
+
+            //We will pluralize instead
             1 => "électrique",
-            2 => "électriques" //Other way to pluralize for 1/2. This is NOT required in english!
-        ],
-        "+EV" => [
+            2 => "électriques",
+
+            //Sub-Substring
             "FULL" => "100% électrique",
             "HYBRID" => "hybride",
             "PLUGIN_HYBRID" => "hybride branchable"
         ],
         "HYDROGEN" => "à l'hydrogène"
+    ],
+    "X_CARS" => [
+        0 => "aucune voiture",
+        1 => "une voiture",
+        2 => "{{plural}} voitures"
     ],
 
     // Placeholder strings
@@ -49,13 +59,19 @@ return [
 
     // Plural with placeholder
     "MY_EV_CARS" => [
-        1 => "J'ai une voiture {{car_type}}",
-        2 => "J'ai {{plural}} voitures {{car_type}}"
+        //"@PLURAL" => "nb",
+        "@REPLACE" => [
+            "type"
+        ],
+        "@TRANSLATION" => "Mes voitures électriques",
+        1 => "Le chat a une {{&CAR}} {{type}}",
+        2 => "Le chat a {{plural}} {{&CAR}} {{type}}"
     ],
 
     // Custom plural key with no "zero" case.
     // In english, "2" should be used when the plural value is zero. In french, "1" should be used
 	"X_HUNGRY_CATS" => [
+    	"@PLURAL" => 'num',
 		1 => "{{num}} chat affamé",
 		2 => "{{num}} chats affamés",
 	],
@@ -64,5 +80,4 @@ return [
 	"TEST_LIMIT" => "Votre test doit être entre {{min}} et {{max}} patates.",
 	"MIN" => "minimum",
 	//"MAX" => "maximum" //Leave disabled for tests
-
 ];
