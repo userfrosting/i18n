@@ -1,6 +1,6 @@
 # I18n module for UserFrosting
 
-Alexander Weissman, 2016
+Louis Charette & Alexander Weissman, 2016
 
 The I18n module handles translation tasks for UserFrosting.  The `MessageTranslator` class can be used as follows:
 
@@ -323,6 +323,27 @@ echo $translator->translate('MY_CATS', ["color" => $colorString);
 
 Finally, if the `@REPLACE` handle is missing in the translation file, we simply end up with the placeholder not being translated (which is something you may want in certain context) : `I have 3 COLOR.WHITE cats`.
 
+### The `&` placeholder
+When a placeholder starts with the `&` character in translation files, it tells the translator to directly replace the placeholder with the right language key (if found). Note that this is CASE SENSITIVE and, as with the other handles, all placeholders defined in the main translation function are passed to all child translations. This is useful when you don't want to translate the same word over and over again in the same language file. Be caureful when using this with plurals as the plural value is passed to all child translation and can cause conflict.
+
+Example:
+```
+"MY_CATS" => [
+    1 => "my cat",
+    2 => "my {{plural}} cats"
+];
+"I_LOVE_MY_CATS" => "I love {{&MY_CATS}}";
+
+$translator->translate('I_LOVE_MY_CATS', 3); //Return "I love my 3 cats"
+```
+In this example, `{{&MY_CATS}}` gets replaced with the `MY_CATS` and since there's 3 cats, the n° 2 rule is selected. So the string becomes `I love my {{plural}} cats` which then becomes `I love my 3 cats`.
+
+
+N.B.: Since this is the last thing handled by the translator, this behaviour can be overwritten by the function call:
+```
+$translator->translate('I_LOVE_MY_CATS', ["plural" => 3, "&MY_CATS" => "my 3 dogs"); //Return "I love my 3 dogs"
+```
+
 ## Example of a complex translation 
 
 ### Language file
@@ -368,7 +389,58 @@ echo $translator->translate("COMPLEX_STRING", [
     "make" => $carMake,
     "model" => "Civic",
     "year" => 1993
-]
+]);
+```
+
+### Result
+```
+There's a child and no adults in the white Honda Civic 1993
+```
+
+
+## Same example, but using the `&` placeholder instead of `@REPLACE`
+
+### Language file
+```
+return [
+    "COMPLEX_STRING" => [
+        "@TRANSLATION" => "There's {{&X_CHILD}} and {{&X_ADULT}} in the {{color}} {{&CAR.FULL_MODEL}}",
+        "@REPLACE" => ["color"],
+    ],
+    "X_CHILD" => [
+        "@PLURAL" => "nb_child",
+    	0 => "no children",
+    	1 => "a child",
+    	2 => "{{plural}} children",
+    ],
+    "X_ADULT" => [
+        "@PLURAL" => "nb_adult",
+    	0 => "no adults",
+    	1 => "an adult",
+    	2 => "{{nb_adult}} adults",
+    ],
+    "CAR" => [
+        "FULL_MODEL" => "{{make}} {{model}} {{year}}"
+    ],
+    "COLOR" => [
+        "BLACK" => "black",
+        "RED" => "red",
+        "WHITE" => "white"
+    ]
+];
+```
+
+### Translate function
+```
+$carMake = "Honda";
+echo $translator->translate("COMPLEX_STRING", [
+    "nb_child" => 1,
+    "nb_adult" => 0,
+    "color" => "COLOR.WHITE",
+    "make" => $carMake,
+    "model" => "Civic",
+    "year" => 1993
+]);
 ```
 
 ### Result

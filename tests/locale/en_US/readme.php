@@ -19,5 +19,10 @@ return [
     ],
     "CAR" => [
         "FULL_MODEL" => "{{make}} {{model}} {{year}}"
+    ],
+
+    "COMPLEX_STRING2" => [
+        "@TRANSLATION" => "There's {{&X_CHILD}} and {{&X_ADULT}} in the {{color}} {{&CAR.FULL_MODEL}}",
+        "@REPLACE" => ["color",],
     ]
 ];

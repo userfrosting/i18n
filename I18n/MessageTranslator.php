@@ -271,14 +271,14 @@ class MessageTranslator extends Repository {
         // Interpolate placeholders
         foreach ($placeholders as $name => $value){
 
-            //All good! We replace the placeholder with the remplacement
+            // All good! We replace the placeholder with the remplacement
             $find = '{{' . trim($name) . '}}';
             $message = str_replace($find, $value, $message);
         }
 
         // We check for {{&...}} strings in the resulting message.
         // Those are directly translated. We do this some regex magic !
-        $message = preg_replace_callback("/{{&([A-Z]\w+)}}/", function ($matches) use ($placeholders) {
+        $message = preg_replace_callback("/{{&(([^}]+[^a-z]))}}/", function ($matches) use ($placeholders) {
             return $this->translate($matches[1], $placeholders);
         }, $message);
 

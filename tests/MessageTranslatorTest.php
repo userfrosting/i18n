@@ -222,5 +222,14 @@ class MessageTranslatorTest extends TestCase
             "model" => "Civic",
             "year" => 1993
         ]), "There's a child and no adults in the white Honda Civic 1993");
+
+        $this->assertEquals($translator->translate("COMPLEX_STRING2", [
+            "nb_child" => 1,
+            "nb_adult" => 0,
+            "color" => "COLOR.WHITE",
+            "make" => $carMake,
+            "model" => "Civic",
+            "year" => 1993
+        ]), "There's a child and no adults in the white Honda Civic 1993");
     }
 }
