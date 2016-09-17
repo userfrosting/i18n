@@ -295,7 +295,7 @@ class MessageTranslator extends Repository {
         $number = (int) $number;
 
         // Default to English rule (1) or the forced one
-        $rule = ($force_rule !== false) ? $force_rule : (($this->has('PLURAL_RULE')) ? $this->get('PLURAL_RULE') : 1);
+        $rule = ($force_rule !== false) ? $force_rule : (($this->has('@PLURAL_RULE')) ? $this->get('@PLURAL_RULE') : 1);
 
         if ($rule > 15 || $rule < 0)
         {

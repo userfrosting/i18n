@@ -62,7 +62,7 @@ echo $translator->translate("ACCOUNT_USER_CHAR_LIMIT", [
 
 The plural system allow for easy pluralization of strings. This whole system is based on Mozilla plural rules (See : https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals). For a given language, there is a grammatical rule on how to change words depending on the number qualifying the word. Different languages can have different rules. For example, in English you say `no cars` (note the plural `cars`) while in French you say `Aucune voiture` (note the singular `voiture`).
 
-The rule associated with a particular language ([see link above](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals)) is defined in the `PLURAL_RULE` key. So in the `english` file, you should find `"PLURAL_RULE" => 1` and in the `french` file `"PLURAL_RULE" => 2`.
+The rule associated with a particular language ([see link above](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals)) is defined in the `@PLURAL_RULE` key. So in the `english` file, you should find `"@PLURAL_RULE" => 1` and in the `french` file `"@PLURAL_RULE" => 2`.
 
 Strings with plural forms are defined as sub arrays with the rules as the key. The right plural form is determined by the plural value passed as the second parameter of the `translate` function :
 ```
@@ -213,6 +213,9 @@ Of courses, sub keys and plural rules can live together inside the same master k
 
 ## Handles
 Some special handles can be defined in the languages files to modify the default behavior of the translator. These handle uses the `@` prefix.
+
+### `@PLURAL_RULE`
+See [Pluralization](#Pluralization).
 
 ### `@TRANSLATION`
 If you want to give a value for the top level key, you can use the `@TRANSLATION` (handle)[#handles] which will create an alias `TOP_KEY` and point it to `TOP_KEY.@TRANSLATION`:

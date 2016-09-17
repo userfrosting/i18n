@@ -1,7 +1,7 @@
 <?php
 
 return [
-    "PLURAL_RULE" => 1, //Required to get the right rule. French is 2, english is 1
+    "@PLURAL_RULE" => 1, //Required to get the right rule. French is 2, english is 1
 
     "USERNAME" => 'Username',
 
