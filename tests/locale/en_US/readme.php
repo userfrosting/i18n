@@ -1,10 +1,7 @@
 <?php
 
 return [
-    "COMPLEX_STRING" => [
-        "@TRANSLATION" => "There's {{child}} and {{adult}} in the {{color}} {{car}}",
-        "@REPLACE" => ["color", "car", "child", "adult"],
-    ],
+    "COMPLEX_STRING" =>  "There's {{child}} and {{adult}} in the {{color}} {{car}}",
     "X_CHILD" => [
         "@PLURAL" => "nb_child",
     	0 => "no children",
@@ -21,8 +18,5 @@ return [
         "FULL_MODEL" => "{{make}} {{model}} {{year}}"
     ],
 
-    "COMPLEX_STRING2" => [
-        "@TRANSLATION" => "There's {{&X_CHILD}} and {{&X_ADULT}} in the {{color}} {{&CAR.FULL_MODEL}}",
-        "@REPLACE" => ["color",],
-    ]
+    "COMPLEX_STRING2" => "There's {{&X_CHILD}} and {{&X_ADULT}} in the {{color}} {{&CAR.FULL_MODEL}}"
 ];

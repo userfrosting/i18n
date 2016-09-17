@@ -258,16 +258,35 @@ echo $translator->translate("NB_HUNGRY_CATS", 2); // Return "2 hungry cats"
 echo $translator->translate("NB_HUNGRY_CATS", ['nb': 5]); // Return "5 hungry cats"
 ```
 
+### The `&` placeholder
+When a placeholder name starts with the `&` character in translation files or the value of a placeholder starts with this same `&` character, it tells the translator to directly replace the placeholder with the right language key (if found). Note that this is CASE SENSITIVE and, as with the other handles, all placeholders defined in the main translation function are passed to all child translations. This is useful when you don't want to translate the same word over and over again in the same language file or with complex translations with plural values. Be caureful when using this with plurals as the plural value is passed to all child translation and can cause conflict (See [Example of a complex translation](#example-of-a-complex-translation)).
 
-### `@REPLACE`
-This handle specify a list of placeholders which are going to be translated before replacement. The other placeholder, including the plural value, will also be passed to this sub translation. This is particularly useful for languages like french where the adjectives can also be pluralizable. Consider this sentence : `I have 3 white catS`. In french, we would say `J'ai 3 chatS blancS`. Notice the `S` on the color `blanc`? One developer could be tempted to do this in an English context :
+Example:
+```
+"MY_CATS" => [
+    1 => "my cat",
+    2 => "my {{plural}} cats"
+];
+"I_LOVE_MY_CATS" => "I love {{&MY_CATS}}";
+
+$translator->translate('I_LOVE_MY_CATS', 3); //Return "I love my 3 cats"
+```
+In this example, `{{&MY_CATS}}` gets replaced with the `MY_CATS` and since there's 3 cats, the n° 2 rule is selected. So the string becomes `I love my {{plural}} cats` which then becomes `I love my 3 cats`.
+
+
+N.B.: Since this is the last thing handled by the translator, this behaviour can be overwritten by the function call:
+```
+$translator->translate('I_LOVE_MY_CATS', ["plural" => 3, "&MY_CATS" => "my 3 dogs"); //Return "I love my 3 dogs"
+```
+
+Since the other placeholders, including the plural value(s) are also be passed to the sub translation, it can be useful for languages like french where the adjectives can also be pluralizable. Consider this sentence : `I have 3 white catS`. In french, we would say `J'ai 3 chatS blancS`. Notice the `S` on the color `blanc`? One developer could be tempted to do this in an English context :
 
 ```
 $colorString = $translator->translate('COLOR.WHITE');
 echo $translator->translate('MY_CATS', ["plural" => 3, "color" => $colorString);
 ```
 
-While this would work in english because the color isn't pluralizable, it won't in french. We'll end up with `J'ai 3 chatS blanc` (No `S` on the color). What we need is the php code to call the translation and passing the color key as a placeholder: `$translator->translate('MY_CATS', ["plural" => 3, "color" => "COLOR.WHITE"]);`. The languages files for both languages would be:
+While this would work in english because the color isn't pluralizable, it won't in french. We'll end up with `J'ai 3 chatS blanc` (No `S` on the color). What we need is the php code to call the translation and passing the color key as a placeholder using the `&` prefix : `$translator->translate('MY_CATS', ["plural" => 3, "color" => "&COLOR.WHITE"]);`. The languages files for both languages in this case would be:
 
 _English_
 ```
@@ -278,9 +297,6 @@ _English_
 ];
 
 "MY_CATS" => [
-    "@REPLACE" => [
-        'color'
-    ],
     0 => "I have no cats",
     1 => "I have a {{color}} cat",
     2 => "I have {{plural}} {{color}} cats"
@@ -301,19 +317,16 @@ _French_
 ];
 
 "MY_CATS" => [
-    "@REPLACE" => [
-        'color'
-    ],
     0 => "I have no cats",
     1 => "I have a {{color}} cat",
     2 => "I have {{plural}} {{color}} cats"
 ];
 ```
 
-Since the placeholders (`["plural" => 3, "color" => "COLOR.WHITE"]`) will be passed to the translate function when the `COLOR.WHITE` key is translated, the correct plural form will be returned in french, giving us `J'ai 3 chatS blancS`. Even without any plural value, this is still shorter to use that defining both translate function inside the php code : 
+Since the placeholders (`["plural" => 3, "color" => "&COLOR.WHITE"]`) will be passed to the translate function when the `COLOR.WHITE` key is translated, the correct plural form will be returned for the color in french, giving us `J'ai 3 chatS blancS`. Even without any plural value, this is still shorter to use that defining both translate function inside the php code : 
 
 ```
-$translator->translate('MY_CATS', ["color" => "COLOR.WHITE"]);
+$translator->translate('MY_CATS', ["color" => "&COLOR.WHITE"]);
 ```
 Vs. 
 ```
@@ -321,92 +334,14 @@ $colorString = $translator->translate('COLOR.WHITE');
 echo $translator->translate('MY_CATS', ["color" => $colorString);
 ```
 
-Finally, if the `@REPLACE` handle is missing in the translation file, we simply end up with the placeholder not being translated (which is something you may want in certain context) : `I have 3 COLOR.WHITE cats`.
+Finally, if the sub translated key is missing in the translation file, we simply end up with the placeholder not being translated (which is something you may want in certain context) : `I have 3 COLOR.WHITE cats`.
 
-### The `&` placeholder
-When a placeholder starts with the `&` character in translation files, it tells the translator to directly replace the placeholder with the right language key (if found). Note that this is CASE SENSITIVE and, as with the other handles, all placeholders defined in the main translation function are passed to all child translations. This is useful when you don't want to translate the same word over and over again in the same language file. Be caureful when using this with plurals as the plural value is passed to all child translation and can cause conflict.
-
-Example:
-```
-"MY_CATS" => [
-    1 => "my cat",
-    2 => "my {{plural}} cats"
-];
-"I_LOVE_MY_CATS" => "I love {{&MY_CATS}}";
-
-$translator->translate('I_LOVE_MY_CATS', 3); //Return "I love my 3 cats"
-```
-In this example, `{{&MY_CATS}}` gets replaced with the `MY_CATS` and since there's 3 cats, the n° 2 rule is selected. So the string becomes `I love my {{plural}} cats` which then becomes `I love my 3 cats`.
-
-
-N.B.: Since this is the last thing handled by the translator, this behaviour can be overwritten by the function call:
-```
-$translator->translate('I_LOVE_MY_CATS', ["plural" => 3, "&MY_CATS" => "my 3 dogs"); //Return "I love my 3 dogs"
-```
-
-## Example of a complex translation 
+## Example of a complex translation
 
 ### Language file
 ```
 return [
-    "COMPLEX_STRING" => [
-        "@TRANSLATION" => "There's {{child}} and {{adult}} in the {{color}} {{car}}",
-        "@REPLACE" => ["color", "car", "child", "adult"],
-    ],
-    "X_CHILD" => [
-        "@PLURAL" => "nb_child",
-    	0 => "no children",
-    	1 => "a child",
-    	2 => "{{plural}} children",
-    ],
-    "X_ADULT" => [
-        "@PLURAL" => "nb_adult",
-    	0 => "no adults",
-    	1 => "an adult",
-    	2 => "{{nb_adult}} adults",
-    ],
-    "CAR" => [
-        "FULL_MODEL" => "{{make}} {{model}} {{year}}"
-    ],
-    "COLOR" => [
-        "BLACK" => "black",
-        "RED" => "red",
-        "WHITE" => "white"
-    ]
-];
-```
-
-### Translate function
-```
-$carMake = "Honda";
-echo $translator->translate("COMPLEX_STRING", [
-    "child" => "X_CHILD",
-    "nb_child" => 1,
-    "adult" => "X_ADULT",
-    "nb_adult" => 0,
-    "color" => "COLOR.WHITE",
-    "car" => "CAR.FULL_MODEL",
-    "make" => $carMake,
-    "model" => "Civic",
-    "year" => 1993
-]);
-```
-
-### Result
-```
-There's a child and no adults in the white Honda Civic 1993
-```
-
-
-## Same example, but using the `&` placeholder instead of `@REPLACE`
-
-### Language file
-```
-return [
-    "COMPLEX_STRING" => [
-        "@TRANSLATION" => "There's {{&X_CHILD}} and {{&X_ADULT}} in the {{color}} {{&CAR.FULL_MODEL}}",
-        "@REPLACE" => ["color"],
-    ],
+    "COMPLEX_STRING" => "There's {{&X_CHILD}} and {{&X_ADULT}} in the {{color}} {{&CAR.FULL_MODEL}}",
     "X_CHILD" => [
         "@PLURAL" => "nb_child",
     	0 => "no children",
@@ -436,7 +371,7 @@ $carMake = "Honda";
 echo $translator->translate("COMPLEX_STRING", [
     "nb_child" => 1,
     "nb_adult" => 0,
-    "color" => "COLOR.WHITE",
+    "color" => "&COLOR.WHITE",
     "make" => $carMake,
     "model" => "Civic",
     "year" => 1993

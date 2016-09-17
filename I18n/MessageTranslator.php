@@ -247,19 +247,6 @@ class MessageTranslator extends Repository {
 
                 return $message_id;
             }
-
-            // @REPLACE => The placeholder will be translated by the key defined in it's value
-            if ($this->has($message_id . ".@REPLACE")) {
-                foreach ($this->get($message_id . ".@REPLACE") as $searchForPlaceholder) {
-
-                    // The placeholder needs to exist first...
-                    if (isset($placeholders[$searchForPlaceholder])) {
-                        $searchFor = '{{' . trim($searchForPlaceholder) . '}}';
-                        $replaceWith = $this->translate($placeholders[$searchForPlaceholder], $placeholders);
-                        $message = str_replace($searchFor, $replaceWith, $message);
-                    }
-                }
-            }
         }
 
         // Ok, now we have a $message and need to replace the placeholders
@@ -270,6 +257,14 @@ class MessageTranslator extends Repository {
 
         // Interpolate placeholders
         foreach ($placeholders as $name => $value){
+
+            // First, we test if the placeholder value starts the "&" caracter.
+            // That means we need to translate that placeholder value
+            if (substr($value, 0, 1) === '&') {
+                //We won't translate it here, otherwise we end up in an infinite loop
+                //Simply add the brackets so it will picked up later by the preg_replace
+                $value = "{{".$value."}}";
+            }
 
             // All good! We replace the placeholder with the remplacement
             $find = '{{' . trim($name) . '}}';

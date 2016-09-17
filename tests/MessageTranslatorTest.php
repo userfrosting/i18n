@@ -82,7 +82,7 @@ class MessageTranslatorTest extends TestCase
         //  - item => Hard coded language key in languge file
         $this->assertEquals($translator->translate("MY_EV_CARS", [
             "plural" => 3,
-            "type" => "CAR.EV"
+            "type" => "&CAR.EV"
         ]), "I have 3 electric cars");
 
         // Test that we can still access @TRANSLATION
@@ -177,7 +177,7 @@ class MessageTranslatorTest extends TestCase
         // Test `plural` pluralisation placeholder with other placeholders
         $this->assertEquals($translator->translate("MY_EV_CARS", [
             "plural" => 3,
-            "type" => "CAR.EV"
+            "type" => "&CAR.EV"
         ]), "Le chat a 3 voitures électriques");
 
 
@@ -212,12 +212,12 @@ class MessageTranslatorTest extends TestCase
         // Test from the README
         $carMake = "Honda";
         $this->assertEquals($translator->translate("COMPLEX_STRING", [
-            "child" => "X_CHILD",
+            "child" => "&X_CHILD",
             "nb_child" => 1,
-            "adult" => "X_ADULT",
+            "adult" => "&X_ADULT",
             "nb_adult" => 0,
-            "color" => "COLOR.WHITE",
-            "car" => "CAR.FULL_MODEL",
+            "color" => "&COLOR.WHITE",
+            "car" => "&CAR.FULL_MODEL",
             "make" => $carMake,
             "model" => "Civic",
             "year" => 1993
@@ -226,7 +226,7 @@ class MessageTranslatorTest extends TestCase
         $this->assertEquals($translator->translate("COMPLEX_STRING2", [
             "nb_child" => 1,
             "nb_adult" => 0,
-            "color" => "COLOR.WHITE",
+            "color" => "&COLOR.WHITE",
             "make" => $carMake,
             "model" => "Civic",
             "year" => 1993

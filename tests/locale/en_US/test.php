@@ -59,10 +59,6 @@ return [
 
     // Plural with placeholder
     "MY_EV_CARS" => [
-        //"@PLURAL" => "nb",
-        "@REPLACE" => [
-            "type"
-        ],
         "@TRANSLATION" => "My electric cars",
         1 => "I have a {{type}} {{&CAR}}",
         2 => "I have {{plural}} {{type}} {{&CAR}}"
