@@ -100,17 +100,23 @@ class MessageTranslator extends Repository {
     /**
      * Load the locale items from all of the files.
      *
-     * @param string|null $base_locale
-     * @param string|null $user_locale
+     * @param string|array|null $locale_array
      */
-    public function loadLocaleFiles($base_locale = 'en_US')
+    public function loadLocaleFiles($locale_array = [])
     {
-        // Search each locale path for default and environment-specific locale files
-        foreach ($this->paths as $path) {
-            // Merge in default locale file
-            $default_files = $this->getLocaleFiles($path, $base_locale);
-            foreach ($default_files as $file_with_path) {
-                $this->mergeLocaleFile($file_with_path);
+        //So we can accept strings argument also
+        if (!is_array($locale_array)) {
+            $locale_array = array($locale_array);
+        }
+
+        foreach ($locale_array as $locale) {
+            // Search each locale path for default and environment-specific locale files
+            foreach ($this->paths as $path) {
+                // Merge in default locale file
+                $default_files = $this->getLocaleFiles($path, $locale);
+                foreach ($default_files as $file_with_path) {
+                    $this->mergeLocaleFile($file_with_path);
+                }
             }
         }
     }

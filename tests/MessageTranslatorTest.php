@@ -117,9 +117,8 @@ class MessageTranslatorTest extends TestCase
         // Add search paths for the test locale files relative to this file. We won't test setPaths with this test (yet)
         $translator->setPaths([dirname(__FILE__)."/locale"]);
 
-        // Load the en_US locale files, no user locale
-        $translator->loadLocaleFiles('en_US');
-        $translator->loadLocaleFiles('fr_FR'); //All en_US key will be replaced by the fr_FR one
+        // Load the en_US locale files as base and fr_FR on top
+        $translator->loadLocaleFiles(['en_US', 'fr_FR']);
 
         // Test most basic functionality
         $this->assertEquals($translator->translate('USERNAME'), "Nom d'utilisateur");
