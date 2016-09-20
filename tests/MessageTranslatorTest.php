@@ -22,6 +22,9 @@ class MessageTranslatorTest extends TestCase
         // Test most basic functionality
         $this->assertEquals($translator->translate('USERNAME'), "Username");
 
+        // Test most the base locale
+        $this->assertEquals($translator->translate('BASE_FALLBACK'), "Base fallback");
+
         // Test @TRANSLATION
         $this->assertEquals($translator->translate('ACCOUNT'), "Account"); // Shortcut for `ACCOUNT.@TRANSLATION`
         $this->assertEquals($translator->translate('ACCOUNT.ALT'), "Profile");
@@ -115,10 +118,14 @@ class MessageTranslatorTest extends TestCase
         $translator->setPaths([dirname(__FILE__)."/locale"]);
 
         // Load the en_US locale files, no user locale
-        $translator->loadLocaleFiles('fr_FR');
+        $translator->loadLocaleFiles('en_US');
+        $translator->loadLocaleFiles('fr_FR'); //All en_US key will be replaced by the fr_FR one
 
         // Test most basic functionality
         $this->assertEquals($translator->translate('USERNAME'), "Nom d'utilisateur");
+
+        // Test most the base locale
+        $this->assertEquals($translator->translate('BASE_FALLBACK'), "Base fallback"); // This key is not defined in the french language, so the enlgish string will be returned
 
         // Test @TRANSLATION
         $this->assertEquals($translator->translate('ACCOUNT'), "Compte de l'utilisateur"); // Shortcut for `ACCOUNT.@TRANSLATION`

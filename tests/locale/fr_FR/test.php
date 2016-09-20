@@ -5,6 +5,8 @@ return [
 
     "USERNAME" => 'Nom d\'utilisateur', //Note the espace `\` caracter here. Won't be displayed in the test
 
+    //"BASE_FALLBACK" => "Langue de secours", //We want to test if the english string will be displayed here
+
     "ACCOUNT" => [
         "@TRANSLATION" => "Compte de l'utilisateur", //Don't need to escape if using double quote `"`
         "ALT" => "Profil"
@@ -33,6 +35,10 @@ return [
         "GAS" => "à essence",
         "EV" => [
             //"@TRANSLATION" => "électrique", //Can't work for french !
+            // But since French is loaded on top to English and English have this one defined
+            // it will return the english string if we want to translate "EV" without a plural value.
+            // So we need to get rid of the English string :
+            "@TRANSLATION" => null,
 
             //We will pluralize instead
             1 => "électrique",

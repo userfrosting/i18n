@@ -103,7 +103,7 @@ class MessageTranslator extends Repository {
      * @param string|null $base_locale
      * @param string|null $user_locale
      */
-    public function loadLocaleFiles($base_locale = 'en_US', $user_locale = null)
+    public function loadLocaleFiles($base_locale = 'en_US')
     {
         // Search each locale path for default and environment-specific locale files
         foreach ($this->paths as $path) {
@@ -111,14 +111,6 @@ class MessageTranslator extends Repository {
             $default_files = $this->getLocaleFiles($path, $base_locale);
             foreach ($default_files as $file_with_path) {
                 $this->mergeLocaleFile($file_with_path);
-            }
-
-            // Then, merge in environment-specific locale file, if it exists
-            if ($user_locale !==  null) {
-                $user_files = $this->getLocaleFiles($path, $user_locale);
-                foreach ($user_files as $file_with_path) {
-                    $this->mergeLocaleFile($file_with_path);
-                }
             }
         }
     }
@@ -176,7 +168,7 @@ class MessageTranslator extends Repository {
                 $plural_value = (isset($placeholders[$plural_key]) ? (int) $placeholders[$plural_key] : (!is_array($placeholders) && is_numeric($placeholders) ? $placeholders : null));
 
                 // Stop for a sec... We don't have a plural value, but before defaut to 1, we check if there's any @TRANSLATION handle
-                if (is_null($plural_value) && !$this->has($message_id . ".@TRANSLATION")) {
+                if (is_null($plural_value) && (!$this->has($message_id . ".@TRANSLATION") || $this->get($message_id . ".@TRANSLATION") == null)) {
 
                     //Default
                     $plural_value = 1;

@@ -5,6 +5,8 @@ return [
 
     "USERNAME" => 'Username',
 
+    "BASE_FALLBACK" => "Base fallback",
+
     "ACCOUNT" => [
         "@TRANSLATION" => "Account",
         "ALT" => "Profile"
