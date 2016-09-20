@@ -39,10 +39,11 @@ $translator->setPaths("locale/");
 $translator->loadLocaleFiles("en_US");
 ```
 
-The above will load the files located in the `locale/en_US` directory. You can also define a second language in `loadLocaleFiles`. This second language will be loaded on top of the other. For example:
+The above will load the files located in the `locale/en_US` directory. You can also define a more than one language using multiple `loadLocaleFiles`. The other languages will be loaded on top of the other. For example:
 
 ```
-$translator->loadLocaleFiles("en_US", "es_ES");
+$translator->loadLocaleFiles("en_US");
+$translator->loadLocaleFiles("es_ES");
 ```
 
 This will use the `english` translation as a base and load the `spanish` translation on top. All keys not found in the spanish translation will fallback to the english one.
