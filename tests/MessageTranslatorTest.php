@@ -11,7 +11,7 @@ class MessageTranslatorTest extends TestCase
     {
 
         // Create the $translator object
-		$translator = new MessageTranslator();
+        $translator = new MessageTranslator();
 
         // Add search paths for the test locale files relative to this file. We won't test setPaths with this test (yet)
         $translator->setPaths([dirname(__FILE__)."/locale"]);
@@ -112,7 +112,7 @@ class MessageTranslatorTest extends TestCase
     {
 
         // Create the $translator object
-		$translator = new MessageTranslator();
+        $translator = new MessageTranslator();
 
         // Add search paths for the test locale files relative to this file. We won't test setPaths with this test (yet)
         $translator->setPaths([dirname(__FILE__)."/locale"]);
@@ -207,7 +207,7 @@ class MessageTranslatorTest extends TestCase
     public function testReadme() {
 
         // Create the $translator object
-		$translator = new MessageTranslator();
+        $translator = new MessageTranslator();
 
         // Add search paths for the test locale files relative to this file. We won't test setPaths with this test (yet)
         $translator->setPaths([dirname(__FILE__)."/locale"]);
@@ -239,13 +239,10 @@ class MessageTranslatorTest extends TestCase
         ]), "There's a child and no adults in the white Honda Civic 1993");
     }
 
+    // Test for the `getAvailableLocales` function
     public function test_getAvaialbleLocale() {
-         // Create the $translator object
-		$translator = new MessageTranslator();
-
-        // Add search paths for the test locale files relative to this file. We won't test setPaths with this test (yet)
+        $translator = new MessageTranslator();
         $translator->setPaths([dirname(__FILE__)."/locale"]);
-
         $this->assertEquals($translator->getAvailableLocales(), ['en_US', 'fr_FR']);
     }
 }
