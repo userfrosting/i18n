@@ -151,7 +151,7 @@ class MessageTranslator extends Repository {
         foreach ($this->paths as $path) {
             $full_paths = glob(rtrim($path, '/\\') . '/*', GLOB_ONLYDIR);
             $locales = array_map('basename', $full_paths);
-            $availableLocales = array_merge($availableLocales, $locales);
+            $availableLocales = array_replace_recursive($availableLocales, $locales);
         }
 
         return $availableLocales;

@@ -242,7 +242,8 @@ class MessageTranslatorTest extends TestCase
     // Test for the `getAvailableLocales` function
     public function test_getAvaialbleLocale() {
         $translator = new MessageTranslator();
-        $translator->setPaths([dirname(__FILE__)."/locale"]);
+        //Load the paths twice to make sure there's no duplicate
+        $translator->setPaths([dirname(__FILE__)."/locale", dirname(__FILE__)."/locale"]);
         $this->assertEquals($translator->getAvailableLocales(), ['en_US', 'fr_FR']);
     }
 }
