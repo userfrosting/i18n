@@ -138,6 +138,26 @@ class MessageTranslator extends Repository {
     }
 
     /**
+     * Get an array of available locales in currently defined paths
+     *
+     * @param none
+     *
+     * @return array List of locales found in current paths
+     */
+    public function getAvailableLocales() {
+
+        $availableLocales = [];
+
+        foreach ($this->paths as $path) {
+            $full_paths = glob(rtrim($path, '/\\') . '/*', GLOB_ONLYDIR);
+            $locales = array_map('basename', $full_paths);
+            $availableLocales = array_merge($availableLocales, $locales);
+        }
+
+        return $availableLocales;
+    }
+
+    /**
      * Translate the given message id into the currently configured language, substituting any placeholders that appear in the translated string.
      *
      * Return the $message_id if not match is found

@@ -238,4 +238,14 @@ class MessageTranslatorTest extends TestCase
             "year" => 1993
         ]), "There's a child and no adults in the white Honda Civic 1993");
     }
+
+    public function test_getAvaialbleLocale() {
+         // Create the $translator object
+		$translator = new MessageTranslator();
+
+        // Add search paths for the test locale files relative to this file. We won't test setPaths with this test (yet)
+        $translator->setPaths([dirname(__FILE__)."/locale"]);
+
+        $this->assertEquals($translator->getAvailableLocales(), ['en_US', 'fr_FR']);
+    }
 }
