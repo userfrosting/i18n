@@ -276,6 +276,9 @@ class MessageTranslator extends Repository {
         // Interpolate placeholders
         foreach ($placeholders as $name => $value){
 
+            //We don't allow nested placeholders. They will return errors on the next lines
+            if (is_array($value)) { continue; }
+
             // First, we test if the placeholder value starts the "&" caracter.
             // That means we need to translate that placeholder value
             if (substr($value, 0, 1) === '&') {
