@@ -246,4 +246,10 @@ class MessageTranslatorTest extends TestCase
         $translator->setPaths([dirname(__FILE__)."/locale", dirname(__FILE__)."/locale"]);
         $this->assertEquals($translator->getAvailableLocales(), ['en_US', 'fr_FR']);
     }
+
+    // Test for placeholder applied to `$key` if it doesn't match any languages keys
+    public function testWithoutKeys() {
+        $translator = new MessageTranslator();
+        $this->assertEquals($translator->translate("You are {{status}}", ['status' => 'dumb']), "You are dumb");
+    }
 }

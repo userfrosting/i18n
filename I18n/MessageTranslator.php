@@ -167,103 +167,106 @@ class MessageTranslator extends Repository {
      */
     public function translate($message_id, $placeholders = [])
     {
-        // If we didn't find a match, return the $message_id
+        // If we didn't find a match, we simply apply the placeholders to $message_id
         if (!$this->has($message_id)) {
-            return $message_id;
-        }
 
-        // Get the message
-        $message = $this->get($message_id);
+            $message = $message_id;
 
-        /* If the message is an array, we have to go deeper because an array can countain some special handles:
-            - @TRANSLATION
-            - @REPLACE
-            - @TRANSLATE
-            - @PLURAL
-        */
-        if (is_array($message)) {
+        } else {
 
-            // Is the message array countain any plural rules (keys that are int)
-            if (!empty(array_filter(array_keys($message), 'is_int'))) {
+            // Get the message
+            $message = $this->get($message_id);
 
-                // Now we can handle plurals using the @PLURAL to define the plural key. If it's not defined, we use the default one
-                $plural_key = (isset($message['@PLURAL'])) ? $message['@PLURAL'] : $this->_defaultPluralKey;
+            /* If the message is an array, we have to go deeper because an array can countain some special handles:
+                - @TRANSLATION
+                - @REPLACE
+                - @TRANSLATE
+                - @PLURAL
+            */
+            if (is_array($message)) {
 
-                // We try get the plural value and default to `1` if none is found
-                // We also allow for a shortcut using the second argument as a numeric value for simple strings.
-                $plural_value = (isset($placeholders[$plural_key]) ? (int) $placeholders[$plural_key] : (!is_array($placeholders) && is_numeric($placeholders) ? $placeholders : null));
+                // Is the message array countain any plural rules (keys that are int)
+                if (!empty(array_filter(array_keys($message), 'is_int'))) {
 
-                // Stop for a sec... We don't have a plural value, but before defaut to 1, we check if there's any @TRANSLATION handle
-                if (is_null($plural_value) && (!$this->has($message_id . ".@TRANSLATION") || $this->get($message_id . ".@TRANSLATION") == null)) {
+                    // Now we can handle plurals using the @PLURAL to define the plural key. If it's not defined, we use the default one
+                    $plural_key = (isset($message['@PLURAL'])) ? $message['@PLURAL'] : $this->_defaultPluralKey;
 
-                    //Default
-                    $plural_value = 1;
+                    // We try get the plural value and default to `1` if none is found
+                    // We also allow for a shortcut using the second argument as a numeric value for simple strings.
+                    $plural_value = (isset($placeholders[$plural_key]) ? (int) $placeholders[$plural_key] : (!is_array($placeholders) && is_numeric($placeholders) ? $placeholders : null));
 
-                }
+                    // Stop for a sec... We don't have a plural value, but before defaut to 1, we check if there's any @TRANSLATION handle
+                    if (is_null($plural_value) && (!$this->has($message_id . ".@TRANSLATION") || $this->get($message_id . ".@TRANSLATION") == null)) {
 
-                // If plural value is still null, we have found our message..!
-                if (is_null($plural_value)) {
+                        //Default
+                        $plural_value = 1;
 
-                    $message = $this->get($message_id . ".@TRANSLATION");
+                    }
 
-                } else {
+                    // If plural value is still null, we have found our message..!
+                    if (is_null($plural_value)) {
 
-                    // Ok great. Now we need the right plural form.
-                    // N.B.: Plurals is based on phpBB and Mozilla work : https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
-                    $key_found = false;
-
-                    // 0 is handled differently. We use it so that "0 users" may be displayed as "No users".
-                    if ($plural_value == 0 && isset($message[0])) {
-
-                        $key_found = 0;
+                        $message = $this->get($message_id . ".@TRANSLATION");
 
                     } else {
 
-                        $use_plural_form = $this->get_plural_form($plural_value);
-                        if (isset($message[$use_plural_form]))
-                        {
-                            // The key we need exists, so we use it.
-                            $key_found = $use_plural_form;
-                        }
-                        else
-                        {
-                            // If the key we need doesn't exist, we use the previous one.
-                            $numbers = array_keys($message);
-                            foreach ($numbers as $num)
+                        // Ok great. Now we need the right plural form.
+                        // N.B.: Plurals is based on phpBB and Mozilla work : https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
+                        $key_found = false;
+
+                        // 0 is handled differently. We use it so that "0 users" may be displayed as "No users".
+                        if ($plural_value == 0 && isset($message[0])) {
+
+                            $key_found = 0;
+
+                        } else {
+
+                            $use_plural_form = $this->get_plural_form($plural_value);
+                            if (isset($message[$use_plural_form]))
                             {
-                                if (is_int($num) && $num > $use_plural_form)
+                                // The key we need exists, so we use it.
+                                $key_found = $use_plural_form;
+                            }
+                            else
+                            {
+                                // If the key we need doesn't exist, we use the previous one.
+                                $numbers = array_keys($message);
+                                foreach ($numbers as $num)
                                 {
-                                    break;
+                                    if (is_int($num) && $num > $use_plural_form)
+                                    {
+                                        break;
+                                    }
+                                    $key_found = $num;
                                 }
-                                $key_found = $num;
                             }
                         }
+
+                        // If no key was found, use the last entry (because it is mostly the plural form).
+                        if ($key_found === false) {
+                            $numbers = array_keys($message);
+                            $key_found = end($numbers);
+                        }
+
+                        $message = $message[$key_found];
+
+                        // If we used the shortcut and $placeholders is a numeric value
+                        // it must be passed back as an array for replacement in the main $message
+                        if (is_numeric($placeholders) || empty($placeholders)) {
+                            $placeholders = array($plural_key => $plural_value);
+                        }
                     }
 
-                    // If no key was found, use the last entry (because it is mostly the plural form).
-                    if ($key_found === false) {
-                        $numbers = array_keys($message);
-                        $key_found = end($numbers);
-                    }
+                // @TRANSLATION => When $message_id is an array, this key is used. To use this, we can't have a plural value
+                } else if ($this->has($message_id . ".@TRANSLATION")) {
 
-                    $message = $message[$key_found];
+                    $message = $this->get($message_id . ".@TRANSLATION");
 
-                    // If we used the shortcut and $placeholders is a numeric value
-                    // it must be passed back as an array for replacement in the main $message
-                    if (is_numeric($placeholders) || empty($placeholders)) {
-                        $placeholders = array($plural_key => $plural_value);
-                    }
+                // If we don't have plural AND a @TRANSLATION, we can't translate any translation key, so we will simply apply the placeholders to $message_id
+                } else {
+
+                    $message = $message_id;
                 }
-
-            // @TRANSLATION => When $message_id is an array, this key is used. To use this, we can't have a plural value
-            } else if ($this->has($message_id . ".@TRANSLATION")) {
-
-                $message = $this->get($message_id . ".@TRANSLATION");
-
-            // If we don't have plural AND a @TRANSLATION, we can't translate anything, so we return the $message_id
-            } else {
-
-                return $message_id;
             }
         }
 
