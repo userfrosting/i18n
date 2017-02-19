@@ -266,7 +266,7 @@ class MessageTranslatorTest extends TestCase
         //ESCAPE : http://twig.sensiolabs.org/doc/2.x/filters/escape.html
         //RAW : http://twig.sensiolabs.org/doc/2.x/filters/raw.html
         $this->assertEquals($translator->translate("TWIG.ESCAPE", ["foo" => "<strong>bar</strong>"]), "Placeholder should be escaped : &lt;strong&gt;bar&lt;/strong&gt;");
-        $this->assertEquals($translator->translate("TWIG.ESCAPE_DEFAULT", ["foo" => "<strong>bar</strong>"]), "Placeholder should be escaped : &lt;strong&gt;bar&lt;/strong&gt;");
+        $this->assertEquals($translator->translate("TWIG.ESCAPE_DEFAULT", ["foo" => "<strong>bar</strong>"]), "Placeholder should NOT be escaped : <strong>bar</strong>");
         $this->assertEquals($translator->translate("TWIG.ESCAPE_NOT", ["foo" => "<strong>bar</strong>"]), "Placeholder should NOT be escaped : <strong>bar</strong>");
 
         //DEFAULT: http://twig.sensiolabs.org/doc/2.x/filters/default.html
@@ -295,5 +295,16 @@ class MessageTranslatorTest extends TestCase
         $this->assertEquals($translator->translate("TWIG.LOWER", ["string" => "WeLcOmE"]), "welcome");
         $this->assertEquals($translator->translate("TWIG.UPPER", ["string" => "WeLcOmE"]), "WELCOME");
         $this->assertEquals($translator->translate("TWIG.CAPITALIZE", ["string" => "WeLcOmE"]), "Welcome");
+    }
+
+    public function testApostrophes()
+    {
+        // Create the $translator object
+        $translator = new MessageTranslator();
+        $translator->setPaths([dirname(__FILE__)."/locale"]);
+        $translator->loadLocaleFiles('en_US');
+
+
+        $this->assertEquals($translator->translate('MY_CAR_MAKE', ["car_make" => "J'aime les pommées"]), "My car is a J'aime les pommées");
     }
 }

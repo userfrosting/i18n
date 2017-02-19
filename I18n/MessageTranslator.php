@@ -37,7 +37,7 @@ class MessageTranslator extends Repository {
         $this->items = $items;
 
         $loader = new \Twig_Loader_Filesystem();
-        $this->twig = new \Twig_Environment($loader);
+        $this->twig = new \Twig_Environment($loader, array('autoescape' => false));
     }
 
     /**

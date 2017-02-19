@@ -3,7 +3,7 @@
 return [
     "TWIG" => [
         "ESCAPE"         => "Placeholder should be escaped : {{foo|e}}",
-        "ESCAPE_DEFAULT" => "Placeholder should be escaped : {{foo}}",
+        "ESCAPE_DEFAULT" => "Placeholder should NOT be escaped : {{foo}}",
         "ESCAPE_NOT"     => "Placeholder should NOT be escaped : {{foo|raw}}",
 
         "DEFAULT"        => "Using default: {{foo|default('bar')}}",
