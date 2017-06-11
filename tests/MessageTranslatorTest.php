@@ -252,17 +252,6 @@ class MessageTranslatorTest extends TestCase
         ]), "There's a child and no adults in the white Honda Civic 1993");
     }
 
-    /*
-    // Test for the `getAvailableLocales` function
-    public function test_getAvaialbleLocale()
-    {
-        $translator = new MessageTranslator();
-        //Load the paths twice to make sure there's no duplicate
-        $translator->setPaths([dirname(__FILE__)."/locale", dirname(__FILE__)."/locale"]);
-        $this->assertEquals($translator->getAvailableLocales(), ['en_US', 'fr_FR']);
-    }
-    */
-
     // Test for placeholder applied to `$key` if it doesn't match any languages keys
     public function testWithoutKeys()
     {
