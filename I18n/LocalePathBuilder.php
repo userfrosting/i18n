@@ -6,6 +6,7 @@
  */
 namespace UserFrosting\I18n;
 
+use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use UserFrosting\Support\Repository\PathBuilder\PathBuilder;
 
 /**
@@ -14,25 +15,38 @@ use UserFrosting\Support\Repository\PathBuilder\PathBuilder;
 class LocalePathBuilder extends PathBuilder
 {
     /**
-     * Glob together all translation files for zero or more locales.
+     * @var string[]
+     */
+    protected $locales;
+
+    /**
+     * Create the loader.
      *
-     * @param string $locales A list of locale names (e.g. 'en_US')
+     * @param RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator $locator
+     * @param string $uri
+     * @param string|string[] $locales A list of locale names (e.g. 'en_US')
+     */
+    public function __construct($locator, $uri, $locales = [])
+    {
+        $this->setLocales($locales);
+
+        parent::__construct($locator, $uri);
+    }
+
+    /**
+     * Glob together all translation files for the current locales.
+     *
      * @return array
      */
-    public function buildPaths($locales = [])
+    public function buildPaths()
     {
-        //So we can accept strings argument also
-        if (!is_array($locales)) {
-            $locales = array($locales);
-        }
-
         // Get all paths from the locator that match the uri.
         // Put them in reverse order to allow later files to override earlier files.
         $searchPaths = array_reverse($this->locator->findResources($this->uri, true, true));
 
         $filePaths = [];
 
-        foreach ($locales as $locale) {
+        foreach ($this->locales as $locale) {
             // Make sure it's a valid string before loading
             if (is_string($locale) && $locale != "") {
                 $localePaths = $this->buildLocalePaths($searchPaths, trim($locale));
@@ -41,6 +55,42 @@ class LocalePathBuilder extends PathBuilder
         }
 
         return $filePaths;
+    }
+
+    /**
+     * @param string|string[] $locales
+     */
+    public function addLocales($locales = [])
+    {
+        //So we can accept strings argument also
+        if (!is_array($locales)) {
+            $locales = array($locales);
+        }
+
+        $this->locales = array_merge($this->locales, $locales);
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getLocales()
+    {
+        return $this->locales;
+    }
+
+    /**
+     * @param string|string[] $locales
+     */
+    public function setLocales($locales = [])
+    {
+        //So we can accept strings argument also
+        if (!is_array($locales)) {
+            $locales = array($locales);
+        }
+
+        $this->locales = $locales;
+        return $this;
     }
 
     /**

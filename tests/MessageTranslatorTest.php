@@ -11,8 +11,6 @@ class MessageTranslatorTest extends TestCase
 {
     protected $basePath;
 
-    protected $builder;
-
     protected $locator;
 
     public function setUp()
@@ -24,14 +22,14 @@ class MessageTranslatorTest extends TestCase
         $this->locator->addPath('locale', '', 'core/locale');
         $this->locator->addPath('locale', '', 'account/locale');
         $this->locator->addPath('locale', '', 'admin/locale');
-
-        $this->builder = new LocalePathBuilder($this->locator, 'locale://');
     }
 
     public function testTranslateEN()
     {
         // Load the en_US locale files, no user locale
-        $paths = $this->builder->buildPaths('en_US');
+        $builder = new LocalePathBuilder($this->locator, 'locale://');
+        $builder->addLocales('en_US');
+        $paths = $builder->buildPaths();
         $loader = new ArrayFileLoader($paths);
     
         // Create the $translator object
@@ -129,7 +127,8 @@ class MessageTranslatorTest extends TestCase
     public function testTranslateFR()
     {
         // Load the en_US locale files as base and fr_FR on top
-        $paths = $this->builder->buildPaths(['en_US', 'fr_FR']);
+        $builder = new LocalePathBuilder($this->locator, 'locale://', ['en_US', 'fr_FR']);
+        $paths = $builder->buildPaths();
         $loader = new ArrayFileLoader($paths);
 
         // Create the $translator object
@@ -222,7 +221,9 @@ class MessageTranslatorTest extends TestCase
     public function testReadme()
     {
         // Load the en_US locale files, no user locale
-        $paths = $this->builder->buildPaths('en_US');
+        $builder = new LocalePathBuilder($this->locator, 'locale://');
+        $builder->setLocales('en_US');
+        $paths = $builder->buildPaths();
         $loader = new ArrayFileLoader($paths);
 
         // Create the $translator object
@@ -262,7 +263,8 @@ class MessageTranslatorTest extends TestCase
     public function testTwigFilters()
     {
         // Load the en_US locale files, no user locale
-        $paths = $this->builder->buildPaths('en_US');
+        $builder = new LocalePathBuilder($this->locator, 'locale://', 'en_US');
+        $paths = $builder->buildPaths();
         $loader = new ArrayFileLoader($paths);
 
         // Create the $translator object

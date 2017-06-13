@@ -27,10 +27,10 @@ class LocalePathBuilderTest extends TestCase
     public function testOne()
     {
         // Arrange
-        $builder = new LocalePathBuilder($this->locator, 'locale://');
+        $builder = new LocalePathBuilder($this->locator, 'locale://', 'en_US');
 
         // Act
-        $paths = $builder->buildPaths('en_US');
+        $paths = $builder->buildPaths();
 
         // Assert
         $this->assertEquals([
@@ -46,10 +46,11 @@ class LocalePathBuilderTest extends TestCase
     public function testMany()
     {
         // Arrange
-        $builder = new LocalePathBuilder($this->locator, 'locale://');
+        $builder = new LocalePathBuilder($this->locator, 'locale://', 'en_US');
+        $builder->addLocales('fr_FR');
 
         // Act
-        $paths = $builder->buildPaths(['en_US', 'fr_FR']);
+        $paths = $builder->buildPaths();
 
         // Assert
         $this->assertEquals([
@@ -58,5 +59,21 @@ class LocalePathBuilderTest extends TestCase
             $this->basePath . '/core/locale/en_US/twig.php',
             $this->basePath . '/core/locale/fr_FR/test.php'
         ], $paths);
+    }
+
+    /**
+     * Test locale values.
+     */
+    public function testInitLocales()
+    {
+        // Arrange
+        $builder = new LocalePathBuilder($this->locator, 'locale://');
+        $builder->addLocales('en_US');
+
+        // Act
+        $locales = $builder->getLocales();
+
+        // Assert
+        $this->assertEquals(['en_US'], $locales);
     }
 }

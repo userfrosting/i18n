@@ -16,7 +16,7 @@ use UserFrosting\Support\Repository\Repository;
  * Translate message ids to a message in a specified language.
  *
  * @author    Louis Charette
- * @author    Alexander Weissman
+ * @author    Alexander Weissman (https://alexanderweissman.com)
  */
 class MessageTranslator extends Repository
 {
@@ -30,6 +30,11 @@ class MessageTranslator extends Repository
      */
     protected $defaultPluralKey = 'plural';
 
+    /**
+     * Create the translator.
+     *
+     * @param array $items
+     */
     public function __construct(array $items = [])
     {
         $this->items = $items;
