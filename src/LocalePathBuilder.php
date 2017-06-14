@@ -67,7 +67,12 @@ class LocalePathBuilder extends PathBuilder
             $locales = array($locales);
         }
 
+        // Add the new locales to the end
         $this->locales = array_merge($this->locales, $locales);
+
+        // Remove any duplicates, preserving only the last instance
+        $this->locales = array_reverse(array_unique(array_reverse($this->locales)));
+        
         return $this;
     }
 
@@ -84,12 +89,8 @@ class LocalePathBuilder extends PathBuilder
      */
     public function setLocales($locales = [])
     {
-        //So we can accept strings argument also
-        if (!is_array($locales)) {
-            $locales = array($locales);
-        }
-
-        $this->locales = $locales;
+        $this->locales = [];
+        $this->addLocales($locales);
         return $this;
     }
 

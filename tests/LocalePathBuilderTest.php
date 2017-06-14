@@ -76,4 +76,17 @@ class LocalePathBuilderTest extends TestCase
         // Assert
         $this->assertEquals(['en_US'], $locales);
     }
+
+    public function testRepeatLocales()
+    {
+        // Arrange
+        $builder = new LocalePathBuilder($this->locator, 'locale://', ['en_US', 'fr_FR', 'fr_FR', 'en_US', 'fr_FR']);
+        $builder->addLocales(['en_US', 'en_US']);
+
+        // Act
+        $locales = $builder->getLocales();
+
+        // Assert
+        $this->assertEquals(['fr_FR', 'en_US'], $locales);
+    }
 }
