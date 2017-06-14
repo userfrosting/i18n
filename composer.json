@@ -24,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "UserFrosting\\I18n\\": "I18n"
+            "UserFrosting\\I18n\\": "src"
         }
     },
     "minimum-stability" : "dev"
