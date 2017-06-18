@@ -3,7 +3,7 @@
  * UserFrosting (http://www.userfrosting.com)
  *
  * @link      https://github.com/userfrosting/i18n
- * @license   https://github.com/userfrosting/i18n/blob/master/licenses/UserFrosting.md (MIT License)
+ * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
 namespace UserFrosting\I18n;
 
@@ -26,7 +26,7 @@ class MessageTranslator extends Repository
     protected $twig;
 
     /**
-     * @var array The default key that contains the pluralization code.
+     * @var string The default key that contains the pluralization code.
      */
     protected $defaultPluralKey = 'plural';
 

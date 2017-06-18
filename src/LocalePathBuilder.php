@@ -3,6 +3,7 @@
  * UserFrosting (http://www.userfrosting.com)
  *
  * @link      https://github.com/userfrosting/i18n
+ * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
  */
 namespace UserFrosting\I18n;
 
@@ -11,6 +12,8 @@ use UserFrosting\Support\Repository\PathBuilder\PathBuilder;
 
 /**
  * Globs together all files in specified locale(s) in each search path.
+ *
+ * @author Alexander Weissman (https://alexanderweissman.com)
  */
 class LocalePathBuilder extends PathBuilder
 {
@@ -72,7 +75,7 @@ class LocalePathBuilder extends PathBuilder
 
         // Remove any duplicates, preserving only the last instance
         $this->locales = array_reverse(array_unique(array_reverse($this->locales)));
-        
+
         return $this;
     }
 
@@ -111,7 +114,7 @@ class LocalePathBuilder extends PathBuilder
             $globs = glob($localePath . "/*.php");
             $filePaths = array_merge($filePaths, $globs);
         }
-        
+
         return $filePaths;
     }
 }
