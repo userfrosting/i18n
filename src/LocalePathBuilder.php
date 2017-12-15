@@ -26,8 +26,8 @@ class LocalePathBuilder extends PathBuilder
      * Create the loader.
      *
      * @param RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator $locator
-     * @param string $uri
-     * @param string|string[] $locales A list of locale names (e.g. 'en_US')
+     * @param string $uri Scheme used to locate resources in $locator, including '://'
+     * @param string|string[] $locales A list of locale names (e.g. 'en_US'). Note that locale preference is ascending.
      */
     public function __construct($locator, $uri, $locales = [])
     {
@@ -39,7 +39,7 @@ class LocalePathBuilder extends PathBuilder
     /**
      * Glob together all translation files for the current locales.
      *
-     * @return array
+     * @return string[]
      */
     public function buildPaths()
     {
@@ -61,7 +61,11 @@ class LocalePathBuilder extends PathBuilder
     }
 
     /**
+     * Adds provides locales to the end of the current locales list.
+     * Note that locale preference is ascending.
+     * 
      * @param string|string[] $locales
+     * @return $this
      */
     public function addLocales($locales = [])
     {
@@ -80,6 +84,8 @@ class LocalePathBuilder extends PathBuilder
     }
 
     /**
+     * Returns list of locales.
+     * 
      * @return string[]
      */
     public function getLocales()
@@ -88,6 +94,9 @@ class LocalePathBuilder extends PathBuilder
     }
 
     /**
+     * Sets locales.
+     * Note that locale preference is ascending.
+     * 
      * @param string|string[] $locales
      */
     public function setLocales($locales = [])
