@@ -1,5 +1,8 @@
 # I18n module for UserFrosting 4.1
 
+[![Build Status](https://travis-ci.org/userfrosting/i18n.svg?branch=master)](https://travis-ci.org/userfrosting/i18n)
+[![Join the chat at https://chat.userfrosting.com/channel/support](https://demo.rocket.chat/images/join-chat.svg)](https://chat.userfrosting.com/channel/support)
+
 Louis Charette & Alexander Weissman, 2016-2017
 
 The I18n module handles translation tasks for UserFrosting.  The `MessageTranslator` class can be used as follows:
@@ -258,7 +261,7 @@ N.B.: When `@TRANSLATION` is used with plural rules, omiting the second argument
 ]
 ```
 With `@TRANSLATION` define above, `$translator->translate("X_HUNGRY_CATS");` will return `Hungry cats`. Remove the `@TRANSLATION` handle and the same `$translator->translate("X_HUNGRY_CATS");` will now return `1 hungry cat`.
- 
+
 
 ### `@PLURAL`
 The default `plural` default placeholder can be overwritten by the `@PLURAL` handle in the language files. This may be useful if you pass an existing array to the translate function.
@@ -340,12 +343,12 @@ _French_
 ];
 ```
 
-Since the placeholders (`["plural" => 3, "color" => "&COLOR.WHITE"]`) will be passed to the translate function when the `COLOR.WHITE` key is translated, the correct plural form will be returned for the color in french, giving us `J'ai 3 chatS blancS`. Even without any plural value, this is still shorter to use that defining both translate function inside the php code : 
+Since the placeholders (`["plural" => 3, "color" => "&COLOR.WHITE"]`) will be passed to the translate function when the `COLOR.WHITE` key is translated, the correct plural form will be returned for the color in french, giving us `J'ai 3 chatS blancS`. Even without any plural value, this is still shorter to use that defining both translate function inside the php code :
 
 ```
 $translator->translate('MY_CATS', ["color" => "&COLOR.WHITE"]);
 ```
-Vs. 
+Vs.
 ```
 $colorString = $translator->translate('COLOR.WHITE');
 echo $translator->translate('MY_CATS', ["color" => $colorString);
