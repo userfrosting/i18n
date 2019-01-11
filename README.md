@@ -1,7 +1,7 @@
-# I18n module for UserFrosting 4.1
+# I18n module for UserFrosting 4
 
 [![Latest Version](https://img.shields.io/github/release/userfrosting/i18n.svg)](https://github.com/userfrosting/i18n/releases)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](licenses/UserFrosting.md)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Build Status](https://travis-ci.org/userfrosting/i18n.svg?branch=master)](https://travis-ci.org/userfrosting/i18n)
 [![Codecov](https://codecov.io/gh/userfrosting/i18n/branch/master/graph/badge.svg)](https://codecov.io/gh/userfrosting/i18n)
 [![Join the chat at https://chat.userfrosting.com/channel/support](https://demo.rocket.chat/images/join-chat.svg)](https://chat.userfrosting.com/channel/support)
