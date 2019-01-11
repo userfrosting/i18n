@@ -18,7 +18,7 @@ If you don't have composer, you need to install it:
 Once the prerequisites are installed, run the tests from the project root directory:
 
 ```
-phpunit --bootstrap tests/bootstrap.php tests
+vendor/bin/phpunit
 ```
 
 
@@ -32,3 +32,11 @@ Time: 41 ms, Memory: 3.75MB
 
 OK (1 test, 18 assertions)
 ```
+
+# Running test coverage report
+
+```
+vendor/bin/phpunit --coverage-html _meta/coverage
+```
+
+Report will be available in _meta/coverage/index.html

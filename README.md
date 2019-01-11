@@ -1,9 +1,13 @@
 # I18n module for UserFrosting 4.1
 
+[![Latest Version](https://img.shields.io/github/release/userfrosting/i18n.svg)](https://github.com/userfrosting/i18n/releases)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](licenses/UserFrosting.md)
 [![Build Status](https://travis-ci.org/userfrosting/i18n.svg?branch=master)](https://travis-ci.org/userfrosting/i18n)
+[![Codecov](https://codecov.io/gh/userfrosting/i18n/branch/master/graph/badge.svg)](https://codecov.io/gh/userfrosting/i18n)
 [![Join the chat at https://chat.userfrosting.com/channel/support](https://demo.rocket.chat/images/join-chat.svg)](https://chat.userfrosting.com/channel/support)
+[![Donate](https://img.shields.io/badge/Open%20Collective-Donate-blue.svg)](https://opencollective.com/userfrosting#backer)
 
-Louis Charette & Alexander Weissman, 2016-2017
+Louis Charette & Alexander Weissman, 2016-2019
 
 The I18n module handles translation tasks for UserFrosting.  The `MessageTranslator` class can be used as follows:
 
@@ -403,8 +407,6 @@ echo $translator->translate("COMPLEX_STRING", [
 There's a child and no adults in the white Honda Civic 1993
 ```
 
-## Testing
+## [Style Guide](STYLE-GUIDE.md)
 
-```
-phpunit --bootstrap tests/bootstrap.php tests
-```
+## [Testing](RUNNING_TESTS.md)
