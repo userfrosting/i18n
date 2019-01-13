@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
+use UserFrosting\UniformResourceLocator\ResourceLocator;
 use UserFrosting\I18n\LocalePathBuilder;
 
 class LocalePathBuilderTest extends TestCase
@@ -13,12 +13,14 @@ class LocalePathBuilderTest extends TestCase
     public function setUp()
     {
         $this->basePath = __DIR__ . '/data';
-        $this->locator = new UniformResourceLocator($this->basePath);
+        $this->locator = new ResourceLocator($this->basePath);
+
+        $this->locator->registerStream('locale');
 
         // Add them one at a time to simulate how they are added in SprinkleManager
-        $this->locator->addPath('locale', '', 'core/locale');
-        $this->locator->addPath('locale', '', 'account/locale');
-        $this->locator->addPath('locale', '', 'admin/locale');
+        $this->locator->registerLocation('core');
+        $this->locator->registerLocation('account');
+        $this->locator->registerLocation('admin');
     }
 
     /**

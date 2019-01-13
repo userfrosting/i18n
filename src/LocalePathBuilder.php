@@ -7,7 +7,7 @@
  */
 namespace UserFrosting\I18n;
 
-use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
+use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
 use UserFrosting\Support\Repository\PathBuilder\PathBuilder;
 
 /**
@@ -25,11 +25,11 @@ class LocalePathBuilder extends PathBuilder
     /**
      * Create the loader.
      *
-     * @param RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator $locator
+     * @param ResourceLocatorInterface $locator
      * @param string $uri Scheme used to locate resources in $locator, including '://'
      * @param string|string[] $locales A list of locale names (e.g. 'en_US'). Note that locale preference is ascending.
      */
-    public function __construct($locator, $uri, $locales = [])
+    public function __construct(ResourceLocatorInterface $locator, $uri, $locales = [])
     {
         $this->setLocales($locales);
 
@@ -63,7 +63,7 @@ class LocalePathBuilder extends PathBuilder
     /**
      * Adds provides locales to the end of the current locales list.
      * Note that locale preference is ascending.
-     * 
+     *
      * @param string|string[] $locales
      * @return $this
      */
@@ -85,7 +85,7 @@ class LocalePathBuilder extends PathBuilder
 
     /**
      * Returns list of locales.
-     * 
+     *
      * @return string[]
      */
     public function getLocales()
@@ -96,7 +96,7 @@ class LocalePathBuilder extends PathBuilder
     /**
      * Sets locales.
      * Note that locale preference is ascending.
-     * 
+     *
      * @param string|string[] $locales
      */
     public function setLocales($locales = [])

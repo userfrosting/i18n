@@ -3,7 +3,7 @@
 namespace UserFrosting\I18n;
 
 use PHPUnit\Framework\TestCase;
-use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
+use UserFrosting\UniformResourceLocator\ResourceLocator;
 use UserFrosting\I18n\LocalePathBuilder;
 use UserFrosting\Support\Repository\Loader\ArrayFileLoader;
 
@@ -16,12 +16,14 @@ class MessageTranslatorTest extends TestCase
     public function setUp()
     {
         $this->basePath = __DIR__ . '/data';
-        $this->locator = new UniformResourceLocator($this->basePath);
+        $this->locator = new ResourceLocator($this->basePath);
+
+        $this->locator->registerStream('locale');
 
         // Add them one at a time to simulate how they are added in SprinkleManager
-        $this->locator->addPath('locale', '', 'core/locale');
-        $this->locator->addPath('locale', '', 'account/locale');
-        $this->locator->addPath('locale', '', 'admin/locale');
+        $this->locator->registerLocation('core');
+        $this->locator->registerLocation('account');
+        $this->locator->registerLocation('admin');
     }
 
     public function testTranslateEN()
@@ -31,7 +33,7 @@ class MessageTranslatorTest extends TestCase
         $builder->addLocales('en_US');
         $paths = $builder->buildPaths();
         $loader = new ArrayFileLoader($paths);
-    
+
         // Create the $translator object
         $translator = new MessageTranslator($loader->load());
 
