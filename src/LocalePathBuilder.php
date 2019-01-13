@@ -1,10 +1,12 @@
 <?php
 /**
- * UserFrosting (http://www.userfrosting.com)
+ * UserFrosting i18n (http://www.userfrosting.com)
  *
  * @link      https://github.com/userfrosting/i18n
- * @license   https://github.com/userfrosting/UserFrosting/blob/master/LICENSE.md (MIT License)
+ * @copyright Copyright (c) 2013-2019 Alexander Weissman, Louis Charette
+ * @license   https://github.com/userfrosting/i18n/blob/master/LICENSE.md (MIT License)
  */
+
 namespace UserFrosting\I18n;
 
 use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
@@ -26,8 +28,8 @@ class LocalePathBuilder extends PathBuilder
      * Create the loader.
      *
      * @param ResourceLocatorInterface $locator
-     * @param string $uri Scheme used to locate resources in $locator, including '://'
-     * @param string|string[] $locales A list of locale names (e.g. 'en_US'). Note that locale preference is ascending.
+     * @param string                   $uri     Scheme used to locate resources in $locator, including '://'
+     * @param string|string[]          $locales A list of locale names (e.g. 'en_US'). Note that locale preference is ascending.
      */
     public function __construct(ResourceLocatorInterface $locator, $uri, $locales = [])
     {
@@ -51,7 +53,7 @@ class LocalePathBuilder extends PathBuilder
 
         foreach ($this->locales as $locale) {
             // Make sure it's a valid string before loading
-            if (is_string($locale) && $locale != "") {
+            if (is_string($locale) && $locale != '') {
                 $localePaths = $this->buildLocalePaths($searchPaths, trim($locale));
                 $filePaths = array_merge($filePaths, $localePaths);
             }
@@ -64,14 +66,14 @@ class LocalePathBuilder extends PathBuilder
      * Adds provides locales to the end of the current locales list.
      * Note that locale preference is ascending.
      *
-     * @param string|string[] $locales
+     * @param  string|string[] $locales
      * @return $this
      */
     public function addLocales($locales = [])
     {
         //So we can accept strings argument also
         if (!is_array($locales)) {
-            $locales = array($locales);
+            $locales = [$locales];
         }
 
         // Add the new locales to the end
@@ -103,6 +105,7 @@ class LocalePathBuilder extends PathBuilder
     {
         $this->locales = [];
         $this->addLocales($locales);
+
         return $this;
     }
 
@@ -110,7 +113,7 @@ class LocalePathBuilder extends PathBuilder
      * Construct paths to all locale files for a given locale.
      *
      * @param string[] $searchPaths
-     * @param string $locale
+     * @param string   $locale
      */
     protected function buildLocalePaths($searchPaths, $locale)
     {
@@ -120,7 +123,7 @@ class LocalePathBuilder extends PathBuilder
         foreach ($searchPaths as $path) {
             $localePath = rtrim($path, '/\\') . '/' . $locale;
             // Grab all php files in the locale directory
-            $globs = glob($localePath . "/*.php");
+            $globs = glob($localePath . '/*.php');
             $filePaths = array_merge($filePaths, $globs);
         }
 
