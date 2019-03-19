@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * UserFrosting i18n (http://www.userfrosting.com)
  *
  * @link      https://github.com/userfrosting/i18n
