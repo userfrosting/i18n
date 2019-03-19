@@ -23,8 +23,8 @@ return [
         2         => '{{nb_adult}} adults',
     ],
     'CAR' => [
-        'FULL_MODEL' => '{{make}} {{model}} {{year}}'
+        'FULL_MODEL' => '{{make}} {{model}} {{year}}',
     ],
 
-    'COMPLEX_STRING2' => "There's {{&X_CHILD}} and {{&X_ADULT}} in the {{color}} {{&CAR.FULL_MODEL}}"
+    'COMPLEX_STRING2' => "There's {{&X_CHILD}} and {{&X_ADULT}} in the {{color}} {{&CAR.FULL_MODEL}}",
 ];

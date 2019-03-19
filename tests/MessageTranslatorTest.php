@@ -11,8 +11,8 @@
 namespace UserFrosting\I18n;
 
 use PHPUnit\Framework\TestCase;
-use UserFrosting\UniformResourceLocator\ResourceLocator;
 use UserFrosting\Support\Repository\Loader\ArrayFileLoader;
+use UserFrosting\UniformResourceLocator\ResourceLocator;
 
 class MessageTranslatorTest extends TestCase
 {
@@ -22,7 +22,7 @@ class MessageTranslatorTest extends TestCase
 
     public function setUp()
     {
-        $this->basePath = __DIR__ . '/data';
+        $this->basePath = __DIR__.'/data';
         $this->locator = new ResourceLocator($this->basePath);
 
         $this->locator->registerStream('locale');
@@ -99,7 +99,7 @@ class MessageTranslatorTest extends TestCase
         // Example of a complex translation
         $this->assertEquals($translator->translate('MY_CAR_STRING', [
             'my_car' => $translator->translate('CAR.EV.PLUGIN_HYBRID'),
-            'color'  => $translator->translate('COLOR.RED')
+            'color'  => $translator->translate('COLOR.RED'),
         ]), 'I drive a red plug-in hybrid');
 
         // Test the special handles all together
@@ -110,7 +110,7 @@ class MessageTranslatorTest extends TestCase
         //  - item => Hard coded language key in languge file
         $this->assertEquals($translator->translate('MY_EV_CARS', [
             'plural' => 3,
-            'type'   => '&CAR.EV'
+            'type'   => '&CAR.EV',
         ]), 'I have 3 electric cars');
 
         // Test that we can still access @TRANSLATION
@@ -198,7 +198,7 @@ class MessageTranslatorTest extends TestCase
         // Example of a complex translation
         $this->assertEquals($translator->translate('MY_CAR_STRING', [
             'my_car' => $translator->translate('CAR.EV.PLUGIN_HYBRID'),
-            'color'  => $translator->translate('COLOR.RED')
+            'color'  => $translator->translate('COLOR.RED'),
         ]), 'Je conduit une hybride branchable de couleur rouge');
 
         $this->assertEquals($translator->translate('MY_EV_CARS'), 'Mes voitures électriques');
@@ -206,7 +206,7 @@ class MessageTranslatorTest extends TestCase
         // Test `plural` pluralisation placeholder with other placeholders
         $this->assertEquals($translator->translate('MY_EV_CARS', [
             'plural' => 3,
-            'type'   => '&CAR.EV'
+            'type'   => '&CAR.EV',
         ]), 'Le chat a 3 voitures électriques');
 
         // Test pluralisation with custom plural key
@@ -248,7 +248,7 @@ class MessageTranslatorTest extends TestCase
             'car'      => '&CAR.FULL_MODEL',
             'make'     => $carMake,
             'model'    => 'Civic',
-            'year'     => 1993
+            'year'     => 1993,
         ]), "There's a child and no adults in the white Honda Civic 1993");
 
         $this->assertEquals($translator->translate('COMPLEX_STRING2', [
@@ -257,7 +257,7 @@ class MessageTranslatorTest extends TestCase
             'color'    => '&COLOR.WHITE',
             'make'     => $carMake,
             'model'    => 'Civic',
-            'year'     => 1993
+            'year'     => 1993,
         ]), "There's a child and no adults in the white Honda Civic 1993");
     }
 
