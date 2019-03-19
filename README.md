@@ -2,10 +2,29 @@
 
 [![Latest Version](https://img.shields.io/github/release/userfrosting/i18n.svg)](https://github.com/userfrosting/i18n/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
-[![Build Status](https://travis-ci.org/userfrosting/i18n.svg?branch=master)](https://travis-ci.org/userfrosting/i18n)
-[![Codecov](https://codecov.io/gh/userfrosting/i18n/branch/master/graph/badge.svg)](https://codecov.io/gh/userfrosting/i18n)
 [![Join the chat at https://chat.userfrosting.com/channel/support](https://demo.rocket.chat/images/join-chat.svg)](https://chat.userfrosting.com/channel/support)
 [![Donate](https://img.shields.io/badge/Open%20Collective-Donate-blue.svg)](https://opencollective.com/userfrosting#backer)
+
+| Branch | Build | Coverage | Style |
+| ------ |:-----:|:--------:|:-----:|
+| [master][i18n]  | [![][i18n-master-build]][i18n-travis] | [![][i18n-master-codecov]][i18n-codecov] | [![][i18n-style-master]][i18n-style] |
+| [develop][i18n-develop] | [![][i18n-develop-build]][i18n-travis] | [![][i18n-develop-codecov]][i18n-codecov] | [![][i18n-style-develop]][i18n-style] |
+
+<!-- Links -->
+[i18n]: https://github.com/userfrosting/i18n
+[i18n-develop]: https://github.com/userfrosting/i18n/tree/develop
+[i18n-version]: https://img.shields.io/github/release/userfrosting/i18n.svg
+[i18n-master-build]: https://travis-ci.org/userfrosting/i18n.svg?branch=master
+[i18n-master-codecov]: https://codecov.io/gh/userfrosting/i18n/branch/master/graph/badge.svg
+[i18n-develop-build]: https://travis-ci.org/userfrosting/i18n.svg?branch=develop
+[i18n-develop-codecov]: https://codecov.io/gh/userfrosting/i18n/branch/develop/graph/badge.svg
+[i18n-releases]: https://github.com/userfrosting/i18n/releases
+[i18n-travis]: https://travis-ci.org/userfrosting/i18n
+[i18n-codecov]: https://codecov.io/gh/userfrosting/i18n
+[i18n-style-master]: https://github.styleci.io/repos/60137335/shield?branch=master&style=flat
+[i18n-style-develop]: https://github.styleci.io/repos/60137335/shield?branch=develop&style=flat
+[i18n-style]: https://github.styleci.io/repos/60137335
+
 
 Louis Charette & Alexander Weissman, 2016-2019
 
