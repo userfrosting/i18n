@@ -29,6 +29,6 @@ return [
 
         'LOWER'          => '{{string|lower}}',
         'UPPER'          => '{{string|upper}}',
-        'CAPITALIZE'     => '{{string|capitalize}}'
-    ]
+        'CAPITALIZE'     => '{{string|capitalize}}',
+    ],
 ];

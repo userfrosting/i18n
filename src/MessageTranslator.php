@@ -13,7 +13,7 @@ namespace UserFrosting\I18n;
 use UserFrosting\Support\Repository\Repository;
 
 /**
- * MessageTranslator Class
+ * MessageTranslator Class.
  *
  * Translate message ids to a message in a specified language.
  *
@@ -49,9 +49,11 @@ class MessageTranslator extends Repository
      * Translate the given message id into the currently configured language, substituting any placeholders that appear in the translated string.
      *
      * Return the $messageKey if not match is found
-     * @param  string    $messageKey             The id of the message id to translate. can use dot notation for array
-     * @param  array|int $placeholders[optional] An optional hash of placeholder names => placeholder values to substitute.
-     * @return string    The translated message.
+     *
+     * @param string    $messageKey             The id of the message id to translate. can use dot notation for array
+     * @param array|int $placeholders[optional] An optional hash of placeholder names => placeholder values to substitute.
+     *
+     * @return string The translated message.
      */
     public function translate($messageKey, $placeholders = [])
     {
@@ -80,7 +82,7 @@ class MessageTranslator extends Repository
                     $pluralValue = (isset($placeholders[$pluralKey]) ? (int) $placeholders[$pluralKey] : (!is_array($placeholders) && is_numeric($placeholders) ? $placeholders : null));
 
                     // Stop for a sec... We don't have a plural value, but before defaut to 1, we check if there's any @TRANSLATION handle
-                    if (is_null($pluralValue) && (!$this->has($messageKey . '.@TRANSLATION') || $this->get($messageKey . '.@TRANSLATION') == null)) {
+                    if (is_null($pluralValue) && (!$this->has($messageKey.'.@TRANSLATION') || $this->get($messageKey.'.@TRANSLATION') == null)) {
 
                         //Default
                         $pluralValue = 1;
@@ -88,7 +90,7 @@ class MessageTranslator extends Repository
 
                     // If plural value is still null, we have found our message..!
                     if (is_null($pluralValue)) {
-                        $message = $this->get($messageKey . '.@TRANSLATION');
+                        $message = $this->get($messageKey.'.@TRANSLATION');
                     } else {
 
                         // Ok great. Now we need the right plural form.
@@ -131,8 +133,8 @@ class MessageTranslator extends Repository
                     }
 
                     // @TRANSLATION => When $messageKey is an array, this key is used. To use this, we can't have a plural value
-                } elseif ($this->has($messageKey . '.@TRANSLATION')) {
-                    $message = $this->get($messageKey . '.@TRANSLATION');
+                } elseif ($this->has($messageKey.'.@TRANSLATION')) {
+                    $message = $this->get($messageKey.'.@TRANSLATION');
                 // If we don't have plural AND a @TRANSLATION, we can't translate any translation key, so we will simply apply the placeholders to $messageKey
                 } else {
                     $message = $messageKey;
@@ -191,6 +193,7 @@ class MessageTranslator extends Repository
      * @param $number        int|float   The number we want to get the plural case for. Float numbers are floored.
      * @param $forceRule    mixed   False to use the plural rule of the language package
      *                               or an integer to force a certain plural rule
+     *
      * @return int The plural-case we need to use for the number plural-rule combination
      */
     public function getPluralForm($number, $forceRule = false)
@@ -204,33 +207,33 @@ class MessageTranslator extends Repository
             throw new OutOfRangeException("The rule number '$rule' must be between 0 and 16.");
         }
 
-        /**
+        /*
          * The following plural rules are based on a list published by the Mozilla Developer Network & code from phpBB Group
          * https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
          */
         switch ($rule) {
             case 0:
-                /**
+                /*
                  * Families: Asian (Chinese, Japanese, Korean, Vietnamese), Persian, Turkic/Altaic (Turkish), Thai, Lao
                  * 1 - everything: 0, 1, 2, ...
                  */
                 return 1;
             case 1:
-                /**
+                /*
                  * Families: Germanic (Danish, Dutch, English, Faroese, Frisian, German, Norwegian, Swedish), Finno-Ugric (Estonian, Finnish, Hungarian), Language isolate (Basque), Latin/Greek (Greek), Semitic (Hebrew), Romanic (Italian, Portuguese, Spanish, Catalan)
                  * 1 - 1
                  * 2 - everything else: 0, 2, 3, ...
                  */
                 return ($number == 1) ? 1 : 2;
             case 2:
-                /**
+                /*
                  * Families: Romanic (French, Brazilian Portuguese)
                  * 1 - 0, 1
                  * 2 - everything else: 2, 3, ...
                  */
                 return (($number == 0) || ($number == 1)) ? 1 : 2;
             case 3:
-                /**
+                /*
                  * Families: Baltic (Latvian)
                  * 1 - 0
                  * 2 - ends in 1, not 11: 1, 21, ... 101, 121, ...
@@ -238,7 +241,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number == 0) ? 1 : ((($number % 10 == 1) && ($number % 100 != 11)) ? 2 : 3);
             case 4:
-                /**
+                /*
                  * Families: Celtic (Scottish Gaelic)
                  * 1 - is 1 or 11: 1, 11
                  * 2 - is 2 or 12: 2, 12
@@ -247,7 +250,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number == 1 || $number == 11) ? 1 : (($number == 2 || $number == 12) ? 2 : (($number >= 3 && $number <= 19) ? 3 : 4));
             case 5:
-                /**
+                /*
                  * Families: Romanic (Romanian)
                  * 1 - 1
                  * 2 - is 0 or ends in 01-19: 0, 2, 3, ... 19, 101, 102, ... 119, 201, ...
@@ -255,7 +258,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 0) && ($number % 100 < 20))) ? 2 : 3);
             case 6:
-                /**
+                /*
                  * Families: Baltic (Lithuanian)
                  * 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
                  * 2 - ends in 0 or ends in 10-20: 0, 10, 11, 12, ... 19, 20, 30, 40, ...
@@ -263,7 +266,7 @@ class MessageTranslator extends Repository
                  */
                 return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 < 2) || (($number % 100 >= 10) && ($number % 100 < 20))) ? 2 : 3);
             case 7:
-                /**
+                /*
                  * Families: Slavic (Croatian, Serbian, Russian, Ukrainian)
                  * 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
                  * 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ...
@@ -271,7 +274,7 @@ class MessageTranslator extends Repository
                  */
                 return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 10) || ($number % 100 >= 20))) ? 2 : 3);
             case 8:
-                /**
+                /*
                  * Families: Slavic (Slovak, Czech)
                  * 1 - 1
                  * 2 - 2, 3, 4
@@ -279,7 +282,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number == 1) ? 1 : ((($number >= 2) && ($number <= 4)) ? 2 : 3);
             case 9:
-                /**
+                /*
                  * Families: Slavic (Polish)
                  * 1 - 1
                  * 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ... 104, 122, ...
@@ -287,7 +290,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number == 1) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 12) || ($number % 100 > 14))) ? 2 : 3);
             case 10:
-                /**
+                /*
                  * Families: Slavic (Slovenian, Sorbian)
                  * 1 - ends in 01: 1, 101, 201, ...
                  * 2 - ends in 02: 2, 102, 202, ...
@@ -296,7 +299,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number % 100 == 1) ? 1 : (($number % 100 == 2) ? 2 : ((($number % 100 == 3) || ($number % 100 == 4)) ? 3 : 4));
             case 11:
-                /**
+                /*
                  * Families: Celtic (Irish Gaeilge)
                  * 1 - 1
                  * 2 - 2
@@ -306,7 +309,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number == 1) ? 1 : (($number == 2) ? 2 : (($number >= 3 && $number <= 6) ? 3 : (($number >= 7 && $number <= 10) ? 4 : 5)));
             case 12:
-                /**
+                /*
                  * Families: Semitic (Arabic)
                  * 1 - 1
                  * 2 - 2
@@ -317,7 +320,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number == 1) ? 1 : (($number == 2) ? 2 : ((($number % 100 >= 3) && ($number % 100 <= 10)) ? 3 : ((($number % 100 >= 11) && ($number % 100 <= 99)) ? 4 : (($number != 0) ? 5 : 6))));
             case 13:
-                /**
+                /*
                  * Families: Semitic (Maltese)
                  * 1 - 1
                  * 2 - is 0 or ends in 01-10: 0, 2, 3, ... 9, 10, 101, 102, ...
@@ -326,7 +329,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 1) && ($number % 100 < 11))) ? 2 : ((($number % 100 > 10) && ($number % 100 < 20)) ? 3 : 4));
             case 14:
-                /**
+                /*
                  * Families: Slavic (Macedonian)
                  * 1 - ends in 1: 1, 11, 21, ...
                  * 2 - ends in 2: 2, 12, 22, ...
@@ -334,7 +337,7 @@ class MessageTranslator extends Repository
                  */
                 return ($number % 10 == 1) ? 1 : (($number % 10 == 2) ? 2 : 3);
             case 15:
-                /**
+                /*
                  * Families: Icelandic
                  * 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, 131, ...
                  * 2 - everything else: 0, 2, 3, ... 10, 11, 12, ... 20, 22, ...

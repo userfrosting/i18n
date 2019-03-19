@@ -17,7 +17,7 @@ return [
 
     'ACCOUNT' => [
         '@TRANSLATION' => 'Account',
-        'ALT'          => 'Profile'
+        'ALT'          => 'Profile',
     ],
 
     // Colors
@@ -30,7 +30,7 @@ return [
         //Plurals
         0 => 'colors',
         1 => 'color',
-        2 => 'colors'
+        2 => 'colors',
     ],
 
     // Cars
@@ -51,14 +51,14 @@ return [
             //Sub-Substring
             'FULL'          => 'full electric',
             'HYBRID'        => 'hybrid',
-            'PLUGIN_HYBRID' => 'plug-in hybrid'
+            'PLUGIN_HYBRID' => 'plug-in hybrid',
         ],
-        'HYDROGEN' => 'hydrogen'
+        'HYDROGEN' => 'hydrogen',
     ],
     'X_CARS' => [
         0 => 'no cars',
         1 => 'a car',
-        2 => '{{plural}} cars'
+        2 => '{{plural}} cars',
     ],
 
     // Placeholder strings
@@ -71,7 +71,7 @@ return [
     'MY_EV_CARS' => [
         '@TRANSLATION' => 'My electric cars',
         1              => 'I have a {{type}} {{&CAR}}',
-        2              => 'I have {{plural}} {{type}} {{&CAR}}'
+        2              => 'I have {{plural}} {{type}} {{&CAR}}',
     ],
 
     // Custom plural key with no "zero" case.

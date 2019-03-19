@@ -17,7 +17,7 @@ return [
 
     'ACCOUNT' => [
         '@TRANSLATION' => "Compte de l'utilisateur", //Don't need to escape if using double quote `"`
-        'ALT'          => 'Profil'
+        'ALT'          => 'Profil',
     ],
 
     // Colors
@@ -30,7 +30,7 @@ return [
         //Plurals
         0 => 'couleur',
         1 => 'couleur',
-        2 => 'couleurs'
+        2 => 'couleurs',
     ],
 
     // Cars
@@ -55,14 +55,14 @@ return [
             //Sub-Substring
             'FULL'          => '100% électrique',
             'HYBRID'        => 'hybride',
-            'PLUGIN_HYBRID' => 'hybride branchable'
+            'PLUGIN_HYBRID' => 'hybride branchable',
         ],
-        'HYDROGEN' => "à l'hydrogène"
+        'HYDROGEN' => "à l'hydrogène",
     ],
     'X_CARS' => [
         0 => 'aucune voiture',
         1 => 'une voiture',
-        2 => '{{plural}} voitures'
+        2 => '{{plural}} voitures',
     ],
 
     // Placeholder strings
@@ -75,7 +75,7 @@ return [
     'MY_EV_CARS' => [
         '@TRANSLATION' => 'Mes voitures électriques',
         1              => 'Le chat a une {{&CAR}} {{type}}',
-        2              => 'Le chat a {{plural}} {{&CAR}} {{type}}'
+        2              => 'Le chat a {{plural}} {{&CAR}} {{type}}',
     ],
 
     // Custom plural key with no "zero" case.
