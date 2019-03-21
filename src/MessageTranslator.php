@@ -23,7 +23,7 @@ use UserFrosting\Support\Repository\Repository;
 class MessageTranslator extends Repository
 {
     /**
-     * @var Twig_Environment A Twig environment used to replace placeholders.
+     * @var \Twig_Environment A Twig environment used to replace placeholders.
      */
     protected $twig;
 
@@ -50,8 +50,8 @@ class MessageTranslator extends Repository
      *
      * Return the $messageKey if not match is found
      *
-     * @param string    $messageKey             The id of the message id to translate. can use dot notation for array
-     * @param array|int $placeholders[optional] An optional hash of placeholder names => placeholder values to substitute.
+     * @param string    $messageKey   The id of the message id to translate. can use dot notation for array
+     * @param array|int $placeholders An optional hash of placeholder names => placeholder values to substitute (default : [])
      *
      * @return string The translated message.
      */
@@ -142,6 +142,23 @@ class MessageTranslator extends Repository
             }
         }
 
+        // Parse Placeholders
+        $message = $this->parsePlaceHolders($message, $placeholders);
+
+        return $message;
+    }
+
+    /**
+     * Parse Placeholder.
+     * Replace
+     *
+     * @param  string    $message      The message to replace placeholders in
+     * @param  array|int $placeholders An optional hash of placeholder names => placeholder values to substitute (default : [])
+     * @return string    The message with replaced placeholders
+     */
+    protected function parsePlaceHolders($message, $placeholders)
+    {
+
         // Ok, now we have a $message and need to replace the placeholders
         // Make sure $placeholders is an array otherwise foreach will fail
         if (!is_array($placeholders)) {
@@ -182,7 +199,6 @@ class MessageTranslator extends Repository
         $template = $this->twig->createTemplate($message);
         $message = $template->render($placeholders);
 
-        // Done !
         return $message;
     }
 
