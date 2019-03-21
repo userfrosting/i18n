@@ -15,11 +15,18 @@ namespace UserFrosting\I18n\PluralRules;
  * 1 - 1
  * 2 - is 0 or ends in 01-19: 0, 2, 3, ... 19, 101, 102, ... 119, 201, ...
  * 3 - everything else: 20, 21, ...
+ * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_5_(3_forms)
  */
 class Rule5 implements RuleInterface
 {
     public static function getRule($number)
     {
-        return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 0) && ($number % 100 < 20))) ? 2 : 3);
+        if ($number == 1) {
+            return 1;
+        } elseif ($number == 0 || (($number % 100 > 0) && ($number % 100 < 20))) {
+            return 2;
+        } else {
+            return 3;
+        }
     }
 }

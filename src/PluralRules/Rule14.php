@@ -15,11 +15,18 @@ namespace UserFrosting\I18n\PluralRules;
  * 1 - ends in 1: 1, 11, 21, ...
  * 2 - ends in 2: 2, 12, 22, ...
  * 3 - everything else: 0, 3, 4, ... 10, 13, 14, ... 20, 23, ...
+ * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_14_(3_forms)
  */
 class Rule14 implements RuleInterface
 {
     public static function getRule($number)
     {
-        return ($number % 10 == 1) ? 1 : (($number % 10 == 2) ? 2 : 3);
+        if ($number % 10 == 1) {
+            return 1;
+        } elseif ($number % 10 == 2) {
+            return 2;
+        } else {
+            return 3;
+        }
     }
 }

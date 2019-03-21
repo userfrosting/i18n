@@ -16,11 +16,20 @@ namespace UserFrosting\I18n\PluralRules;
  * 2 - is 2 or 12: 2, 12
  * 3 - others between 3 and 19: 3, 4, ... 10, 13, ... 18, 19
  * 4 - everything else: 0, 20, 21, ...
+ * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_4_(4_forms)
  */
 class Rule4 implements RuleInterface
 {
     public static function getRule($number)
     {
-        return ($number == 1 || $number == 11) ? 1 : (($number == 2 || $number == 12) ? 2 : (($number >= 3 && $number <= 19) ? 3 : 4));
+        if ($number == 1 || $number == 11) {
+            return 1;
+        } elseif ($number == 2 || $number == 12) {
+            return 2;
+        } elseif ($number >= 3 && $number <= 19) {
+            return 3;
+        } else {
+            return 4;
+        }
     }
 }

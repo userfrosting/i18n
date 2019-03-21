@@ -15,11 +15,18 @@ namespace UserFrosting\I18n\PluralRules;
  * 1 - 1
  * 2 - 2, 3, 4
  * 3 - everything else: 0, 5, 6, 7, ...
+ * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_8_(3_forms)
  */
 class Rule8 implements RuleInterface
 {
     public static function getRule($number)
     {
-        return ($number == 1) ? 1 : ((($number >= 2) && ($number <= 4)) ? 2 : 3);
+        if ($number == 1) {
+            return 1;
+        } elseif ($number >= 2 && $number <= 4) {
+            return 2;
+        } else {
+            return 3;
+        }
     }
 }

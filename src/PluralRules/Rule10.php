@@ -16,11 +16,20 @@ namespace UserFrosting\I18n\PluralRules;
  * 2 - ends in 02: 2, 102, 202, ...
  * 3 - ends in 03-04: 3, 4, 103, 104, 203, 204, ...
  * 4 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, ...
+ * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_10_(4_forms)
  */
 class Rule10 implements RuleInterface
 {
     public static function getRule($number)
     {
-        return ($number % 100 == 1) ? 1 : (($number % 100 == 2) ? 2 : ((($number % 100 == 3) || ($number % 100 == 4)) ? 3 : 4));
+        if ($number % 100 == 1) {
+            return 1;
+        } elseif ($number % 100 == 2) {
+            return 2;
+        } elseif (($number % 100 == 3) || ($number % 100 == 4)) {
+            return 3;
+        } else {
+            return 4;
+        }
     }
 }

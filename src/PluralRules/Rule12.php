@@ -11,18 +11,32 @@
 namespace UserFrosting\I18n\PluralRules;
 
 /**
- * Families: Semitic (Arabic)
+ * Families: Semitic (Arabic).
+ *
  * 1 - 1
  * 2 - 2
  * 3 - ends in 03-10: 3, 4, ... 10, 103, 104, ... 110, 203, 204, ...
  * 4 - ends in 11-99: 11, ... 99, 111, 112, ...
  * 5 - everything else: 100, 101, 102, 200, 201, 202, ...
  * 6 - 0
+ * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_12_(6_forms)
  */
 class Rule12 implements RuleInterface
 {
     public static function getRule($number)
     {
-        return ($number == 1) ? 1 : (($number == 2) ? 2 : ((($number % 100 >= 3) && ($number % 100 <= 10)) ? 3 : ((($number % 100 >= 11) && ($number % 100 <= 99)) ? 4 : (($number != 0) ? 5 : 6))));
+        if ($number == 1) {
+            return 1;
+        } elseif ($number == 2) {
+            return 2;
+        } elseif (($number % 100 >= 3) && ($number % 100 <= 10)) {
+            return 3;
+        } elseif (($number % 100 >= 11) && ($number % 100 <= 99)) {
+            return 4;
+        } elseif ($number != 0) {
+            return 5;
+        } else {
+            return 6;
+        }
     }
 }

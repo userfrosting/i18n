@@ -17,11 +17,22 @@ namespace UserFrosting\I18n\PluralRules;
  * 3 - is 3-6: 3, 4, 5, 6
  * 4 - is 7-10: 7, 8, 9, 10
  * 5 - everything else: 0, 11, 12, ...
+ * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_11_(5_forms)
  */
 class Rule11 implements RuleInterface
 {
     public static function getRule($number)
     {
-        return ($number == 1) ? 1 : (($number == 2) ? 2 : (($number >= 3 && $number <= 6) ? 3 : (($number >= 7 && $number <= 10) ? 4 : 5)));
+        if ($number == 1) {
+            return 1;
+        } elseif ($number == 2) {
+            return 2;
+        } elseif ($number >= 3 && $number <= 6) {
+            return 3;
+        } elseif ($number >= 7 && $number <= 10) {
+            return 4;
+        } else {
+            return 5;
+        }
     }
 }
