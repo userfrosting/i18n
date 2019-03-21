@@ -311,4 +311,13 @@ class MessageTranslatorTest extends TestCase
         $this->assertEquals($translator->translate('TWIG.UPPER', ['string' => 'WeLcOmE']), 'WELCOME');
         $this->assertEquals($translator->translate('TWIG.CAPITALIZE', ['string' => 'WeLcOmE']), 'Welcome');
     }
+
+    /**
+     * @expectedException \OutOfRangeException
+     */
+    public function testGetPluralFormWithException()
+    {
+        $translator = new MessageTranslator();
+        $translator->getPluralForm(1, 132);
+    }
 }
