@@ -19,7 +19,7 @@ abstract class RuleBase extends TestCase
     protected $ruleToTest;
 
     /**
-     * Test rule class implement the right interface
+     * Test rule class implement the right interface.
      */
     public function testRuleClass()
     {
@@ -28,6 +28,7 @@ abstract class RuleBase extends TestCase
 
     /**
      * @dataProvider ruleProvider
+     *
      * @param int $number         Input number
      * @param int $expectedResult Expected result
      */
@@ -38,7 +39,8 @@ abstract class RuleBase extends TestCase
     }
 
     /**
-     * Data provider for `testRule`
+     * Data provider for `testRule`.
+     *
      * @return array
      */
     abstract public function ruleProvider();

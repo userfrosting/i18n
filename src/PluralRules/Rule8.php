@@ -15,6 +15,7 @@ namespace UserFrosting\I18n\PluralRules;
  * 1 - 1
  * 2 - 2, 3, 4
  * 3 - everything else: 0, 5, 6, 7, ...
+ *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_8_(3_forms)
  */
 class Rule8 implements RuleInterface

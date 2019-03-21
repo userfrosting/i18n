@@ -15,6 +15,7 @@ namespace UserFrosting\I18n\PluralRules;
  * 1 - 1
  * 2 - is 0 or ends in 01-19: 0, 2, 3, ... 19, 101, 102, ... 119, 201, ...
  * 3 - everything else: 20, 21, ...
+ *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_5_(3_forms)
  */
 class Rule5 implements RuleInterface

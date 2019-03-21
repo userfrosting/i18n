@@ -48,7 +48,7 @@ class Rule14Test extends RuleBase
             [123, 3],
             [124, 3],
             [125, 3],
-            [200, 3]
+            [200, 3],
         ];
     }
 }

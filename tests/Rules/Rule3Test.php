@@ -29,7 +29,7 @@ class Rule3Test extends RuleBase
             [11, 3],
             [21, 2],
             [141, 2],
-            [128, 3]
+            [128, 3],
         ];
     }
 }

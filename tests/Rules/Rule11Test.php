@@ -46,7 +46,7 @@ class Rule11Test extends RuleBase
             [122, 5],
             [123, 5],
             [124, 5],
-            [125, 5]
+            [125, 5],
         ];
     }
 }

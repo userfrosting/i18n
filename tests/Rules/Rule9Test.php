@@ -41,7 +41,7 @@ class Rule9Test extends RuleBase
             [122, 2],
             [123, 2],
             [124, 2],
-            [125, 3]
+            [125, 3],
         ];
     }
 }

@@ -38,7 +38,7 @@ class Rule6Test extends RuleBase
             [101, 1],
             [110, 2],
             [111, 2],
-            [128, 3]
+            [128, 3],
         ];
     }
 }
