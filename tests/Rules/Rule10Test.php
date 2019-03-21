@@ -48,7 +48,7 @@ class Rule10Test extends RuleBase
             [202, 2],
             [203, 3],
             [204, 3],
-            [205, 4]
+            [205, 4],
         ];
     }
 }

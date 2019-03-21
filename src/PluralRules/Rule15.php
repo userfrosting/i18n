@@ -14,6 +14,7 @@ namespace UserFrosting\I18n\PluralRules;
  * Families: Icelandic
  * 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, 131, ...
  * 2 - everything else: 0, 2, 3, ... 10, 11, 12, ... 20, 22, ...
+ *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_15_(2_forms)
  */
 class Rule15 implements RuleInterface

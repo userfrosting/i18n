@@ -11,9 +11,10 @@
 namespace UserFrosting\I18n\PluralRules;
 
 /**
- * Interface for Rule Definition
+ * Interface for Rule Definition.
  *
  * The plural rules are based on a list published by the Mozilla Developer Network & code from phpBB Group
+ *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
  */
 interface RuleInterface

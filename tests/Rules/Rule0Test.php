@@ -25,7 +25,7 @@ class Rule0Test extends RuleBase
             [1, 1],
             [2, 1],
             [-2, 1],
-            [128, 1]
+            [128, 1],
         ];
     }
 }

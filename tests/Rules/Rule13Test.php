@@ -51,7 +51,7 @@ class Rule13Test extends RuleBase
             [125, 4],
             [200, 4],
             [201, 2],
-            [202, 2]
+            [202, 2],
         ];
     }
 }

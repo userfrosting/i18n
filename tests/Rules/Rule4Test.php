@@ -34,7 +34,7 @@ class Rule4Test extends RuleBase
             [19, 3],
             [20, 4],
             [21, 4],
-            [128, 4]
+            [128, 4],
         ];
     }
 }

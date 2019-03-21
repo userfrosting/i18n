@@ -52,7 +52,7 @@ class Rule12Test extends RuleBase
             [123, 4],
             [124, 4],
             [125, 4],
-            [200, 5]
+            [200, 5],
         ];
     }
 }

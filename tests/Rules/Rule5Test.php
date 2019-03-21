@@ -37,7 +37,7 @@ class Rule5Test extends RuleBase
             [101, 2],
             [110, 2],
             [111, 2],
-            [128, 3]
+            [128, 3],
         ];
     }
 }

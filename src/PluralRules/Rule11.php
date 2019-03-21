@@ -17,6 +17,7 @@ namespace UserFrosting\I18n\PluralRules;
  * 3 - is 3-6: 3, 4, 5, 6
  * 4 - is 7-10: 7, 8, 9, 10
  * 5 - everything else: 0, 11, 12, ...
+ *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_11_(5_forms)
  */
 class Rule11 implements RuleInterface

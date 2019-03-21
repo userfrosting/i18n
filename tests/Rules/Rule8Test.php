@@ -40,7 +40,7 @@ class Rule8Test extends RuleBase
             [101, 3],
             [110, 3],
             [111, 3],
-            [128, 3]
+            [128, 3],
         ];
     }
 }

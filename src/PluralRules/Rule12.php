@@ -19,6 +19,7 @@ namespace UserFrosting\I18n\PluralRules;
  * 4 - ends in 11-99: 11, ... 99, 111, 112, ...
  * 5 - everything else: 100, 101, 102, 200, 201, 202, ...
  * 6 - 0
+ *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_12_(6_forms)
  */
 class Rule12 implements RuleInterface

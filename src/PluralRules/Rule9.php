@@ -15,6 +15,7 @@ namespace UserFrosting\I18n\PluralRules;
  * 1 - 1
  * 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ... 104, 122, ...
  * 3 - everything else: 0, 5, 6, ... 11, 12, 13, 14, 15, ... 20, 21, 25, ...
+ *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals#Plural_rule_9_(3_forms)
  */
 class Rule9 implements RuleInterface
