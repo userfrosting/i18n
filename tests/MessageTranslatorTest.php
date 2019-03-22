@@ -37,10 +37,11 @@ class MessageTranslatorTest extends TestCase
 
     /**
      * @dataProvider localeStringProvider
-     * @param  string $key
-     * @param  array $placeholders
-     * @param  string $expectedResultEnglish
-     * @param  string $expectedResultFrench
+     *
+     * @param string $key
+     * @param array  $placeholders
+     * @param string $expectedResultEnglish
+     * @param string $expectedResultFrench
      */
     public function testTranslate($key, $placeholders, $expectedResultEnglish, $expectedResultFrench)
     {
@@ -52,7 +53,7 @@ class MessageTranslatorTest extends TestCase
     }
 
     /**
-     *
+     * Run more complex translations outside the provider.
      */
     public function testTranslate_withNested()
     {
@@ -84,7 +85,8 @@ class MessageTranslatorTest extends TestCase
     }
 
     /**
-     * DataProvider for testTranslateEN
+     * DataProvider for testTranslateEN.
+     *
      * @return array [$key, $placeholders, $expectedResultEnglish, $expectedResultFrench]
      */
     public function localeStringProvider()
@@ -171,7 +173,7 @@ class MessageTranslatorTest extends TestCase
     }
 
     /**
-     * Test the readme examples
+     * Test the readme examples.
      */
     public function testReadme()
     {
@@ -203,7 +205,7 @@ class MessageTranslatorTest extends TestCase
     }
 
     /**
-     * Test for placeholder applied to `$key` if it doesn't match any languages keys
+     * Test for placeholder applied to `$key` if it doesn't match any languages keys.
      */
     public function testWithoutKeys()
     {
@@ -213,9 +215,10 @@ class MessageTranslatorTest extends TestCase
 
     /**
      * @dataProvider twigProvider
-     * @param  string $key
-     * @param  array $placeholders
-     * @param  string $expectedResult
+     *
+     * @param string $key
+     * @param array  $placeholders
+     * @param string $expectedResult
      */
     public function testTwigFilters($key, $placeholders, $expectedResult)
     {
@@ -232,7 +235,8 @@ class MessageTranslatorTest extends TestCase
     }
 
     /**
-     * Data Provider for testTwigFilters
+     * Data Provider for testTwigFilters.
+     *
      * @return array
      */
     public function twigProvider()
@@ -275,7 +279,8 @@ class MessageTranslatorTest extends TestCase
     }
 
     /**
-     * @param  array  $language Default to ['en_US'], use ['en_US', 'fr_FR'] to french
+     * @param array $language Default to ['en_US'], use ['en_US', 'fr_FR'] to french
+     *
      * @return MessageTranslator
      */
     protected function getTranslator($language = ['en_US'])
