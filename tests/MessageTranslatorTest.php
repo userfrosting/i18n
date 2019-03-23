@@ -163,7 +163,7 @@ class MessageTranslatorTest extends TestCase
             // Custom key can also be omited in the placeholder if it's the only placeholder even with custom plural key
             ['X_HUNGRY_CATS', 5, '5 hungry cats', '5 chats affamés'],
 
-            // Test missing pluralisation and placeholder (expected fail)
+            // Test missing pluralisation and placeholder (default to 1)
             ['X_HUNGRY_CATS', [], '1 hungry cat', '1 chat affamé'],
 
             // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")

@@ -57,90 +57,8 @@ class MessageTranslator extends Repository
      */
     public function translate($messageKey, $placeholders = [])
     {
-        // If we didn't find a match, we simply apply the placeholders to $messageKey
-        if (!$this->has($messageKey)) {
-            $message = $messageKey;
-        } else {
-            // Get the message
-            $message = $this->get($messageKey);
-
-            /* If the message is an array, we have to go deeper because an array can countain some special handles:
-                - @TRANSLATION
-                - @REPLACE
-                - @TRANSLATE
-                - @PLURAL
-            */
-            if (is_array($message)) {
-                // Is the message array countain any plural rules (keys that are int)
-                if (!empty(array_filter(array_keys($message), 'is_int'))) {
-
-                    // Now we can handle plurals using the @PLURAL to define the plural key. If it's not defined, we use the default one
-                    $pluralKey = (isset($message['@PLURAL'])) ? $message['@PLURAL'] : $this->defaultPluralKey;
-
-                    // We try get the plural value and default to `1` if none is found
-                    // We also allow for a shortcut using the second argument as a numeric value for simple strings.
-                    $pluralValue = (isset($placeholders[$pluralKey]) ? (int) $placeholders[$pluralKey] : (!is_array($placeholders) && is_numeric($placeholders) ? $placeholders : null));
-
-                    // Stop for a sec... We don't have a plural value, but before defaut to 1, we check if there's any @TRANSLATION handle
-                    if (is_null($pluralValue) && (!$this->has($messageKey.'.@TRANSLATION') || $this->get($messageKey.'.@TRANSLATION') == null)) {
-
-                        //Default
-                        $pluralValue = 1;
-                    }
-
-                    // If plural value is still null, we have found our message..!
-                    if (is_null($pluralValue)) {
-                        $message = $this->get($messageKey.'.@TRANSLATION');
-                    } else {
-
-                        // Ok great. Now we need the right plural form.
-                        // N.B.: Plurals is based on phpBB and Mozilla work : https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
-                        $keyFound = false;
-
-                        // 0 is handled differently. We use it so that "0 users" may be displayed as "No users".
-                        if ($pluralValue == 0 && isset($message[0])) {
-                            $keyFound = 0;
-                        } else {
-                            $usePluralForm = $this->getPluralForm($pluralValue);
-                            if (isset($message[$usePluralForm])) {
-                                // The key we need exists, so we use it.
-                                $keyFound = $usePluralForm;
-                            } else {
-                                // If the key we need doesn't exist, we use the previous one.
-                                $numbers = array_keys($message);
-                                foreach ($numbers as $num) {
-                                    if (is_int($num) && $num > $usePluralForm) {
-                                        break;
-                                    }
-                                    $keyFound = $num;
-                                }
-                            }
-                        }
-
-                        // If no key was found, use the last entry (because it is mostly the plural form).
-                        if ($keyFound === false) {
-                            $numbers = array_keys($message);
-                            $keyFound = end($numbers);
-                        }
-
-                        $message = $message[$keyFound];
-
-                        // If we used the shortcut and $placeholders is a numeric value
-                        // it must be passed back as an array for replacement in the main $message
-                        if (is_numeric($placeholders) || empty($placeholders)) {
-                            $placeholders = [$pluralKey => $pluralValue];
-                        }
-                    }
-
-                    // @TRANSLATION => When $messageKey is an array, this key is used. To use this, we can't have a plural value
-                } elseif ($this->has($messageKey.'.@TRANSLATION')) {
-                    $message = $this->get($messageKey.'.@TRANSLATION');
-                // If we don't have plural AND a @TRANSLATION, we can't translate any translation key, so we will simply apply the placeholders to $messageKey
-                } else {
-                    $message = $messageKey;
-                }
-            }
-        }
+        // Get the correct message from the specified key
+        $message = $this->getMessageFromKey($messageKey, $placeholders);
 
         // Parse Placeholders
         $message = $this->parsePlaceHolders($message, $placeholders);
@@ -149,11 +67,155 @@ class MessageTranslator extends Repository
     }
 
     /**
+     * Get the message from key.
+     * Go throught all registered language keys avaiable and find the correct
+     * one to use, using the placeholders to select the correct plural form.
+     *
+     * @param string    $messageKey   The key to find the message for
+     * @param array|int $placeholders Passed by reference, since plural placeholder will be added for later processing
+     *
+     * @return string The message string
+     */
+    protected function getMessageFromKey($messageKey, &$placeholders)
+    {
+        // If we can't find a match, return $messageKey
+        if (!$this->has($messageKey)) {
+            return $messageKey;
+        }
+
+        // Get message from items
+        $message = $this->get($messageKey);
+
+        // If message is an array, we'll need to go depper to get the actual string. Otherwise we're good to move on.
+        if (!is_array($message)) {
+            return $message;
+        }
+
+        // First, let's see if we can get the plural rules.
+        // A plural form will always have priority over the `@TRANSLATION` instruction
+        if (!empty(array_filter(array_keys($message), 'is_int'))) {
+
+            // We start by picking up the plural key, aka which placeholder contains the numeric value defining how many {x} we have
+            $pluralKey = $this->getPluralKey($message);
+
+            // Let's get the plural value, aka how many {x} we have
+            $pluralValue = $this->getPluralValue($placeholders, $pluralKey);
+
+            // If no plural value was found, we either use the singular form or fallback to `@TRANSLATION` instruction
+            if (is_null($pluralValue)) {
+
+                // If we have a `@TRANSLATION` instruction, return this
+                if ($this->has($messageKey.'.@TRANSLATION') && !is_null($this->get($messageKey.'.@TRANSLATION'))) {
+                    return $this->get($messageKey.'.@TRANSLATION');
+                }
+
+                // Otherwise fallback to singular version
+                $pluralValue = 1;
+            }
+
+            // If $placeholders is a numeric value, we transform back to an array for replacement in the main $message
+            if (is_numeric($placeholders) || empty($placeholders)) {
+                $placeholders = [$pluralKey => $pluralValue];
+            }
+
+            // At this point, we need to go deeper and find the correct plural form to use
+            return $message[$this->getPluralMessageKey($message, $pluralValue)];
+        }
+
+        // If we didn't find a plural form, we try to find the "@TRANSLATION" form.
+        if ($this->has($messageKey.'.@TRANSLATION')) {
+            return $this->get($messageKey.'.@TRANSLATION');
+        }
+
+        // If the message is an array, but we can't find a plural form or a "@TRANSLATION" instruction, we can't go further.
+        // We can't return the array, so we'll return the key
+        //throw new \Exception("Can't find translation key");
+
+        return $messageKey;
+    }
+
+    /**
+     * Return the plural key from a translation array.
+     * If no plural key is defined in the `@PLURAL` instruction of the message array, we fallback to the default one.
+     *
+     * @param array $messageArray
+     *
+     * @return string
+     */
+    protected function getPluralKey(array $messageArray)
+    {
+        if (isset($messageArray['@PLURAL'])) {
+            return $messageArray['@PLURAL'];
+        } else {
+            return $this->defaultPluralKey;
+        }
+    }
+
+    /**
+     * Return the plural value, aka the nummber to display, from the placeholder values.
+     *
+     * @param array|int $placeholders Placeholder
+     * @param string    $pluralKey    The plural key, for key => value match
+     *
+     * @return int|null The number, null if not found
+     */
+    protected function getPluralValue($placeholders, $pluralKey)
+    {
+        if (isset($placeholders[$pluralKey])) {
+            return (int) $placeholders[$pluralKey];
+        }
+
+        if (!is_array($placeholders) && is_numeric($placeholders)) {
+            return $placeholders;
+        }
+
+        // Null will be returned
+    }
+
+    /**
+     * Return the correct plural message form to use.
+     * When multiple plural form are available for a message, this method will return the correct oen to use based on the numeric value
+     *
+     * @param array $messageArray The array with all the form inside ($pluralRule => $message)
+     * @param int   $pluralValue  The numeric value used to select the correct message
+     *
+     * @return int Returns which key from $messageArray to use
+     */
+    protected function getPluralMessageKey(array $messageArray, $pluralValue)
+    {
+        // 0 is not handled by the rules. We use it so that "0 users" may be displayed as "No users".
+        if ($pluralValue == 0 && isset($messageArray[0])) {
+            return 0;
+        }
+
+        // Get the correct plural form to use depending on the language
+        $usePluralForm = $this->getPluralForm($pluralValue);
+
+        // If the message array contains a string for this form, return it
+        if (isset($messageArray[$usePluralForm])) {
+            return $usePluralForm;
+        }
+
+        // If the key we need doesn't exist, use the previous available one.
+        $numbers = array_keys($messageArray);
+        foreach ($numbers as $num) {
+            if (is_int($num) && $num > $usePluralForm) {
+                break;
+            }
+
+            return $num;
+        }
+
+        // If no key was found, use the last entry (because it is mostly the plural form).
+        return end(array_keys($messageArray));
+    }
+
+    /**
      * Parse Placeholder.
      * Replace placeholders in the message with their values from the passed argument.
      *
      * @param string $message      The message to replace placeholders in
-     * @param array  $placeholders An optional hash of placeholder names => placeholder values to substitute (default : [])
+     * @param array  $placeholders An optional hash of placeholder (names => placeholder) values to substitute (default : [])
      *
      * @return string The message with replaced placeholders
      */
@@ -199,6 +261,7 @@ class MessageTranslator extends Repository
     /**
      * Determine which plural form we should use.
      * For some languages this is not as simple as for English.
+     * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
      *
      * @param int|float $number    The number we want to get the plural case for. Float numbers are floored.
      * @param mixed     $forceRule False to use the plural rule of the language package
@@ -209,7 +272,7 @@ class MessageTranslator extends Repository
     public function getPluralForm($number, $forceRule = false)
     {
         // Default to English rule (1) or the forced one
-        $ruleNumber = ($forceRule !== false) ? $forceRule : (($this->has('@PLURAL_RULE')) ? $this->get('@PLURAL_RULE') : 1);
+        $ruleNumber = $this->getPluralRuleNumber($forceRule);
 
         // Get the rule class
         $class = "\UserFrosting\I18n\PluralRules\Rule$ruleNumber";
@@ -218,5 +281,25 @@ class MessageTranslator extends Repository
         }
 
         return $class::getRule((int) $number);
+    }
+
+    /**
+     * Return the correct rule number to use.
+     *
+     * @param bool|int $forceRule Force to use a particular rule. Otherwise, use the language defined one
+     *
+     * @return int
+     */
+    protected function getPluralRuleNumber($forceRule)
+    {
+        if ($forceRule !== false) {
+            return $forceRule;
+        }
+
+        if ($this->has('@PLURAL_RULE')) {
+            return $this->get('@PLURAL_RULE');
+        }
+
+        return 1;
     }
 }
