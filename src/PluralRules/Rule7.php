@@ -24,10 +24,12 @@ class Rule7 implements RuleInterface
     {
         if (($number % 10 == 1) && ($number % 100 != 11)) {
             return 1;
-        } elseif (($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 10) || ($number % 100 >= 20))) {
-            return 2;
-        } else {
-            return 3;
         }
+
+        if (($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 10) || ($number % 100 >= 20))) {
+            return 2;
+        }
+
+        return 3;
     }
 }

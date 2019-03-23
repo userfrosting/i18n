@@ -24,10 +24,12 @@ class Rule3 implements RuleInterface
     {
         if ($number == 0) {
             return 1;
-        } elseif (($number % 10 == 1) && ($number % 100 != 11)) {
-            return 2;
-        } else {
-            return 3;
         }
+
+        if (($number % 10 == 1) && ($number % 100 != 11)) {
+            return 2;
+        }
+
+        return 3;
     }
 }

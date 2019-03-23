@@ -28,16 +28,24 @@ class Rule12 implements RuleInterface
     {
         if ($number == 1) {
             return 1;
-        } elseif ($number == 2) {
-            return 2;
-        } elseif (($number % 100 >= 3) && ($number % 100 <= 10)) {
-            return 3;
-        } elseif (($number % 100 >= 11) && ($number % 100 <= 99)) {
-            return 4;
-        } elseif ($number != 0) {
-            return 5;
-        } else {
-            return 6;
         }
+
+        if ($number == 2) {
+            return 2;
+        }
+
+        if (($number % 100 >= 3) && ($number % 100 <= 10)) {
+            return 3;
+        }
+
+        if (($number % 100 >= 11) && ($number % 100 <= 99)) {
+            return 4;
+        }
+
+        if ($number != 0) {
+            return 5;
+        }
+
+        return 6;
     }
 }

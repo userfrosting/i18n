@@ -24,10 +24,12 @@ class Rule9 implements RuleInterface
     {
         if ($number == 1) {
             return 1;
-        } elseif (($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 12) || ($number % 100 > 14))) {
-            return 2;
-        } else {
-            return 3;
         }
+
+        if (($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 12) || ($number % 100 > 14))) {
+            return 2;
+        }
+
+        return 3;
     }
 }

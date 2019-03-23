@@ -24,10 +24,12 @@ class Rule5 implements RuleInterface
     {
         if ($number == 1) {
             return 1;
-        } elseif ($number == 0 || (($number % 100 > 0) && ($number % 100 < 20))) {
-            return 2;
-        } else {
-            return 3;
         }
+
+        if ($number == 0 || (($number % 100 > 0) && ($number % 100 < 20))) {
+            return 2;
+        }
+
+        return 3;
     }
 }

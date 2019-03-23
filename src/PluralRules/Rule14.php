@@ -24,10 +24,12 @@ class Rule14 implements RuleInterface
     {
         if ($number % 10 == 1) {
             return 1;
-        } elseif ($number % 10 == 2) {
-            return 2;
-        } else {
-            return 3;
         }
+
+        if ($number % 10 == 2) {
+            return 2;
+        }
+
+        return 3;
     }
 }

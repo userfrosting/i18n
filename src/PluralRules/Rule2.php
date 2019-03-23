@@ -23,8 +23,8 @@ class Rule2 implements RuleInterface
     {
         if ($number == 0 || $number == 1) {
             return 1;
-        } else {
-            return 2;
         }
+
+        return 2;
     }
 }

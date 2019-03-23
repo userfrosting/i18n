@@ -25,12 +25,16 @@ class Rule13 implements RuleInterface
     {
         if ($number === 1) {
             return 1;
-        } elseif ($number === 0 || (($number % 100 >= 1) && ($number % 100 < 11))) {
-            return 2;
-        } elseif (($number % 100 > 10) && ($number % 100 < 20)) {
-            return 3;
-        } else {
-            return 4;
         }
+
+        if ($number === 0 || (($number % 100 >= 1) && ($number % 100 < 11))) {
+            return 2;
+        }
+
+        if (($number % 100 > 10) && ($number % 100 < 20)) {
+            return 3;
+        }
+
+        return 4;
     }
 }

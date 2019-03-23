@@ -25,12 +25,16 @@ class Rule10 implements RuleInterface
     {
         if ($number % 100 == 1) {
             return 1;
-        } elseif ($number % 100 == 2) {
-            return 2;
-        } elseif (($number % 100 == 3) || ($number % 100 == 4)) {
-            return 3;
-        } else {
-            return 4;
         }
+
+        if ($number % 100 == 2) {
+            return 2;
+        }
+
+        if (($number % 100 == 3) || ($number % 100 == 4)) {
+            return 3;
+        }
+
+        return 4;
     }
 }

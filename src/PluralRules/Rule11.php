@@ -26,14 +26,20 @@ class Rule11 implements RuleInterface
     {
         if ($number == 1) {
             return 1;
-        } elseif ($number == 2) {
-            return 2;
-        } elseif ($number >= 3 && $number <= 6) {
-            return 3;
-        } elseif ($number >= 7 && $number <= 10) {
-            return 4;
-        } else {
-            return 5;
         }
+
+        if ($number == 2) {
+            return 2;
+        }
+
+        if ($number >= 3 && $number <= 6) {
+            return 3;
+        }
+
+        if ($number >= 7 && $number <= 10) {
+            return 4;
+        }
+
+        return 5;
     }
 }

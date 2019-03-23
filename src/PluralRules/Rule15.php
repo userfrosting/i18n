@@ -23,8 +23,8 @@ class Rule15 implements RuleInterface
     {
         if (($number % 10 == 1) && ($number % 100 != 11)) {
             return 1;
-        } else {
-            return 2;
         }
+
+        return 2;
     }
 }

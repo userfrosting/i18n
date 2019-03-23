@@ -174,7 +174,7 @@ class MessageTranslator extends Repository
 
     /**
      * Return the correct plural message form to use.
-     * When multiple plural form are available for a message, this method will return the correct oen to use based on the numeric value
+     * When multiple plural form are available for a message, this method will return the correct oen to use based on the numeric value.
      *
      * @param array $messageArray The array with all the form inside ($pluralRule => $message)
      * @param int   $pluralValue  The numeric value used to select the correct message
@@ -261,6 +261,7 @@ class MessageTranslator extends Repository
     /**
      * Determine which plural form we should use.
      * For some languages this is not as simple as for English.
+     *
      * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
      *
      * @param int|float $number    The number we want to get the plural case for. Float numbers are floored.

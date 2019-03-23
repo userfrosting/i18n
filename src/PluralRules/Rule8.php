@@ -24,10 +24,12 @@ class Rule8 implements RuleInterface
     {
         if ($number == 1) {
             return 1;
-        } elseif ($number >= 2 && $number <= 4) {
-            return 2;
-        } else {
-            return 3;
         }
+
+        if ($number >= 2 && $number <= 4) {
+            return 2;
+        }
+
+        return 3;
     }
 }

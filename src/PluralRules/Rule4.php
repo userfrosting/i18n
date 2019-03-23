@@ -25,12 +25,16 @@ class Rule4 implements RuleInterface
     {
         if ($number == 1 || $number == 11) {
             return 1;
-        } elseif ($number == 2 || $number == 12) {
-            return 2;
-        } elseif ($number >= 3 && $number <= 19) {
-            return 3;
-        } else {
-            return 4;
         }
+
+        if ($number == 2 || $number == 12) {
+            return 2;
+        }
+
+        if ($number >= 3 && $number <= 19) {
+            return 3;
+        }
+
+        return 4;
     }
 }
