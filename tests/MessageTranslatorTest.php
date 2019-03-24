@@ -262,7 +262,7 @@ class MessageTranslatorTest extends TestCase
     }
 
     /**
-     * Test locale wihtout a `@PLURAL_RULE`
+     * Test locale wihtout a `@PLURAL_RULE`.
      */
     public function testGetPluralFormWithNoDefineRule()
     {
