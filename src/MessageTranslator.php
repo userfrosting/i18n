@@ -119,7 +119,18 @@ class MessageTranslator extends Repository
             }
 
             // At this point, we need to go deeper and find the correct plural form to use
-            return $message[$this->getPluralMessageKey($message, $pluralValue)];
+            $plural = $this->getPluralMessageKey($message, $pluralValue);
+
+            // Only return if the plural is not null. Will happen if the message array don't follow the rules
+            if (!is_null($plural)) {
+                return $message[$plural];
+            }
+
+            // One last check... If we don't have a rule, but the $pluralValue
+            // as a key does exist, we might still be able to return it
+            if (isset($message[$pluralValue])) {
+                return $message[$pluralValue];
+            }
         }
 
         // If we didn't find a plural form, we try to find the "@TRANSLATION" form.
@@ -129,8 +140,6 @@ class MessageTranslator extends Repository
 
         // If the message is an array, but we can't find a plural form or a "@TRANSLATION" instruction, we can't go further.
         // We can't return the array, so we'll return the key
-        //throw new \Exception("Can't find translation key");
-
         return $messageKey;
     }
 
@@ -183,7 +192,7 @@ class MessageTranslator extends Repository
      */
     protected function getPluralMessageKey(array $messageArray, $pluralValue)
     {
-        // 0 is not handled by the rules. We use it so that "0 users" may be displayed as "No users".
+        // Bypass the rules for a value of "0" so that "0 users" may be displayed as "No users".
         if ($pluralValue == 0 && isset($messageArray[0])) {
             return 0;
         }
@@ -198,7 +207,7 @@ class MessageTranslator extends Repository
 
         // If the key we need doesn't exist, use the previous available one.
         $numbers = array_keys($messageArray);
-        foreach ($numbers as $num) {
+        foreach (array_reverse($numbers) as $num) {
             if (is_int($num) && $num > $usePluralForm) {
                 break;
             }
@@ -206,8 +215,7 @@ class MessageTranslator extends Repository
             return $num;
         }
 
-        // If no key was found, use the last entry (because it is mostly the plural form).
-        return end(array_keys($messageArray));
+        // If no key was found, null will be returned
     }
 
     /**

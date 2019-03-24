@@ -169,6 +169,33 @@ class MessageTranslatorTest extends TestCase
             // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
             // We don't want to end up with "Votre test doit être entre minimum et 200 patates"
             ['TEST_LIMIT', ['min' => 4, 'max' => 200], 'Your test must be between 4 and 200 potatoes.', 'Votre test doit être entre 4 et 200 patates.'],
+
+            // Test message is an empty array. Will return the key
+            ['EMPTY', [], 'EMPTY', 'EMPTY'],
+
+            // Test missing one rule. 2 will return singular as the plural is not defined
+            ['X_RULES', 1, '1 rule', '1 règle'],
+            ['X_RULES', 2, '2 rule', '2 règle'],
+
+            // Test missing all ruless, but still have 0. Will return the "zero" form.
+            ['X_BANANAS', 1, 'no bananas', 'aucune banane'],
+            ['X_BANANAS', 2, 'no bananas', 'aucune banane'],
+
+            // Test keys are int, but don't follow the rules. It will fallback to the key
+            ['X_DOGS', [], 'X_DOGS', 'X_DOGS'],
+            ['X_DOGS', 0, 'X_DOGS', 'X_DOGS'],
+            ['X_DOGS', 1, 'X_DOGS', 'X_DOGS'],
+            ['X_DOGS', 2, 'X_DOGS', 'X_DOGS'], // No plural rules found
+            ['X_DOGS', 5, 'five dogs', 'cinq chiens'], // This one is hardcoded and will fallback as normal string key
+            ['X_DOGS', 101, '101 Dalmatians', '101 Dalmatiens'], // Same here
+            ['X_DOGS', 102, 'X_DOGS', 'X_DOGS'], // This one is not hardcoded
+            ['X_DOGS', 1000, 'An island of dogs', 'Une tempête de chiens'], // Still fallback, if the key is a string representing and INT
+
+            // keys as strings
+            ['X_TABLES', 0, 'no tables', 'aucune table'],
+            ['X_TABLES', 1, 'a table', 'une table'],
+            ['X_TABLES', 2, '2 tables', '2 tables'],
+            ['X_TABLES', 5, '5 tables', '5 tables'],
         ];
     }
 
@@ -232,6 +259,21 @@ class MessageTranslatorTest extends TestCase
     public function testGetPluralFormWithException()
     {
         $this->getTranslator()->getPluralForm(1, 132);
+    }
+
+    /**
+     * Test locale wihtout a `@PLURAL_RULE`
+     */
+    public function testGetPluralFormWithNoDefineRule()
+    {
+        $translator = $this->getTranslator(['es_ES']);
+        $foo = $translator->getPluralForm(1);
+        $this->assertSame(1, $foo);
+
+        // Test with 0. If `@PLURAL_RULE` 1 is applied, it will return `X_CARS.2` (zero is plural)
+        // With `@PLURAL_RULE` 0, it would have been `X_CARS.1` (no plurals)
+        // and with `@PLURAL_RULE` 2, would have been `X_CARS.1` also (0 is singular)
+        $this->assertEquals($translator->translate('X_CARS', 0), '0 coches');
     }
 
     /**
