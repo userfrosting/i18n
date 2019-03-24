@@ -16,15 +16,17 @@ use UserFrosting\UniformResourceLocator\ResourceLocator;
 
 class MessageTranslatorTest extends TestCase
 {
-    protected $basePath;
+    /** @var string Test locale file location */
+    protected $basePath = __DIR__.'/data';
 
+    /** @var ResourceLocator */
     protected $locator;
 
     public function setUp()
     {
-        $this->basePath = __DIR__.'/data';
         $this->locator = new ResourceLocator($this->basePath);
 
+        // Register stream
         $this->locator->registerStream('locale');
 
         // Add them one at a time to simulate how they are added in SprinkleManager
@@ -33,68 +35,34 @@ class MessageTranslatorTest extends TestCase
         $this->locator->registerLocation('admin');
     }
 
-    public function testTranslateEN()
+    /**
+     * @dataProvider localeStringProvider
+     *
+     * @param string $key
+     * @param array  $placeholders
+     * @param string $expectedResultEnglish
+     * @param string $expectedResultFrench
+     */
+    public function testTranslate($key, $placeholders, $expectedResultEnglish, $expectedResultFrench)
     {
-        // Load the en_US locale files, no user locale
-        $builder = new LocalePathBuilder($this->locator, 'locale://');
-        $builder->addLocales('en_US');
-        $paths = $builder->buildPaths();
-        $loader = new ArrayFileLoader($paths);
+        $translator = $this->getTranslator();
+        $this->assertEquals($translator->translate($key, $placeholders), $expectedResultEnglish);
 
-        // Create the $translator object
-        $translator = new MessageTranslator($loader->load());
+        $frenchTranslator = $this->getTranslator(['en_US', 'fr_FR']);
+        $this->assertEquals($frenchTranslator->translate($key, $placeholders), $expectedResultFrench);
+    }
 
-        // Test most basic functionality
-        $this->assertEquals($translator->translate('USERNAME'), 'Username');
-
-        // Test most the base locale
-        $this->assertEquals($translator->translate('BASE_FALLBACK'), 'Base fallback');
-
-        // Test @TRANSLATION
-        $this->assertEquals($translator->translate('ACCOUNT'), 'Account'); // Shortcut for `ACCOUNT.@TRANSLATION`
-        $this->assertEquals($translator->translate('ACCOUNT.ALT'), 'Profile');
-
-        // Test basic plural functionality
-        $this->assertEquals($translator->translate('COLOR', 0), 'colors'); //Note plural in english, singular in french !
-        $this->assertEquals($translator->translate('COLOR', 1), 'color');
-        $this->assertEquals($translator->translate('COLOR', 2), 'colors');
-        $this->assertEquals($translator->translate('COLOR', 3), 'colors');
-
-        // Test plural default
-        $this->assertEquals($translator->translate('COLOR'), 'color');
-
-        // Test basic nested items
-        $this->assertEquals($translator->translate('COLOR.BLACK'), 'black');
-        $this->assertEquals($translator->translate('COLOR.WHITE'), 'white');
-
-        // Test placeholders
-        $this->assertEquals($translator->translate('MY_CAR_MAKE', ['car_make' => 'Toyota']), 'My car is a Toyota');
-        $this->assertEquals($translator->translate('MY_CAR_YEAR', ['year' => 2015]), 'I bought my car in 2015');
-
-        // Test plural placeholder
-        $this->assertEquals($translator->translate('X_CARS', 0), 'no cars');
-        $this->assertEquals($translator->translate('X_CARS', 1), 'a car');
-        $this->assertEquals($translator->translate('X_CARS', 2), '2 cars');
-        $this->assertEquals($translator->translate('X_CARS', 10), '10 cars');
+    /**
+     * Run more complex translations outside the provider.
+     */
+    public function testTranslate_withNested()
+    {
+        // English translator
+        $translator = $this->getTranslator();
 
         // Example of a lang key in a placeholder
         // N.B.: In a real life situation, it's recommended to create a new Top level plural instead
         $this->assertEquals($translator->translate('MY_CARS', ['x_cars' => $translator->translate('X_CARS', 10)]), 'I have 10 cars');
-
-        // Test `+CAR` called (top nested name) without "CAR" defined
-        $this->assertEquals($translator->translate('CAR'), 'car');
-
-        // Test 3 levels nested with "CAR"
-        $this->assertEquals($translator->translate('CAR.GAS'), 'gas');
-        $this->assertEquals($translator->translate('CAR.EV'), 'electric');
-        $this->assertEquals($translator->translate('CAR.EV.HYBRID'), 'hybrid');
-        $this->assertEquals($translator->translate('CAR.HYDROGEN'), 'hydrogen');
-
-        // Test extra placeholder (`year` not used)
-        $this->assertEquals($translator->translate('MY_CAR_MAKE', ['car_make' => 'Toyota', 'year' => 2014]), 'My car is a Toyota');
-
-        // Test missing placeholder (`car_make` nor defined)
-        $this->assertEquals($translator->translate('MY_CAR_MAKE'), 'My car is a ');
 
         // Example of a complex translation
         $this->assertEquals($translator->translate('MY_CAR_STRING', [
@@ -102,140 +70,142 @@ class MessageTranslatorTest extends TestCase
             'color'  => $translator->translate('COLOR.RED'),
         ]), 'I drive a red plug-in hybrid');
 
-        // Test the special handles all together
-        // MY_EV_CARS => {{who}} have {{plural}} {{type}} {{item}}
-        //  - who => Hard coded literal in language file
-        //  - plural => 3
-        //  - type => Will be replaced by the message of "CAR.EV" key
-        //  - item => Hard coded language key in languge file
-        $this->assertEquals($translator->translate('MY_EV_CARS', [
-            'plural' => 3,
-            'type'   => '&CAR.EV',
-        ]), 'I have 3 electric cars');
-
-        // Test that we can still access @TRANSLATION
-        $this->assertEquals($translator->translate('MY_EV_CARS'), 'My electric cars');
-
-        // Test pluralisation with custom plural key
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', ['num' => 0]), '0 hungry cats');
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', ['num' => 1]), '1 hungry cat');
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', ['num' => 2]), '2 hungry cats');
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', ['num' => 5]), '5 hungry cats');
-
-        // Custom key can also be omited in the placeholder if it's the only placeholder even with custom plural key
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', 5), '5 hungry cats');
-
-        // Test missing pluralisation and placeholder (expected fail)
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS'), '1 hungry cat');
-
-        // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
-        // We don't want to end up with "Votre test doit être entre minimum et 200 patates"
-        $this->assertEquals($translator->translate('TEST_LIMIT', ['min' => 4, 'max' => 200]), 'Your test must be between 4 and 200 potatoes.');
-    }
-
-    public function testTranslateFR()
-    {
-        // Load the en_US locale files as base and fr_FR on top
-        $builder = new LocalePathBuilder($this->locator, 'locale://', ['en_US', 'fr_FR']);
-        $paths = $builder->buildPaths();
-        $loader = new ArrayFileLoader($paths);
-
-        // Create the $translator object
-        $translator = new MessageTranslator($loader->load());
-
-        // Test most basic functionality
-        $this->assertEquals($translator->translate('USERNAME'), "Nom d'utilisateur");
-
-        // Test most the base locale
-        $this->assertEquals($translator->translate('BASE_FALLBACK'), 'Base fallback'); // This key is not defined in the french language, so the enlgish string will be returned
-
-        // Test @TRANSLATION
-        $this->assertEquals($translator->translate('ACCOUNT'), "Compte de l'utilisateur"); // Shortcut for `ACCOUNT.@TRANSLATION`
-        $this->assertEquals($translator->translate('ACCOUNT.ALT'), 'Profil');
-
-        // Test basic plural functionality
-        $this->assertEquals($translator->translate('COLOR', 0), 'couleur'); //Note plural in english, singular in french !
-        $this->assertEquals($translator->translate('COLOR', 1), 'couleur');
-        $this->assertEquals($translator->translate('COLOR', 2), 'couleurs');
-        $this->assertEquals($translator->translate('COLOR', 3), 'couleurs');
-
-        // Test plural default
-        $this->assertEquals($translator->translate('COLOR'), 'couleur');
-
-        // Test basic nested items
-        $this->assertEquals($translator->translate('COLOR.BLACK'), 'noir');
-        $this->assertEquals($translator->translate('COLOR.WHITE'), 'blanc');
-
-        // Test placeholders
-        $this->assertEquals($translator->translate('MY_CAR_MAKE', ['car_make' => 'Toyota']), 'Ma voiture est une Toyota');
-        $this->assertEquals($translator->translate('MY_CAR_YEAR', ['year' => 2015]), "J'ai acheté ma voiture en 2015");
-
-        // Test plural placeholder
-        $this->assertEquals($translator->translate('X_CARS', 0), 'aucune voiture');
-        $this->assertEquals($translator->translate('X_CARS', 1), 'une voiture');
-        $this->assertEquals($translator->translate('X_CARS', 2), '2 voitures');
-        $this->assertEquals($translator->translate('X_CARS', 10), '10 voitures');
+        // FRENCH version
+        $frenchTranslator = $this->getTranslator(['en_US', 'fr_FR']);
 
         // Example of a lang key in a placeholder
         // N.B.: In a real life situation, it's recommended to create a new Top level plural instead
-        $this->assertEquals($translator->translate('MY_CARS', ['x_cars' => $translator->translate('X_CARS', 10)]), "J'ai 10 voitures");
-
-        // Test `+CAR` called (top nested name) without "CAR" defined
-        $this->assertEquals($translator->translate('CAR'), 'voiture');
-
-        // Test 3 levels nested with "CAR"
-        $this->assertEquals($translator->translate('CAR.GAS'), 'à essence');
-        $this->assertEquals($translator->translate('CAR.EV'), 'électrique');
-        $this->assertEquals($translator->translate('CAR.EV.HYBRID'), 'hybride');
-        $this->assertEquals($translator->translate('CAR.HYDROGEN'), "à l'hydrogène");
-
-        // Test extra placeholder (`year` not used)
-        $this->assertEquals($translator->translate('MY_CAR_MAKE', ['car_make' => 'Toyota', 'year' => 2014]), 'Ma voiture est une Toyota');
-
-        // Test missing placeholder (`car_make` nor defined)
-        $this->assertEquals($translator->translate('MY_CAR_MAKE'), 'Ma voiture est une ');
+        $this->assertEquals($frenchTranslator->translate('MY_CARS', ['x_cars' => $frenchTranslator->translate('X_CARS', 10)]), "J'ai 10 voitures");
 
         // Example of a complex translation
-        $this->assertEquals($translator->translate('MY_CAR_STRING', [
-            'my_car' => $translator->translate('CAR.EV.PLUGIN_HYBRID'),
-            'color'  => $translator->translate('COLOR.RED'),
+        $this->assertEquals($frenchTranslator->translate('MY_CAR_STRING', [
+            'my_car' => $frenchTranslator->translate('CAR.EV.PLUGIN_HYBRID'),
+            'color'  => $frenchTranslator->translate('COLOR.RED'),
         ]), 'Je conduit une hybride branchable de couleur rouge');
-
-        $this->assertEquals($translator->translate('MY_EV_CARS'), 'Mes voitures électriques');
-
-        // Test `plural` pluralisation placeholder with other placeholders
-        $this->assertEquals($translator->translate('MY_EV_CARS', [
-            'plural' => 3,
-            'type'   => '&CAR.EV',
-        ]), 'Le chat a 3 voitures électriques');
-
-        // Test pluralisation with custom plural key
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', ['num' => 0]), '0 chat affamé');
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', ['num' => 1]), '1 chat affamé');
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', ['num' => 2]), '2 chats affamés');
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', ['num' => 5]), '5 chats affamés');
-
-        // Custom key can also be omited in the placeholder if it's the only placeholder even with custom plural key
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS', 5), '5 chats affamés');
-
-        // Test missing pluralisation and placeholder (expected fail)
-        $this->assertEquals($translator->translate('X_HUNGRY_CATS'), '1 chat affamé');
-
-        // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
-        // We don't want to end up with "Votre test doit être entre minimum et 200 patates"
-        $this->assertEquals($translator->translate('TEST_LIMIT', ['min' => 4, 'max' => 200]), 'Votre test doit être entre 4 et 200 patates.');
     }
 
+    /**
+     * DataProvider for testTranslateEN.
+     *
+     * @return array [$key, $placeholders, $expectedResultEnglish, $expectedResultFrench]
+     */
+    public function localeStringProvider()
+    {
+        return [
+            // Test most basic functionality
+            ['USERNAME', [], 'Username', "Nom d'utilisateur"],
+
+            // Test most the base locale
+            ['BASE_FALLBACK', [], 'Base fallback', 'Base fallback'],
+
+            // Test @TRANSLATION
+            ['ACCOUNT', [], 'Account', "Compte de l'utilisateur"], // Shortcut for `ACCOUNT.@TRANSLATION`
+            ['ACCOUNT.ALT', [], 'Profile', 'Profil'],
+
+            // Test basic plural functionality
+            ['COLOR', 0, 'colors', 'couleur'], //Note plural in english, singular in french !
+            ['COLOR', 1, 'color', 'couleur'],
+            ['COLOR', 2, 'colors', 'couleurs'],
+            ['COLOR', 3, 'colors', 'couleurs'],
+
+            // Test plural default
+            ['COLOR', [], 'color', 'couleur'],
+
+            // Test basic nested items
+            ['COLOR.BLACK', [], 'black', 'noir'],
+            ['COLOR.WHITE', [], 'white', 'blanc'],
+
+            // Test placeholders
+            ['MY_CAR_MAKE', ['car_make' => 'Toyota'], 'My car is a Toyota', 'Ma voiture est une Toyota'],
+            ['MY_CAR_YEAR', ['year' => 2015], 'I bought my car in 2015', "J'ai acheté ma voiture en 2015"],
+
+            // Test plural placeholder
+            ['X_CARS', 0, 'no cars', 'aucune voiture'],
+            ['X_CARS', 1, 'a car', 'une voiture'],
+            ['X_CARS', 2, '2 cars', '2 voitures'],
+            ['X_CARS', 10, '10 cars', '10 voitures'],
+
+            // Test `+CAR` called (top nested name) without "CAR" defined
+            ['CAR', [], 'car', 'voiture'],
+
+            // Test 3 levels nested with "CAR"
+            ['CAR.GAS', [], 'gas', 'à essence'],
+            ['CAR.EV', [], 'electric', 'électrique'],
+            ['CAR.EV.HYBRID', [], 'hybrid', 'hybride'],
+            ['CAR.HYDROGEN', [], 'hydrogen', "à l'hydrogène"],
+
+            // Test extra placeholder (`year` not used)
+            ['MY_CAR_MAKE', ['car_make' => 'Toyota', 'year' => 2014], 'My car is a Toyota', 'Ma voiture est une Toyota'],
+
+            // Test missing placeholder (`car_make` nor defined)
+            ['MY_CAR_MAKE', [], 'My car is a ', 'Ma voiture est une '],
+
+            // Test that we can still access @TRANSLATION
+            ['MY_EV_CARS', [], 'My electric cars', 'Mes voitures électriques'],
+
+            // Test the special handles all together
+            // MY_EV_CARS => {{who}} have {{plural}} {{type}} {{item}}
+            //  - who => Hard coded literal in language file
+            //  - plural => 3
+            //  - type => Will be replaced by the message of "CAR.EV" key
+            //  - item => Hard coded language key in languge file
+            ['MY_EV_CARS', [
+                'plural' => 3,
+                'type'   => '&CAR.EV',
+            ], 'I have 3 electric cars', 'Le chat a 3 voitures électriques'],
+
+            // Test pluralisation with custom plural key
+            ['X_HUNGRY_CATS', ['num' => 0], '0 hungry cats', '0 chat affamé'],
+            ['X_HUNGRY_CATS', ['num' => 1], '1 hungry cat', '1 chat affamé'],
+            ['X_HUNGRY_CATS', ['num' => 2], '2 hungry cats', '2 chats affamés'],
+            ['X_HUNGRY_CATS', ['num' => 5], '5 hungry cats', '5 chats affamés'],
+
+            // Custom key can also be omited in the placeholder if it's the only placeholder even with custom plural key
+            ['X_HUNGRY_CATS', 5, '5 hungry cats', '5 chats affamés'],
+
+            // Test missing pluralisation and placeholder (default to 1)
+            ['X_HUNGRY_CATS', [], '1 hungry cat', '1 chat affamé'],
+
+            // Test basic placeholder remplacement using int as placeholder value (So they don't try to translate "min" and "max")
+            // We don't want to end up with "Votre test doit être entre minimum et 200 patates"
+            ['TEST_LIMIT', ['min' => 4, 'max' => 200], 'Your test must be between 4 and 200 potatoes.', 'Votre test doit être entre 4 et 200 patates.'],
+
+            // Test message is an empty array. Will return the key
+            ['EMPTY', [], 'EMPTY', 'EMPTY'],
+
+            // Test missing one rule. 2 will return singular as the plural is not defined
+            ['X_RULES', 1, '1 rule', '1 règle'],
+            ['X_RULES', 2, '2 rule', '2 règle'],
+
+            // Test missing all ruless, but still have 0. Will return the "zero" form.
+            ['X_BANANAS', 1, 'no bananas', 'aucune banane'],
+            ['X_BANANAS', 2, 'no bananas', 'aucune banane'],
+
+            // Test keys are int, but don't follow the rules. It will fallback to the key
+            ['X_DOGS', [], 'X_DOGS', 'X_DOGS'],
+            ['X_DOGS', 0, 'X_DOGS', 'X_DOGS'],
+            ['X_DOGS', 1, 'X_DOGS', 'X_DOGS'],
+            ['X_DOGS', 2, 'X_DOGS', 'X_DOGS'], // No plural rules found
+            ['X_DOGS', 5, 'five dogs', 'cinq chiens'], // This one is hardcoded and will fallback as normal string key
+            ['X_DOGS', 101, '101 Dalmatians', '101 Dalmatiens'], // Same here
+            ['X_DOGS', 102, 'X_DOGS', 'X_DOGS'], // This one is not hardcoded
+            ['X_DOGS', 1000, 'An island of dogs', 'Une tempête de chiens'], // Still fallback, if the key is a string representing and INT
+
+            // keys as strings
+            ['X_TABLES', 0, 'no tables', 'aucune table'],
+            ['X_TABLES', 1, 'a table', 'une table'],
+            ['X_TABLES', 2, '2 tables', '2 tables'],
+            ['X_TABLES', 5, '5 tables', '5 tables'],
+        ];
+    }
+
+    /**
+     * Test the readme examples.
+     */
     public function testReadme()
     {
-        // Load the en_US locale files, no user locale
-        $builder = new LocalePathBuilder($this->locator, 'locale://');
-        $builder->setLocales('en_US');
-        $paths = $builder->buildPaths();
-        $loader = new ArrayFileLoader($paths);
-
         // Create the $translator object
-        $translator = new MessageTranslator($loader->load());
+        $translator = $this->getTranslator();
 
         // Test from the README
         $carMake = 'Honda';
@@ -261,54 +231,108 @@ class MessageTranslatorTest extends TestCase
         ]), "There's a child and no adults in the white Honda Civic 1993");
     }
 
-    // Test for placeholder applied to `$key` if it doesn't match any languages keys
+    /**
+     * Test for placeholder applied to `$key` if it doesn't match any languages keys.
+     */
     public function testWithoutKeys()
     {
-        $translator = new MessageTranslator();
+        $translator = $this->getTranslator();
         $this->assertEquals($translator->translate('You are {{status}}', ['status' => 'dumb']), 'You are dumb');
     }
 
-    public function testTwigFilters()
+    /**
+     * @dataProvider twigProvider
+     *
+     * @param string $key
+     * @param array  $placeholders
+     * @param string $expectedResult
+     */
+    public function testTwigFilters($key, $placeholders, $expectedResult)
     {
-        // Load the en_US locale files, no user locale
-        $builder = new LocalePathBuilder($this->locator, 'locale://', 'en_US');
+        $translator = $this->getTranslator();
+        $this->assertEquals($translator->translate($key, $placeholders), $expectedResult);
+    }
+
+    /**
+     * @expectedException \OutOfRangeException
+     */
+    public function testGetPluralFormWithException()
+    {
+        $this->getTranslator()->getPluralForm(1, 132);
+    }
+
+    /**
+     * Test locale wihtout a `@PLURAL_RULE`.
+     */
+    public function testGetPluralFormWithNoDefineRule()
+    {
+        $translator = $this->getTranslator(['es_ES']);
+        $foo = $translator->getPluralForm(1);
+        $this->assertSame(1, $foo);
+
+        // Test with 0. If `@PLURAL_RULE` 1 is applied, it will return `X_CARS.2` (zero is plural)
+        // With `@PLURAL_RULE` 0, it would have been `X_CARS.1` (no plurals)
+        // and with `@PLURAL_RULE` 2, would have been `X_CARS.1` also (0 is singular)
+        $this->assertEquals($translator->translate('X_CARS', 0), '0 coches');
+    }
+
+    /**
+     * Data Provider for testTwigFilters.
+     *
+     * @return array
+     */
+    public function twigProvider()
+    {
+        return [
+
+            //ESCAPE : http://twig.sensiolabs.org/doc/2.x/filters/escape.html
+            //RAW : http://twig.sensiolabs.org/doc/2.x/filters/raw.html
+            ['TWIG.ESCAPE', ['foo' => '<strong>bar</strong>'], 'Placeholder should be escaped : &lt;strong&gt;bar&lt;/strong&gt;'],
+            ['TWIG.ESCAPE_DEFAULT', ['foo' => '<strong>bar</strong>'], 'Placeholder should be escaped : &lt;strong&gt;bar&lt;/strong&gt;'],
+            ['TWIG.ESCAPE_NOT', ['foo' => '<strong>bar</strong>'], 'Placeholder should NOT be escaped : <strong>bar</strong>'],
+
+            //DEFAULT: http://twig.sensiolabs.org/doc/2.x/filters/default.html
+            ['TWIG.DEFAULT', [], 'Using default: bar'],
+            ['TWIG.DEFAULT', ['foo' => 'cat'], 'Using default: cat'],
+            ['TWIG.DEFAULT_NOT', [], 'Not using default: '],
+
+            //ABS : http://twig.sensiolabs.org/doc/2.x/filters/abs.html
+            ['TWIG.ABS', ['number' => '-5'], '5'],
+            ['TWIG.ABS_NOT', ['number' => '-5'], '-5'],
+
+            //DATE : http://twig.sensiolabs.org/doc/2.x/filters/date.html
+            ['TWIG.DATE', ['when' => '10 September 2000'], '09/10/2000'],
+
+            //FIRST : http://twig.sensiolabs.org/doc/2.x/filters/first.html
+            //LAST: http://twig.sensiolabs.org/doc/2.x/filters/last.html
+            ['TWIG.FIRST', ['numbers' => [1, 3, 5]], '1'],
+            ['TWIG.LAST', ['numbers' => [1, 3, 5]], '5'],
+
+            //NUMBER_FORMAT: http://twig.sensiolabs.org/doc/2.x/filters/number_format.html
+            ['TWIG.NUMBER_FORMAT', ['number' => 9800.333], '9 800.33'],
+
+            //LOWER: http://twig.sensiolabs.org/doc/2.x/filters/lower.html
+            //UPPER: http://twig.sensiolabs.org/doc/2.x/filters/upper.html
+            //CAPITALIZE: http://twig.sensiolabs.org/doc/2.x/filters/capitalize.html
+            ['TWIG.LOWER', ['string' => 'WeLcOmE'], 'welcome'],
+            ['TWIG.UPPER', ['string' => 'WeLcOmE'], 'WELCOME'],
+            ['TWIG.CAPITALIZE', ['string' => 'WeLcOmE'], 'Welcome'],
+        ];
+    }
+
+    /**
+     * @param array $language Default to ['en_US'], use ['en_US', 'fr_FR'] to french
+     *
+     * @return MessageTranslator
+     */
+    protected function getTranslator($language = ['en_US'])
+    {
+        $builder = new LocalePathBuilder($this->locator, 'locale://', $language);
         $paths = $builder->buildPaths();
         $loader = new ArrayFileLoader($paths);
 
-        // Create the $translator object
         $translator = new MessageTranslator($loader->load());
 
-        //ESCAPE : http://twig.sensiolabs.org/doc/2.x/filters/escape.html
-        //RAW : http://twig.sensiolabs.org/doc/2.x/filters/raw.html
-        $this->assertEquals($translator->translate('TWIG.ESCAPE', ['foo' => '<strong>bar</strong>']), 'Placeholder should be escaped : &lt;strong&gt;bar&lt;/strong&gt;');
-        $this->assertEquals($translator->translate('TWIG.ESCAPE_DEFAULT', ['foo' => '<strong>bar</strong>']), 'Placeholder should be escaped : &lt;strong&gt;bar&lt;/strong&gt;');
-        $this->assertEquals($translator->translate('TWIG.ESCAPE_NOT', ['foo' => '<strong>bar</strong>']), 'Placeholder should NOT be escaped : <strong>bar</strong>');
-
-        //DEFAULT: http://twig.sensiolabs.org/doc/2.x/filters/default.html
-        $this->assertEquals($translator->translate('TWIG.DEFAULT'), 'Using default: bar');
-        $this->assertEquals($translator->translate('TWIG.DEFAULT', ['foo' => 'cat']), 'Using default: cat');
-        $this->assertEquals($translator->translate('TWIG.DEFAULT_NOT'), 'Not using default: ');
-
-        //ABS : http://twig.sensiolabs.org/doc/2.x/filters/abs.html
-        $this->assertEquals($translator->translate('TWIG.ABS', ['number' => '-5']), '5');
-        $this->assertEquals($translator->translate('TWIG.ABS_NOT', ['number' => '-5']), '-5');
-
-        //DATE : http://twig.sensiolabs.org/doc/2.x/filters/date.html
-        $this->assertEquals($translator->translate('TWIG.DATE', ['when' => '10 September 2000']), '09/10/2000');
-
-        //FIRST : http://twig.sensiolabs.org/doc/2.x/filters/first.html
-        //LAST: http://twig.sensiolabs.org/doc/2.x/filters/last.html
-        $this->assertEquals($translator->translate('TWIG.FIRST', ['numbers' => [1, 3, 5]]), '1');
-        $this->assertEquals($translator->translate('TWIG.LAST', ['numbers' => [1, 3, 5]]), '5');
-
-        //NUMBER_FORMAT: http://twig.sensiolabs.org/doc/2.x/filters/number_format.html
-        $this->assertEquals($translator->translate('TWIG.NUMBER_FORMAT', ['number' => 9800.333]), '9 800.33');
-
-        //LOWER: http://twig.sensiolabs.org/doc/2.x/filters/lower.html
-        //UPPER: http://twig.sensiolabs.org/doc/2.x/filters/upper.html
-        //CAPITALIZE: http://twig.sensiolabs.org/doc/2.x/filters/capitalize.html
-        $this->assertEquals($translator->translate('TWIG.LOWER', ['string' => 'WeLcOmE']), 'welcome');
-        $this->assertEquals($translator->translate('TWIG.UPPER', ['string' => 'WeLcOmE']), 'WELCOME');
-        $this->assertEquals($translator->translate('TWIG.CAPITALIZE', ['string' => 'WeLcOmE']), 'Welcome');
+        return $translator;
     }
 }

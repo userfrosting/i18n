@@ -86,4 +86,37 @@ return [
     'TEST_LIMIT' => 'Your test must be between {{min}} and {{max}} potatoes.',
     'MIN'        => 'minimum',
     //"MAX" => "maximum" //Leave disabled for tests
+
+    // Empty array
+    'EMPTY' => [
+
+    ],
+
+    // Missing one rule
+    'X_RULES' => [
+        0 => 'no rules',
+        1 => '{{plural}} rule',
+        //2 => '{{plural}} rules', //Leave disabled for tests
+    ],
+
+    // Missing all rules
+    'X_BANANAS' => [
+        0 => 'no bananas',
+        //1 => '{{plural}} banana', //Leave disabled for tests
+        //2 => '{{plural}} bananas', //Leave disabled for tests
+    ],
+
+    // No rules are followed
+    'X_DOGS' => [
+        5      => 'five dogs',
+        101    => '101 Dalmatians',
+        '1000' => 'An island of dogs',
+    ],
+
+    // keys as strings
+    'X_TABLES' => [
+        '0' => 'no tables',
+        '1' => 'a table',
+        '2' => '{{plural}} tables',
+    ],
 ];

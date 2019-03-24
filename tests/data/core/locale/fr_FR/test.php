@@ -90,4 +90,37 @@ return [
     'TEST_LIMIT' => 'Votre test doit être entre {{min}} et {{max}} patates.',
     'MIN'        => 'minimum',
     //"MAX" => "maximum" //Leave disabled for tests
+
+    // Empty array
+    'EMPTY' => [
+
+    ],
+
+    // Missing one rule
+    'X_RULES' => [
+        0 => 'aucune règle',
+        1 => '{{plural}} règle',
+        //2 => '{{plural}} règles', //Leave disabled for tests
+    ],
+
+    // Missing all rules
+    'X_BANANAS' => [
+        0 => 'aucune banane',
+        //1 => '{{plural}} banane', //Leave disabled for tests
+        //2 => '{{plural}} bananes', //Leave disabled for tests
+    ],
+
+    // No rules are followed
+    'X_DOGS' => [
+        5      => 'cinq chiens',
+        101    => '101 Dalmatiens',
+        '1000' => 'Une tempête de chiens',
+    ],
+
+    // keys as strings
+    'X_TABLES' => [
+        '0' => 'aucune table',
+        '1' => 'une table',
+        '2' => '{{plural}} tables',
+    ],
 ];
