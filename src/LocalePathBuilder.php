@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * UserFrosting i18n (http://www.userfrosting.com)
  *
  * @link      https://github.com/userfrosting/i18n
@@ -9,8 +10,8 @@
 
 namespace UserFrosting\I18n;
 
-use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
 use UserFrosting\Support\Repository\PathBuilder\PathBuilder;
+use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
 
 /**
  * Globs together all files in specified locale(s) in each search path.
@@ -66,7 +67,8 @@ class LocalePathBuilder extends PathBuilder
      * Adds provides locales to the end of the current locales list.
      * Note that locale preference is ascending.
      *
-     * @param  string|string[] $locales
+     * @param string|string[] $locales
+     *
      * @return $this
      */
     public function addLocales($locales = [])
@@ -121,9 +123,9 @@ class LocalePathBuilder extends PathBuilder
 
         // Search all paths for the specified locale
         foreach ($searchPaths as $path) {
-            $localePath = rtrim($path, '/\\') . '/' . $locale;
+            $localePath = rtrim($path, '/\\').'/'.$locale;
             // Grab all php files in the locale directory
-            $globs = glob($localePath . '/*.php');
+            $globs = glob($localePath.'/*.php');
             $filePaths = array_merge($filePaths, $globs);
         }
 

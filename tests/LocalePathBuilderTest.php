@@ -1,8 +1,16 @@
 <?php
 
+/*
+ * UserFrosting i18n (http://www.userfrosting.com)
+ *
+ * @link      https://github.com/userfrosting/i18n
+ * @copyright Copyright (c) 2013-2019 Alexander Weissman, Louis Charette
+ * @license   https://github.com/userfrosting/i18n/blob/master/LICENSE.md (MIT License)
+ */
+
 use PHPUnit\Framework\TestCase;
-use UserFrosting\UniformResourceLocator\ResourceLocator;
 use UserFrosting\I18n\LocalePathBuilder;
+use UserFrosting\UniformResourceLocator\ResourceLocator;
 
 class LocalePathBuilderTest extends TestCase
 {
@@ -12,7 +20,7 @@ class LocalePathBuilderTest extends TestCase
 
     public function setUp()
     {
-        $this->basePath = __DIR__ . '/data';
+        $this->basePath = __DIR__.'/data';
         $this->locator = new ResourceLocator($this->basePath);
 
         $this->locator->registerStream('locale');
@@ -36,9 +44,9 @@ class LocalePathBuilderTest extends TestCase
 
         // Assert
         $this->assertEquals([
-            $this->basePath . '/core/locale/en_US/readme.php',
-            $this->basePath . '/core/locale/en_US/test.php',
-            $this->basePath . '/core/locale/en_US/twig.php'
+            $this->basePath.'/core/locale/en_US/readme.php',
+            $this->basePath.'/core/locale/en_US/test.php',
+            $this->basePath.'/core/locale/en_US/twig.php',
         ], $paths);
     }
 
@@ -56,10 +64,10 @@ class LocalePathBuilderTest extends TestCase
 
         // Assert
         $this->assertEquals([
-            $this->basePath . '/core/locale/en_US/readme.php',
-            $this->basePath . '/core/locale/en_US/test.php',
-            $this->basePath . '/core/locale/en_US/twig.php',
-            $this->basePath . '/core/locale/fr_FR/test.php'
+            $this->basePath.'/core/locale/en_US/readme.php',
+            $this->basePath.'/core/locale/en_US/test.php',
+            $this->basePath.'/core/locale/en_US/twig.php',
+            $this->basePath.'/core/locale/fr_FR/test.php',
         ], $paths);
     }
 
