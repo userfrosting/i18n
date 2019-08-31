@@ -55,7 +55,7 @@ class MessageTranslator extends Repository
      *
      * @return string The translated message.
      */
-    public function translate($messageKey, $placeholders = [])
+    public function translate(string $messageKey, $placeholders = []): string
     {
         // Get the correct message from the specified key
         $message = $this->getMessageFromKey($messageKey, $placeholders);
@@ -76,7 +76,7 @@ class MessageTranslator extends Repository
      *
      * @return string The message string
      */
-    protected function getMessageFromKey($messageKey, &$placeholders)
+    protected function getMessageFromKey(string $messageKey, &$placeholders): string
     {
         // If we can't find a match, return $messageKey
         if (!$this->has($messageKey)) {
@@ -151,7 +151,7 @@ class MessageTranslator extends Repository
      *
      * @return string
      */
-    protected function getPluralKey(array $messageArray)
+    protected function getPluralKey(array $messageArray): string
     {
         if (isset($messageArray['@PLURAL'])) {
             return $messageArray['@PLURAL'];
@@ -168,7 +168,7 @@ class MessageTranslator extends Repository
      *
      * @return int|null The number, null if not found
      */
-    protected function getPluralValue($placeholders, $pluralKey)
+    protected function getPluralValue($placeholders, string $pluralKey): ?int
     {
         if (isset($placeholders[$pluralKey])) {
             return (int) $placeholders[$pluralKey];
@@ -179,6 +179,7 @@ class MessageTranslator extends Repository
         }
 
         // Null will be returned
+        return null;
     }
 
     /**
@@ -188,9 +189,9 @@ class MessageTranslator extends Repository
      * @param array $messageArray The array with all the form inside ($pluralRule => $message)
      * @param int   $pluralValue  The numeric value used to select the correct message
      *
-     * @return int Returns which key from $messageArray to use
+     * @return int|null Returns which key from $messageArray to use
      */
-    protected function getPluralMessageKey(array $messageArray, $pluralValue)
+    protected function getPluralMessageKey(array $messageArray, int $pluralValue): ?int
     {
         // Bypass the rules for a value of "0" so that "0 users" may be displayed as "No users".
         if ($pluralValue == 0 && isset($messageArray[0])) {
@@ -216,6 +217,7 @@ class MessageTranslator extends Repository
         }
 
         // If no key was found, null will be returned
+        return null;
     }
 
     /**
@@ -227,7 +229,7 @@ class MessageTranslator extends Repository
      *
      * @return string The message with replaced placeholders
      */
-    protected function parsePlaceHolders($message, array $placeholders)
+    protected function parsePlaceHolders(string $message, array $placeholders): string
     {
         // Interpolate translatable placeholders values. This allows to
         // pre-translate placeholder which value starts with the `&` caracter
