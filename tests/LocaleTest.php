@@ -13,8 +13,8 @@ namespace UserFrosting\I18n\Tests;
 use PHPUnit\Framework\TestCase;
 use UserFrosting\I18n\Locale;
 use UserFrosting\I18n\LocaleInterface;
-use UserFrosting\UniformResourceLocator\ResourceLocator;
 use UserFrosting\Support\Exception\FileNotFoundException;
+use UserFrosting\UniformResourceLocator\ResourceLocator;
 
 class LocaleTest extends TestCase
 {
@@ -90,8 +90,8 @@ class LocaleTest extends TestCase
                 'plural' => 2,
             ],
             'parents' => [
-                'en_US'
-            ]
+                'en_US',
+            ],
         ], $data);
     }
 
@@ -131,7 +131,7 @@ class LocaleTest extends TestCase
         $this->assertSame(['en_US'], $locale->getDependentLocales());
     }
 
-    /**
+    /*
      * @depends testConstructor
      * @depends testGetConfig
      */

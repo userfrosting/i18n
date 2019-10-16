@@ -18,7 +18,7 @@ namespace UserFrosting\I18n;
 interface LocaleInterface
 {
     /**
-     * Create locale class
+     * Create locale class.
      *
      * @param string $identifier The locale identifier (ie. "en_US")
      * @param string $configFile The path to the locale config file
@@ -26,35 +26,35 @@ interface LocaleInterface
     public function __construct(string $identifier, string $configFile);
 
     /**
-     * Returns the list of authors of the locale
+     * Returns the list of authors of the locale.
      *
      * @return string[] The list of authors
      */
     public function getAuthors(): array;
 
     /**
-     * Returns all loaded locale Key => Translation data dictionary
+     * Returns all loaded locale Key => Translation data dictionary.
      *
      * @return string[] The locale dictionnary
      */
     public function getDictionary(): array;
 
     /**
-     * Returns defined configuration file
+     * Returns defined configuration file.
      *
      * @return string
      */
     public function getConfigFile(): string;
 
     /**
-     * Returns the locale indentifier
+     * Returns the locale indentifier.
      *
      * @return string
      */
     public function getIndentifier(): string;
 
     /**
-     * Return the raw configuration data
+     * Return the raw configuration data.
      *
      * @return array
      */

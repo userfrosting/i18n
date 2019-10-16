@@ -42,7 +42,7 @@ class Locale implements LocaleInterface
     protected $dictionary = [];
 
     /**
-     * Create locale class
+     * Create locale class.
      *
      * @param string $identifier The locale identifier (ie. "en_US")
      * @param string $configFile The path to the locale config file
@@ -57,7 +57,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Loads the config into the class property
+     * Loads the config into the class property.
      *
      * @throws \UserFrosting\Support\Exception\FileNotFoundException if config file not found
      */
@@ -68,7 +68,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Returns the list of authors of the locale
+     * Returns the list of authors of the locale.
      *
      * @return string[] The list of authors
      */
@@ -78,7 +78,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Returns all loaded locale Key => Translation data dictionary
+     * Returns all loaded locale Key => Translation data dictionary.
      *
      * @return string[] The locale dictionnary
      */
@@ -92,7 +92,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Returns defined configuration file
+     * Returns defined configuration file.
      *
      * @return string
      */
@@ -102,7 +102,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Returns the locale indentifier
+     * Returns the locale indentifier.
      *
      * @return string
      */
@@ -112,7 +112,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Return the raw configuration data
+     * Return the raw configuration data.
      *
      * @return array
      */
@@ -122,7 +122,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Return the raw configuration data
+     * Return the raw configuration data.
      *
      * @return array
      */
@@ -132,7 +132,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Return the name of the locale, in English form
+     * Return the name of the locale, in English form.
      *
      * @return string
      */
@@ -142,7 +142,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Return the localized version of the locale name
+     * Return the localized version of the locale name.
      *
      * @return string
      */
