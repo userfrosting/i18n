@@ -1,0 +1,9 @@
+name: Spanish
+localized_name: Español
+authors:
+  - Salma Hayek
+  - Selena Gomez
+options:
+    plural: 1
+parents:
+- en_US
