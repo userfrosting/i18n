@@ -37,11 +37,6 @@ class Locale implements LocaleInterface
     protected $config;
 
     /**
-     * @var array Locale "Key => translation" data matrix
-     */
-    protected $dictionary = [];
-
-    /**
      * Create locale class.
      *
      * @param string $identifier The locale identifier (ie. "en_US")
@@ -75,20 +70,6 @@ class Locale implements LocaleInterface
     public function getAuthors(): array
     {
         return $this->config['authors'];
-    }
-
-    /**
-     * Returns all loaded locale Key => Translation data dictionary.
-     *
-     * @return string[] The locale dictionnary
-     */
-    public function getDictionary(): array
-    {
-        if (empty($this->dictionary)) {
-            $this->loadDictionary();
-        }
-
-        return $this->dictionary;
     }
 
     /**
@@ -126,7 +107,7 @@ class Locale implements LocaleInterface
      *
      * @return array
      */
-    public function getDependentLocales(): array
+    public function getDependentLocales(): ?array
     {
         return $this->config['parents'];
     }
@@ -149,12 +130,5 @@ class Locale implements LocaleInterface
     public function getLocalizedName(): string
     {
         return $this->config['localized_name'];
-    }
-
-    protected function loadDictionary(): array
-    {
-        $dictionary = [];
-
-        return $this->dictionary = $dictionary;
     }
 }

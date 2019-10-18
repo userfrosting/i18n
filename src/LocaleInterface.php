@@ -33,13 +33,6 @@ interface LocaleInterface
     public function getAuthors(): array;
 
     /**
-     * Returns all loaded locale Key => Translation data dictionary.
-     *
-     * @return string[] The locale dictionnary
-     */
-    public function getDictionary(): array;
-
-    /**
      * Returns defined configuration file.
      *
      * @return string
@@ -59,4 +52,25 @@ interface LocaleInterface
      * @return array
      */
     public function getConfig(): array;
+
+    /**
+     * Return the raw configuration data.
+     *
+     * @return array
+     */
+    public function getDependentLocales(): ?array;
+
+    /**
+     * Return the name of the locale, in English form.
+     *
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
+     * Return the localized version of the locale name.
+     *
+     * @return string
+     */
+    public function getLocalizedName(): string;
 }
