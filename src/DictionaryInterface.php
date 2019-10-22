@@ -11,7 +11,7 @@
 namespace UserFrosting\I18n;
 
 /**
- * Locale Dictionnary
+ * Locale Dictionnary.
  *
  * Used to return all "Key => translation" data matrix
  *

@@ -49,7 +49,7 @@ interface LocaleInterface
     /**
      * Return the raw configuration data.
      *
-     * @return array
+     * @return (array|string)[]
      */
     public function getConfig(): array;
 
@@ -66,6 +66,13 @@ interface LocaleInterface
      * @return string
      */
     public function getName(): string;
+
+    /**
+     * Return the number representing the plural rule to use for this locale.
+     *
+     * @return int
+     */
+    public function getPluralRule(): int;
 
     /**
      * Return the localized version of the locale name.

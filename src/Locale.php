@@ -95,7 +95,7 @@ class Locale implements LocaleInterface
     /**
      * Return the raw configuration data.
      *
-     * @return array
+     * @return (array|string)[]
      */
     public function getConfig(): array
     {
@@ -120,6 +120,20 @@ class Locale implements LocaleInterface
     public function getName(): string
     {
         return $this->config['name'];
+    }
+
+    /**
+     * Return the number representing the plural rule to use for this locale.
+     *
+     * @return int
+     */
+    public function getPluralRule(): int
+    {
+        if (isset($this->config['options']['plural'])) {
+            return $this->config['options']['plural'];
+        } else {
+            return 1;
+        }
     }
 
     /**

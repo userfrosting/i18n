@@ -11,8 +11,7 @@
 namespace UserFrosting\I18n;
 
 use UserFrosting\Support\Repository\Loader\ArrayFileLoader;
-use UserFrosting\I18n\LocaleInterface;
-use UserFrosting\UniformResourceLocator\Resource;
+use UserFrosting\Support\Repository\Loader\FileRepositoryLoader;
 use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
 
 /**
@@ -25,6 +24,11 @@ use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
 class Dictionary implements DictionaryInterface
 {
     /**
+     * @var string Base URI for locator
+     */
+    protected $uri = 'locale://';
+
+    /**
      * @var LocaleInterface
      */
     protected $locale;
@@ -35,18 +39,25 @@ class Dictionary implements DictionaryInterface
     protected $locator;
 
     /**
+     * @var FileRepositoryLoader
+     */
+    protected $fileLoader;
+
+    /**
      * @var array Locale "Key => translation" data matrix
      */
     protected $dictionary = [];
 
     /**
-     * @param LocaleInterface $locale
+     * @param LocaleInterface          $locale
      * @param ResourceLocatorInterface $locator
+     * @param FileRepositoryLoader     $fileLoader File loader used to load each dictionnay files (default to Array Loader)
      */
-    public function __construct(LocaleInterface $locale, ResourceLocatorInterface $locator)
+    public function __construct(LocaleInterface $locale, ResourceLocatorInterface $locator, FileRepositoryLoader $fileLoader = null)
     {
         $this->locale = $locale;
         $this->locator = $locator;
+        $this->fileLoader = is_null($fileLoader) ? new ArrayFileLoader([]) : $fileLoader;
     }
 
     /**
@@ -65,23 +76,51 @@ class Dictionary implements DictionaryInterface
     }
 
     /**
-     * Load the dictionnary from file
+     * Set the locator base URI (default 'locale://').
      *
-     * @return array The locale dictionnary
+     * @param string $uri
+     */
+    public function setUri(string $uri): void
+    {
+        $this->uri = $uri;
+    }
+
+    /**
+     * Return the file repository loader used to load
+     *
+     * @return FileRepositoryLoader
+     */
+    public function getFileLoader(): FileRepositoryLoader
+    {
+        return $this->fileLoader;
+    }
+
+    /**
+     * Load the dictionnary from file.
+     *
+     * @return (string|array)[] The locale dictionnary
      */
     protected function loadDictionary(): array
     {
         // Get list of files to load
         $files = $this->getDictionaryFiles();
 
+        // Stop if no files are present
+        if (empty($files)) {
+            return [];
+        }
+
         // Load all files content
-        $loader = new ArrayFileLoader($files);
+        $loader = $this->getFileLoader();
+        $loader->setPaths($files);
+
         return $loader->load();
     }
 
     /**
-     * Returns a list of files to load
-     * @return array[Resource]
+     * Returns a list of files to load.
+     *
+     * @return string[]
      */
     protected function getDictionaryFiles(): array
     {
@@ -91,8 +130,7 @@ class Dictionary implements DictionaryInterface
         $parents = $this->locale->getDependentLocales();
 
         if (!empty($parents)) {
-            foreach ($parents as $parent)
-            {
+            foreach ($parents as $parent) {
                 $parentLocale = new Locale($parent, "locale://$parent/config.yaml");
                 //TODO : Recursively load dictionnary instead, cause a dependant can have dependencies
                 $files = array_merge($files, $this->getFilesForLocale($parentLocale));
@@ -107,10 +145,10 @@ class Dictionary implements DictionaryInterface
     }
 
     /**
-     * Remove config files from locator results
+     * Remove config files from locator results.
      *
-     * @param  array  $files
-     * @return array[Resource]
+     * @param  \UserFrosting\UniformResourceLocator\ResourceInterface[] $files
+     * @return string[]
      */
     protected function filterDictionaryFiles(array $files): array
     {
@@ -119,8 +157,9 @@ class Dictionary implements DictionaryInterface
         $filtered = [];
 
         foreach ($files as $file) {
-            if ($file->getExtension() == "php") {
-                $filtered[] = $file;
+            if ($file->getExtension() == 'php') {
+                // Add to filtered and convert Resource to string (path)
+                $filtered[] = (string) $file;
             }
         }
 
@@ -128,13 +167,13 @@ class Dictionary implements DictionaryInterface
     }
 
     /**
-     * List all files for a given locale using the locator
+     * List all files for a given locale using the locator.
      *
-     * @param  LocaleInterface $locale
-     * @return array[Resource]
+     * @param  LocaleInterface                                          $locale
+     * @return \UserFrosting\UniformResourceLocator\ResourceInterface[]
      */
     protected function getFilesForLocale(LocaleInterface $locale): array
     {
-        return $this->locator->listResources('locale://' . $locale->getIndentifier(), true);
+        return $this->locator->listResources($this->uri . $locale->getIndentifier(), true);
     }
 }
