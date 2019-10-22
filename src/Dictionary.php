@@ -15,7 +15,7 @@ use UserFrosting\Support\Repository\Loader\FileRepositoryLoader;
 use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
 
 /**
- * Locale Dictionnary
+ * Locale Dictionnary.
  *
  * Load all locale all "Key => translation" data matrix
  *
@@ -86,7 +86,7 @@ class Dictionary implements DictionaryInterface
     }
 
     /**
-     * Return the file repository loader used to load
+     * Return the file repository loader used to load.
      *
      * @return FileRepositoryLoader
      */
@@ -145,35 +145,30 @@ class Dictionary implements DictionaryInterface
     }
 
     /**
-     * Remove config files from locator results.
+     * Remove config files from locator results and convert ResourceInterface to path/string
      *
-     * @param  \UserFrosting\UniformResourceLocator\ResourceInterface[] $files
+     * @param \UserFrosting\UniformResourceLocator\ResourceInterface[] $files
+     *
      * @return string[]
      */
     protected function filterDictionaryFiles(array $files): array
     {
-        //TODO : Use Array_filter
-
-        $filtered = [];
-
-        foreach ($files as $file) {
+        return array_filter($files, function ($file) {
             if ($file->getExtension() == 'php') {
-                // Add to filtered and convert Resource to string (path)
-                $filtered[] = (string) $file;
+                return (string) $file;
             }
-        }
-
-        return $filtered;
+        });
     }
 
     /**
      * List all files for a given locale using the locator.
      *
-     * @param  LocaleInterface                                          $locale
+     * @param LocaleInterface $locale
+     *
      * @return \UserFrosting\UniformResourceLocator\ResourceInterface[]
      */
     protected function getFilesForLocale(LocaleInterface $locale): array
     {
-        return $this->locator->listResources($this->uri . $locale->getIndentifier(), true);
+        return $this->locator->listResources($this->uri.$locale->getIndentifier(), true);
     }
 }

@@ -157,8 +157,8 @@ class DictionaryTest extends TestCase
     {
         // Set expectations
         $expectedResult = [
-            'Foo' => 'Bar',
-            'Bar' => 'Foo',
+            'Foo'  => 'Bar',
+            'Bar'  => 'Foo',
             'test' => [
                 'Bar' => 'Rab',
                 'Foo' => 'Oof',
