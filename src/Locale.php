@@ -126,9 +126,7 @@ class Locale implements LocaleInterface
      */
     public function getDependentLocalesIdentifier(): array
     {
-        $parents = $this->config['parents'];
-
-        return (is_array($parents)) ? $this->config['parents'] : [];
+        return (is_array($this->config['parents'])) ? $this->config['parents'] : [];
     }
 
     /**
