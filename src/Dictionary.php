@@ -118,7 +118,7 @@ class Dictionary implements DictionaryInterface
 
         // Now load dependent dictionnaries
         foreach ($this->locale->getDependentLocales() as $locale) {
-            $dependentDictionary = new Dictionary($locale, $this->locator, $this->fileLoader);
+            $dependentDictionary = new self($locale, $this->locator, $this->fileLoader);
             $dictionary = array_merge_recursive($dependentDictionary->getDictionary(), $dictionary);
         }
 
@@ -126,7 +126,7 @@ class Dictionary implements DictionaryInterface
     }
 
     /**
-     * Remove config files from locator results and convert ResourceInterface to path/string
+     * Remove config files from locator results and convert ResourceInterface to path/string.
      *
      * @param \UserFrosting\UniformResourceLocator\ResourceInterface[] $files
      *

@@ -39,7 +39,7 @@ class Locale implements LocaleInterface
     /**
      * Create locale class.
      *
-     * @param string $identifier The locale identifier (ie. "en_US")
+     * @param string      $identifier The locale identifier (ie. "en_US")
      * @param string|null $configFile The path to the locale config file
      */
     public function __construct(string $identifier, ?string $configFile = null)
@@ -103,7 +103,7 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Return an array of parent locales
+     * Return an array of parent locales.
      *
      * @return Locale[]
      */
@@ -112,15 +112,15 @@ class Locale implements LocaleInterface
         $parents = $this->getDependentLocalesIdentifier();
 
         // Transform locale identifier to locale instance
-        $locales = array_map(function($value) {
-            return new Locale($value);
+        $locales = array_map(function ($value) {
+            return new self($value);
         }, $parents);
 
         return $locales;
     }
 
     /**
-     * Return a list of parent locale identifier (eg. [fr_FR, en_US])
+     * Return a list of parent locale identifier (eg. [fr_FR, en_US]).
      *
      * @return string[]
      */

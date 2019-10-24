@@ -46,14 +46,14 @@ interface LocaleInterface
     public function getConfig(): array;
 
     /**
-     * Return an array of parent locales
+     * Return an array of parent locales.
      *
      * @return LocaleInterface[]
      */
     public function getDependentLocales(): array;
 
     /**
-     * Return a list of parent locale identifier (eg. [fr_FR, en_US])
+     * Return a list of parent locale identifier (eg. [fr_FR, en_US]).
      *
      * @return string[]
      */
