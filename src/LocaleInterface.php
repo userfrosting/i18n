@@ -21,9 +21,9 @@ interface LocaleInterface
      * Create locale class.
      *
      * @param string $identifier The locale identifier (ie. "en_US")
-     * @param string $configFile The path to the locale config file
+     * @param string|null $configFile The path to the locale config file
      */
-    public function __construct(string $identifier, string $configFile);
+    public function __construct(string $identifier, ?string $configFile = null);
 
     /**
      * Returns the list of authors of the locale.
@@ -54,11 +54,18 @@ interface LocaleInterface
     public function getConfig(): array;
 
     /**
-     * Return the raw configuration data.
+     * Return an array of parent locales
      *
-     * @return array
+     * @return LocaleInterface[]
      */
-    public function getDependentLocales(): ?array;
+    public function getDependentLocales(): array;
+
+    /**
+     * Return a list of parent locale identifier (eg. [fr_FR, en_US])
+     *
+     * @return string[]
+     */
+    public function getDependentLocalesIdentifier(): array;
 
     /**
      * Return the name of the locale, in English form.

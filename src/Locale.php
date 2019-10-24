@@ -40,12 +40,12 @@ class Locale implements LocaleInterface
      * Create locale class.
      *
      * @param string $identifier The locale identifier (ie. "en_US")
-     * @param string $configFile The path to the locale config file
+     * @param string|null $configFile The path to the locale config file
      */
-    public function __construct(string $identifier, string $configFile)
+    public function __construct(string $identifier, ?string $configFile = null)
     {
         $this->identifier = $identifier;
-        $this->configFile = $configFile;
+        $this->configFile = (isset($configFile)) ? $configFile : "locale://$identifier/locale.yaml";
 
         // Load locale config
         $this->loadConfig();
@@ -103,13 +103,32 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Return the raw configuration data.
+     * Return an array of parent locales
      *
-     * @return array
+     * @return Locale[]
      */
-    public function getDependentLocales(): ?array
+    public function getDependentLocales(): array
     {
-        return $this->config['parents'];
+        $parents = $this->getDependentLocalesIdentifier();
+
+        // Transform locale identifier to locale instance
+        $locales = array_map(function($value) {
+            return new Locale($value);
+        }, $parents);
+
+        return $locales;
+    }
+
+    /**
+     * Return a list of parent locale identifier (eg. [fr_FR, en_US])
+     *
+     * @return string[]
+     */
+    public function getDependentLocalesIdentifier(): array
+    {
+        $parents = $this->config['parents'];
+
+        return (is_array($parents)) ? $this->config['parents'] : [];
     }
 
     /**

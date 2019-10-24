@@ -37,7 +37,7 @@ class LocaleTest extends TestCase
 
     public function testConstructor(): Locale
     {
-        $locale = new Locale('fr_FR', 'locale://fr_FR/config.yaml');
+        $locale = new Locale('fr_FR', 'locale://fr_FR/locale.yaml');
         $this->assertInstanceOf(LocaleInterface::class, $locale);
 
         return $locale;
@@ -55,9 +55,19 @@ class LocaleTest extends TestCase
     public function testGetConfigFile(Locale $locale)
     {
         $data = $locale->getConfigFile();
-        $this->assertInternalType('string', $data);
+        $this->assertIsString($data);
 
-        $this->assertSame('locale://fr_FR/config.yaml', $data);
+        $this->assertSame('locale://fr_FR/locale.yaml', $data);
+    }
+
+    /**
+     * @depends testGetConfigFile
+     */
+    public function testConstructorWithNotPath()
+    {
+        $locale = new Locale('fr_FR');
+        $this->assertInstanceOf(LocaleInterface::class, $locale);
+        $this->assertSame('locale://fr_FR/locale.yaml', $locale->getConfigFile());
     }
 
     /**
@@ -66,7 +76,7 @@ class LocaleTest extends TestCase
     public function testGetIndentifier(Locale $locale)
     {
         $data = $locale->getIndentifier();
-        $this->assertInternalType('string', $data);
+        $this->assertIsString($data);
 
         $this->assertSame('fr_FR', $data);
     }
@@ -77,7 +87,7 @@ class LocaleTest extends TestCase
     public function testGetConfig(Locale $locale)
     {
         $data = $locale->getConfig();
-        $this->assertInternalType('array', $data);
+        $this->assertIsArray($data);
 
         $this->assertSame([
             'name'           => 'French',
@@ -102,7 +112,7 @@ class LocaleTest extends TestCase
     public function testGetAuthors(Locale $locale)
     {
         $data = $locale->getAuthors();
-        $this->assertInternalType('array', $data);
+        $this->assertIsArray($data);
 
         $this->assertSame([
             'Foo Bar',
@@ -119,16 +129,52 @@ class LocaleTest extends TestCase
     public function testGetDetails(Locale $locale)
     {
         //getName
-        $this->assertInternalType('string', $locale->getName());
+        $this->assertIsString($locale->getName());
         $this->assertSame('French', $locale->getName());
 
         //getLocalizedName
-        $this->assertInternalType('string', $locale->getLocalizedName());
+        $this->assertIsString($locale->getLocalizedName());
         $this->assertSame('Français', $locale->getLocalizedName());
 
-        //getDependentLocales
-        $this->assertInternalType('array', $locale->getDependentLocales());
-        $this->assertSame(['en_US'], $locale->getDependentLocales());
+        //getDependentLocalesIdentifier
+        $this->assertIsArray($locale->getDependentLocalesIdentifier());
+        $this->assertSame(['en_US'], $locale->getDependentLocalesIdentifier());
+
+        //getPluralRule
+        $this->assertIsInt($locale->getPluralRule());
+        $this->assertSame(2, $locale->getPluralRule());
+    }
+
+    /**
+     * @depends testConstructor
+     * @depends testGetConfig
+     */
+    public function testGetPluralRule(Locale $locale)
+    {
+        $this->assertIsInt($locale->getPluralRule());
+        $this->assertSame(2, $locale->getPluralRule());
+    }
+
+    /**
+     * @depends testConstructorWithNotPath
+     * @depends testGetPluralRule
+     */
+    public function testGetPluralRuleWithNoRule()
+    {
+        $locale = new Locale('es_ES');
+        $this->assertIsInt($locale->getPluralRule());
+        $this->assertSame(1, $locale->getPluralRule());
+    }
+
+    /**
+     * @depends testConstructor
+     * @depends testGetDetails
+     */
+    public function testGetDependentLocales(Locale $locale)
+    {
+        $result = $locale->getDependentLocales();
+        $this->assertIsArray($result);
+        $this->assertInstanceOf(LocaleInterface::class, $result[0]);
     }
 
     /*
