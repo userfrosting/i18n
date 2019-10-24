@@ -18,14 +18,6 @@ namespace UserFrosting\I18n;
 interface LocaleInterface
 {
     /**
-     * Create locale class.
-     *
-     * @param string $identifier The locale identifier (ie. "en_US")
-     * @param string|null $configFile The path to the locale config file
-     */
-    public function __construct(string $identifier, ?string $configFile = null);
-
-    /**
      * Returns the list of authors of the locale.
      *
      * @return string[] The list of authors

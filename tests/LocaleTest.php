@@ -43,7 +43,7 @@ class LocaleTest extends TestCase
         return $locale;
     }
 
-    public function testConstructorWithNotFoundPath()
+    public function testConstructorWithNotFoundPath(): void
     {
         $this->expectException(FileNotFoundException::class);
         $locale = new Locale('fr_FR', 'locale://fr_FR/dontexist.yaml');
@@ -52,7 +52,7 @@ class LocaleTest extends TestCase
     /**
      * @depends testConstructor
      */
-    public function testGetConfigFile(Locale $locale)
+    public function testGetConfigFile(Locale $locale): void
     {
         $data = $locale->getConfigFile();
         $this->assertIsString($data);
@@ -63,7 +63,7 @@ class LocaleTest extends TestCase
     /**
      * @depends testGetConfigFile
      */
-    public function testConstructorWithNotPath()
+    public function testConstructorWithNotPath(): void
     {
         $locale = new Locale('fr_FR');
         $this->assertInstanceOf(LocaleInterface::class, $locale);
@@ -73,7 +73,7 @@ class LocaleTest extends TestCase
     /**
      * @depends testConstructor
      */
-    public function testGetIndentifier(Locale $locale)
+    public function testGetIndentifier(Locale $locale): void
     {
         $data = $locale->getIndentifier();
         $this->assertIsString($data);
@@ -84,7 +84,7 @@ class LocaleTest extends TestCase
     /**
      * @depends testConstructor
      */
-    public function testGetConfig(Locale $locale)
+    public function testGetConfig(Locale $locale): void
     {
         $data = $locale->getConfig();
         $this->assertIsArray($data);
@@ -109,7 +109,7 @@ class LocaleTest extends TestCase
      * @depends testConstructor
      * @depends testGetConfig
      */
-    public function testGetAuthors(Locale $locale)
+    public function testGetAuthors(Locale $locale): void
     {
         $data = $locale->getAuthors();
         $this->assertIsArray($data);
@@ -126,7 +126,7 @@ class LocaleTest extends TestCase
      * @depends testConstructor
      * @depends testGetConfig
      */
-    public function testGetDetails(Locale $locale)
+    public function testGetDetails(Locale $locale): void
     {
         //getName
         $this->assertIsString($locale->getName());
@@ -149,7 +149,7 @@ class LocaleTest extends TestCase
      * @depends testConstructor
      * @depends testGetConfig
      */
-    public function testGetPluralRule(Locale $locale)
+    public function testGetPluralRule(Locale $locale): void
     {
         $this->assertIsInt($locale->getPluralRule());
         $this->assertSame(2, $locale->getPluralRule());
@@ -159,7 +159,7 @@ class LocaleTest extends TestCase
      * @depends testConstructorWithNotPath
      * @depends testGetPluralRule
      */
-    public function testGetPluralRuleWithNoRule()
+    public function testGetPluralRuleWithNoRule(): void
     {
         $locale = new Locale('es_ES');
         $this->assertIsInt($locale->getPluralRule());
@@ -170,7 +170,7 @@ class LocaleTest extends TestCase
      * @depends testConstructor
      * @depends testGetDetails
      */
-    public function testGetDependentLocales(Locale $locale)
+    public function testGetDependentLocales(Locale $locale): void
     {
         $result = $locale->getDependentLocales();
         $this->assertIsArray($result);
