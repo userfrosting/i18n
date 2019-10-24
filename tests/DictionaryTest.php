@@ -204,13 +204,60 @@ class DictionaryTest extends TestCase
     }
 
     /**
-     * Integration test with default
+     * @depends testGetDictionary_withNoDependentLocaleNoData
+     */
+    public function testGetDictionary_withDependentLocaleNoDataOnBoth(): void
+    {
+        // Prepare dependent mocked locale - ff_FF
+        $localeDependent = Mockery::mock(Locale::class);
+        $localeDependent->shouldReceive('getDependentLocales')->once()->andReturn([]);
+        $localeDependent->shouldReceive('getIndentifier')->once()->andReturn('ff_FF');
+
+        // Prepare mocked locale - aa_bb
+        $locale = Mockery::mock(Locale::class);
+        $locale->shouldReceive('getDependentLocales')->once()->andReturn([$localeDependent]);
+        $locale->shouldReceive('getIndentifier')->once()->andReturn('aa_bb');
+
+        // Prepare mock Locator - Return no file
+        $locator = Mockery::mock(ResourceLocator::class);
+        $locator->shouldReceive('listResources')->once()->with('locale://aa_bb', true)->andReturn([]);
+        $locator->shouldReceive('listResources')->once()->with('locale://ff_FF', true)->andReturn([]);
+
+        // Prepare mock FileLoader - No files, so loader shouldn't load anything
+        $fileLoader = Mockery::mock(ArrayFileLoader::class);
+        $fileLoader->shouldNotReceive('setPaths');
+        $fileLoader->shouldNotReceive('load');
+
+        // Set expectations
+        $expectedResult = [];
+
+        // Get dictionnary
+        $dictionary = new Dictionary($locale, $locator, $fileLoader);
+        $data = $dictionary->getDictionary();
+
+        // Perform assertions
+        $this->assertIsArray($data);
+        $this->assertEquals($expectedResult, $data);
+    }
+
+    /*
+     TODO :
+     - public function testGetDictionary_withDependentLocaleNoDataOnBoth(): void
+     - public function testGetDictionary_withDependentLocaleNoDataOnSecond(): void
+     - public function testGetDictionary_withDependentLocaleNoDataOnFirst(): void
+     - public function testGetDictionary_withDependentLocaleDataOnBoth(): void
+     - public function testGetDictionary_withManyDependentLocale(): void
+     - public function testGetDictionary_withRecursiveDependentLocale(): void
+     */
+
+    /**
+     * Integration test with default.
      *
      * @depends testConstructor
      */
     public function testGetDictionary_withRealLocale(): void
     {
-        $locale = new Locale('es_ES', 'locale://es_ES/config.yaml');
+        $locale = new Locale('es_ES');
         $dictionary = new Dictionary($locale, $this->locator);
 
         $expectedResult = [

@@ -102,46 +102,27 @@ class Dictionary implements DictionaryInterface
      */
     protected function loadDictionary(): array
     {
+        $dictionary = [];
+
         // Get list of files to load
-        $files = $this->getDictionaryFiles();
+        $files = $this->getFiles();
+        $files = $this->filterDictionaryFiles($files);
 
-        // Stop if no files are present
-        if (empty($files)) {
-            return [];
+        // Load all files content if files are present
+        if (!empty($files)) {
+            $loader = $this->getFileLoader();
+            $loader->setPaths($files);
+
+            $dictionary = $loader->load();
         }
 
-        // Load all files content
-        $loader = $this->getFileLoader();
-        $loader->setPaths($files);
-
-        return $loader->load();
-    }
-
-    /**
-     * Returns a list of files to load.
-     *
-     * @return string[]
-     */
-    protected function getDictionaryFiles(): array
-    {
-        $files = [];
-
-        // First, load all parents locales
-        $parents = $this->locale->getDependentLocales();
-
-        if (!empty($parents)) {
-            foreach ($parents as $parent) {
-                $parentLocale = new Locale($parent, "locale://$parent/config.yaml");
-                //TODO : Recursively load dictionnary instead, cause a dependant can have dependencies
-                $files = array_merge($files, $this->getFilesForLocale($parentLocale));
-            }
+        // Now load dependent dictionnaries
+        foreach ($this->locale->getDependentLocales() as $locale) {
+            $dependentDictionary = new Dictionary($locale, $this->locator, $this->fileLoader);
+            $dictionary = array_merge_recursive($dependentDictionary->getDictionary(), $dictionary);
         }
 
-        // Now get for main locale
-        $files = array_merge($files, $this->getFilesForLocale($this->locale));
-
-        // Only keep .php files
-        return $this->filterDictionaryFiles($files);
+        return $dictionary;
     }
 
     /**
@@ -163,12 +144,10 @@ class Dictionary implements DictionaryInterface
     /**
      * List all files for a given locale using the locator.
      *
-     * @param LocaleInterface $locale
-     *
      * @return \UserFrosting\UniformResourceLocator\ResourceInterface[]
      */
-    protected function getFilesForLocale(LocaleInterface $locale): array
+    protected function getFiles(): array
     {
-        return $this->locator->listResources($this->uri.$locale->getIndentifier(), true);
+        return $this->locator->listResources($this->uri.$this->locale->getIndentifier(), true);
     }
 }
