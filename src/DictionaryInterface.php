@@ -25,4 +25,11 @@ interface DictionaryInterface
      * @return string[] The locale dictionnary
      */
     public function getDictionary(): array;
+
+    /**
+     * Return the associate locale
+     *
+     * @return LocaleInterface
+     */
+    public function getLocale(): LocaleInterface;
 }

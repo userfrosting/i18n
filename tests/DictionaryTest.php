@@ -13,6 +13,7 @@ namespace UserFrosting\I18n\Tests;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use UserFrosting\I18n\Dictionary;
+use UserFrosting\I18n\LocaleInterface;
 use UserFrosting\I18n\DictionaryInterface;
 use UserFrosting\I18n\Locale;
 use UserFrosting\Support\Repository\Loader\ArrayFileLoader;
@@ -49,6 +50,20 @@ class DictionaryTest extends TestCase
 
         $dictionary = new Dictionary($locale, $this->locator);
         $this->assertInstanceOf(DictionaryInterface::class, $dictionary);
+    }
+
+    /**
+     * @depends testConstructor
+     */
+    public function testGetLocale(): void
+    {
+        $locale = Mockery::mock(Locale::class);
+        $locator = Mockery::mock(ResourceLocator::class);
+        $dictionary = new Dictionary($locale, $locator); //<-- Test no fileLoader too
+
+        // Make sure constructor works
+        $this->assertInstanceOf(DictionaryInterface::class, $dictionary);
+        $this->assertInstanceOf(LocaleInterface::class, $dictionary->getLocale());
     }
 
     /**

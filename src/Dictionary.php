@@ -44,7 +44,7 @@ class Dictionary implements DictionaryInterface
     protected $fileLoader;
 
     /**
-     * @var array Locale "Key => translation" data matrix
+     * @var array Locale "Key => translation" data matrix cache
      */
     protected $dictionary = [];
 
@@ -83,6 +83,16 @@ class Dictionary implements DictionaryInterface
     public function setUri(string $uri): void
     {
         $this->uri = $uri;
+    }
+
+    /**
+     * Return the associate locale
+     *
+     * @return LocaleInterface
+     */
+    public function getLocale(): LocaleInterface
+    {
+        return $this->locale;
     }
 
     /**
