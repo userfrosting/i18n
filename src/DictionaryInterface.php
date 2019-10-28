@@ -11,7 +11,7 @@
 namespace UserFrosting\I18n;
 
 /**
- * Locale Dictionnary.
+ * Locale Dictionary.
  *
  * Used to return all "Key => translation" data matrix
  *
@@ -22,12 +22,12 @@ interface DictionaryInterface
     /**
      * Returns all loaded locale Key => Translation data dictionary.
      *
-     * @return string[] The locale dictionnary
+     * @return string[] The locale dictionary
      */
     public function getDictionary(): array;
 
     /**
-     * Return the associate locale
+     * Return the associate locale.
      *
      * @return LocaleInterface
      */

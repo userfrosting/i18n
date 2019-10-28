@@ -15,7 +15,7 @@ use UserFrosting\Support\Repository\Loader\FileRepositoryLoader;
 use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
 
 /**
- * Locale Dictionnary.
+ * Locale Dictionary.
  *
  * Load all locale all "Key => translation" data matrix
  *
@@ -64,7 +64,7 @@ class Dictionary implements DictionaryInterface
      * Returns all loaded locale Key => Translation data dictionary.
      * Won't load the whole thing twice if already loaded in the class.
      *
-     * @return string[] The locale dictionnary
+     * @return string[] The locale dictionary
      */
     public function getDictionary(): array
     {
@@ -86,7 +86,7 @@ class Dictionary implements DictionaryInterface
     }
 
     /**
-     * Return the associate locale
+     * Return the associate locale.
      *
      * @return LocaleInterface
      */
@@ -106,13 +106,16 @@ class Dictionary implements DictionaryInterface
     }
 
     /**
-     * Load the dictionnary from file.
+     * Load the dictionary from file.
      *
-     * @return (string|array)[] The locale dictionnary
+     * @return (string|array)[] The locale dictionary
      */
     protected function loadDictionary(): array
     {
         $dictionary = [];
+
+        // List of loaded locales
+        $loadedLocale = [$this->locale->getIndentifier()];
 
         // Get list of files to load
         $files = $this->getFiles();
@@ -128,8 +131,18 @@ class Dictionary implements DictionaryInterface
 
         // Now load dependent dictionnaries
         foreach ($this->locale->getDependentLocales() as $locale) {
+
+            // Stop if locale already loaded to prevent recursion
+            $localesToLoad = array_merge([$locale->getIndentifier()], $locale->getDependentLocalesIdentifier());
+            $intersection = array_intersect($localesToLoad, $loadedLocale);
+            if (!empty($intersection)) {
+                throw new \LogicException("Can't load dictionary. Dependencies recursion detected : " . implode(', ', $intersection));
+            }
+
             $dependentDictionary = new self($locale, $this->locator, $this->fileLoader);
-            $dictionary = array_merge_recursive($dependentDictionary->getDictionary(), $dictionary);
+            $dictionary = array_replace_recursive($dictionary, $dependentDictionary->getDictionary());
+
+            $loadedLocale[] = $locale->getIndentifier();
         }
 
         return $dictionary;
