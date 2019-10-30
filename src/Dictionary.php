@@ -136,11 +136,11 @@ class Dictionary implements DictionaryInterface
             $localesToLoad = array_merge([$locale->getIndentifier()], $locale->getDependentLocalesIdentifier());
             $intersection = array_intersect($localesToLoad, $loadedLocale);
             if (!empty($intersection)) {
-                throw new \LogicException("Can't load dictionary. Dependencies recursion detected : " . implode(', ', $intersection));
+                throw new \LogicException("Can't load dictionary. Dependencies recursion detected : ".implode(', ', $intersection));
             }
 
             $dependentDictionary = new self($locale, $this->locator, $this->fileLoader);
-            $dictionary = array_replace_recursive($dictionary, $dependentDictionary->getDictionary());
+            $dictionary = array_replace_recursive($dependentDictionary->getDictionary(), $dictionary);
 
             $loadedLocale[] = $locale->getIndentifier();
         }

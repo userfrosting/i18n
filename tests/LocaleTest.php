@@ -24,7 +24,7 @@ class LocaleTest extends TestCase
 
     public function setUp()
     {
-        $this->basePath = __DIR__.'/data';
+        $this->basePath = __DIR__.'/data/sprinkles';
         $this->locator = new ResourceLocator($this->basePath);
 
         $this->locator->registerStream('locale');

@@ -1,0 +1,9 @@
+name: French
+localized_name: Français
+authors:
+  - Foo Bar
+  - Bar Foo
+options:
+    plural: 2
+parents:
+  - en_US

@@ -1,0 +1,6 @@
+name: English
+localized_name: English
+authors:
+  - John Appleseed
+options:
+    plural: 1

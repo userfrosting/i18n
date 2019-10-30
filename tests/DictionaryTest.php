@@ -28,15 +28,10 @@ class DictionaryTest extends TestCase
 
     public function setUp()
     {
-        $this->basePath = __DIR__.'/data';
+        $this->basePath = __DIR__.'/data/dictionary';
         $this->locator = new ResourceLocator($this->basePath);
 
-        $this->locator->registerStream('locale');
-
-        // Add them one at a time to simulate how they are added in SprinkleManager
-        $this->locator->registerLocation('core');
-        $this->locator->registerLocation('account');
-        $this->locator->registerLocation('admin');
+        $this->locator->registerStream('locale', '', null, true);
     }
 
     public function tearDown()
@@ -367,15 +362,15 @@ class DictionaryTest extends TestCase
     public function testGetDictionary_withDependentLocaleDataOnBoth(): void
     {
         // Set expectations
-        $aa_AA_FILE = [
+        $fr_FR_FILE = [
             'Foo'  => 'Bar',
             'test' => [
                 'aaa' => 'AAA',
                 'ccc' => '', // Overwrites "CCC"
-                'ddd' => 'DDD' // Overwrites ""
+                'ddd' => 'DDD', // Overwrites ""
             ],
         ];
-        $ff_FF_FILE = [
+        $en_US_FILE = [
             'Bar'  => 'Foo',
             'test' => [
                 'bbb' => 'BBB',
@@ -396,40 +391,40 @@ class DictionaryTest extends TestCase
             'Bar'  => 'Foo',
         ];
 
-        // Prepare dependent mocked locale - ff_FF
+        // Prepare dependent mocked locale - en_US
         $localeDependent = Mockery::mock(Locale::class);
         $localeDependent->shouldReceive('getDependentLocales')->andReturn([]);
         $localeDependent->shouldReceive('getDependentLocalesIdentifier')->andReturn([]);
-        $localeDependent->shouldReceive('getIndentifier')->andReturn('ff_FF');
+        $localeDependent->shouldReceive('getIndentifier')->andReturn('en_US');
 
-        // Prepare mocked locale - aa_bb
+        // Prepare mocked locale - fr_FR
         $locale = Mockery::mock(Locale::class);
         $locale->shouldReceive('getDependentLocales')->andReturn([$localeDependent]);
-        $locale->shouldReceive('getDependentLocalesIdentifier')->andReturn(['ff_FF']);
-        $locale->shouldReceive('getIndentifier')->andReturn('aa_bb');
+        $locale->shouldReceive('getDependentLocalesIdentifier')->andReturn(['en_US']);
+        $locale->shouldReceive('getIndentifier')->andReturn('fr_FR');
 
         // Prepare first mock Resource - File `Foo/Bar/File1.php`
-        $file1 = Mockery::mock(Resource::class);
-        $file1->shouldReceive('getExtension')->andReturn('php');
-        $file1->shouldReceive('__toString')->andReturn('Foo/Bar/File1.php');
+        $file_FR = Mockery::mock(Resource::class);
+        $file_FR->shouldReceive('getExtension')->andReturn('php');
+        $file_FR->shouldReceive('__toString')->andReturn('Locale/fr_FR/file.php');
 
         // Prepare first mock Resource - File `Foo/Bar/File1.php`
-        $file2 = Mockery::mock(Resource::class);
-        $file2->shouldReceive('getExtension')->andReturn('php');
-        $file2->shouldReceive('__toString')->andReturn('Bar/Foo/File2.php');
+        $file_EN = Mockery::mock(Resource::class);
+        $file_EN->shouldReceive('getExtension')->andReturn('php');
+        $file_EN->shouldReceive('__toString')->andReturn('Locale/en_US/file.php');
 
         // Prepare mock Locator - Return no file on ff_FF
         $locator = Mockery::mock(ResourceLocator::class);
-        $locator->shouldReceive('listResources')->once()->with('locale://aa_bb', true)->andReturn([$file1]);
-        $locator->shouldReceive('listResources')->once()->with('locale://ff_FF', true)->andReturn([$file2]);
+        $locator->shouldReceive('listResources')->once()->with('locale://fr_FR', true)->andReturn([$file_FR]);
+        $locator->shouldReceive('listResources')->once()->with('locale://en_US', true)->andReturn([$file_EN]);
 
         // Prepare mock FileLoader - No files, so loader shouldn't load anything
         $fileLoader = Mockery::mock(ArrayFileLoader::class);
-        $fileLoader->shouldReceive('setPaths')->once()->with(['Bar/Foo/File2.php']);
-        $fileLoader->shouldReceive('load')->once()->andReturn($ff_FF_FILE);
+        $fileLoader->shouldReceive('setPaths')->once()->with(['Locale/fr_FR/file.php']);
+        $fileLoader->shouldReceive('load')->once()->andReturn($fr_FR_FILE);
 
-        $fileLoader->shouldReceive('setPaths')->once()->with(['Foo/Bar/File1.php']);
-        $fileLoader->shouldReceive('load')->once()->andReturn($aa_AA_FILE);
+        $fileLoader->shouldReceive('setPaths')->once()->with(['Locale/en_US/file.php']);
+        $fileLoader->shouldReceive('load')->once()->andReturn($en_US_FILE);
 
         // Get dictionary
         $dictionary = new Dictionary($locale, $locator, $fileLoader);
@@ -494,7 +489,7 @@ class DictionaryTest extends TestCase
             'test' => [
                 'aaa' => 'AAA',
                 'ccc' => '', // Overwrites "CCC"
-                'ddd' => 'DDD' // Overwrites ""
+                'ddd' => 'DDD', // Overwrites ""
             ],
         ];
 
@@ -536,7 +531,7 @@ class DictionaryTest extends TestCase
     /**
      * Integration test with default.
      *
-     * @depends testConstructor
+     * @ depends testConstructor
      */
     public function testGetDictionary_withRealLocale(): void
     {
@@ -544,15 +539,69 @@ class DictionaryTest extends TestCase
         $dictionary = new Dictionary($locale, $this->locator);
 
         $expectedResult = [
-            'X_CARS' => [
-                1 => '{{plural}} coche',
-                2 => '{{plural}} coches',
-            ],
-            'FOO' => 'BAR',
+            'FOO' => 'Foo',  // bar/bar.php file will be loaded first
+            'CAR' => 'Coche',
+            'BAR' => 'FooFoo', // ...but zzz/bar.php will be loaded LAST because of alphabetical order !
         ];
 
         $data = $dictionary->getDictionary();
 
+        $this->assertIsArray($data);
+        $this->assertEquals($expectedResult, $data);
+    }
+
+    /**
+     * @ depends testConstructor
+     */
+    public function testGetDictionary_withRealLocale_withDependentLocaleDataOnBoth(): void
+    {
+        // Set expectations
+        // fr_FR depends on en_US. So FR data will be loaded over EN data
+        // Replicate testGetDictionary_withDependentLocaleDataOnBoth result
+        $expectedResult = [
+            'Foo'  => 'Bar',
+            'test' => [
+                'aaa' => 'AAA',
+                'ccc' => '',
+                'ddd' => 'DDD',
+                'bbb' => 'BBB',
+            ],
+            'Bar'  => 'Foo',
+        ];
+
+        // Get dictionary
+        $locale = new Locale('fr_FR');
+        $dictionary = new Dictionary($locale, $this->locator);
+        $data = $dictionary->getDictionary();
+
+        // Perform assertions
+        $this->assertIsArray($data);
+        $this->assertEquals($expectedResult, $data);
+    }
+
+    public function testGetDictionary_withRealLocale_withThirdDependentLocale(): void
+    {
+        // Set expectations
+        // fr_CA depends on fr_FR which depends on en_US.
+        // So CA data will be loaded over FR data will be loaded over EN data
+        // 'foo' key will be different
+        $expectedResult = [
+            'Foo'  => 'Tabarnak',
+            'test' => [
+                'aaa' => 'AAA',
+                'ccc' => '',
+                'ddd' => 'DDD',
+                'bbb' => 'BBB',
+            ],
+            'Bar'  => 'Foo',
+        ];
+
+        // Get dictionary
+        $locale = new Locale('fr_CA');
+        $dictionary = new Dictionary($locale, $this->locator);
+        $data = $dictionary->getDictionary();
+
+        // Perform assertions
         $this->assertIsArray($data);
         $this->assertEquals($expectedResult, $data);
     }

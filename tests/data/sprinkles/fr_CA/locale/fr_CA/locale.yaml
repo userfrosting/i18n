@@ -1,0 +1,9 @@
+name: French Canadian
+localized_name: Français Canadien
+authors:
+  - Foo Bar
+  - Bar Foo
+options:
+    plural: 2
+parents:
+  - fr_FR
