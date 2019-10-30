@@ -56,7 +56,7 @@ class TranslatorTest extends TestCase
     }*/
 
     /**
-     * Test locale with a plural option
+     * Test locale with a plural option.
      */
     public function testGetPluralForm(): void
     {
@@ -118,7 +118,7 @@ class TranslatorTest extends TestCase
     }
 
     /**
-     * Basic test to see if triple dependency works
+     * Basic test to see if triple dependency works.
      */
     public function testTranslateWithNestedDependencies(): void
     {
