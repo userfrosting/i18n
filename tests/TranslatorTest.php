@@ -8,16 +8,18 @@
  * @license   https://github.com/userfrosting/i18n/blob/master/LICENSE.md (MIT License)
  */
 
-namespace UserFrosting\I18n;
+namespace UserFrosting\I18n\Tests;
 
 use PHPUnit\Framework\TestCase;
-use UserFrosting\Support\Repository\Loader\ArrayFileLoader;
+use UserFrosting\I18n\Dictionary;
+use UserFrosting\I18n\Locale;
+use UserFrosting\I18n\Translator;
 use UserFrosting\UniformResourceLocator\ResourceLocator;
 
-class MessageTranslatorTest extends TestCase
+class TranslatorTest extends TestCase
 {
     /** @var string Test locale file location */
-    protected $basePath = __DIR__.'/data';
+    protected $basePath = __DIR__.'/data/sprinkles';
 
     /** @var ResourceLocator */
     protected $locator;
@@ -32,30 +34,102 @@ class MessageTranslatorTest extends TestCase
         // Add them one at a time to simulate how they are added in SprinkleManager
         $this->locator->registerLocation('core');
         $this->locator->registerLocation('account');
-        $this->locator->registerLocation('admin');
+        $this->locator->registerLocation('admin'); // Simulate non existing sprinkle
+        $this->locator->registerLocation('fr_CA'); // Simulate the fr_CA locale !
+    }
+
+    /**
+     * Test paths for a single locale.
+     */
+    /*public function testGetAvailableLocales()
+    {
+        $translator = new Translator($this->locator);
+
+        $locales = $translator->getAvailableLocales();
+
+        // Assert
+        $this->assertEquals([
+            'en_US',
+            'fr_CA',
+            'fr_FR',
+        ], $locales);
+    }*/
+
+    /**
+     * Test locale with a plural option
+     */
+    public function testGetPluralForm(): void
+    {
+        $translator = $this->getTranslator('en_US');
+        $this->assertSame(1, $translator->getPluralForm(1));
+        $this->assertSame(2, $translator->getPluralForm(2));
+        $this->assertSame(2, $translator->getPluralForm(20));
+
+        // Test with 0. If `@PLURAL_RULE` 1 is applied, it will return `X_CARS.2` (zero is plural)
+        // With `@PLURAL_RULE` 0, it would have been `X_CARS.1` (no plurals)
+        // and with `@PLURAL_RULE` 2, would have been `X_CARS.1` also (0 is singular)
+        $this->assertEquals($translator->translate('X_CARS', 0), 'no cars');
+        $this->assertEquals($translator->translate('X_CARS', 1), 'a car');
+        $this->assertEquals($translator->translate('X_CARS', 2), '2 cars');
+    }
+
+    /**
+     * @depends testGetPluralForm
+     * Test locale wihtout a `@PLURAL_RULE`.
+     */
+    public function testGetPluralFormWithNoDefineRule(): void
+    {
+        $translator = $this->getTranslator('es_ES');
+        $this->assertSame(1, $translator->getPluralForm(1));
+        $this->assertSame(2, $translator->getPluralForm(2));
+        $this->assertSame(2, $translator->getPluralForm(20));
+
+        // Test with 0. If `@PLURAL_RULE` 1 is applied, it will return `X_CARS.2` (zero is plural)
+        // With `@PLURAL_RULE` 0, it would have been `X_CARS.1` (no plurals)
+        // and with `@PLURAL_RULE` 2, would have been `X_CARS.1` also (0 is singular)
+        $this->assertEquals($translator->translate('X_CARS', 0), '0 coches');
+    }
+
+    /**
+     * @depends testGetPluralForm
+     */
+    public function testGetPluralFormWithException(): void
+    {
+        $translator = $this->getTranslator();
+        $this->expectException(\OutOfRangeException::class);
+        $translator->getPluralForm(1, 132);
     }
 
     /**
      * @dataProvider localeStringProvider
      *
-     * @param string $key
-     * @param array  $placeholders
-     * @param string $expectedResultEnglish
-     * @param string $expectedResultFrench
+     * @param string       $key
+     * @param string[]|int $placeholders
+     * @param string       $expectedResultEnglish
+     * @param string       $expectedResultFrench
      */
-    public function testTranslate($key, $placeholders, $expectedResultEnglish, $expectedResultFrench)
+    public function testTranslate(string $key, $placeholders, string $expectedResultEnglish, string $expectedResultFrench): void
     {
         $translator = $this->getTranslator();
-        $this->assertEquals($translator->translate($key, $placeholders), $expectedResultEnglish);
+        $this->assertEquals($expectedResultEnglish, $translator->translate($key, $placeholders));
 
-        $frenchTranslator = $this->getTranslator(['en_US', 'fr_FR']);
-        $this->assertEquals($frenchTranslator->translate($key, $placeholders), $expectedResultFrench);
+        $frenchTranslator = $this->getTranslator('fr_FR');
+        $this->assertEquals($expectedResultFrench, $frenchTranslator->translate($key, $placeholders));
+    }
+
+    /**
+     * Basic test to see if triple dependency works
+     */
+    public function testTranslateWithNestedDependencies(): void
+    {
+        $frenchTranslator = $this->getTranslator('fr_CA');
+        $this->assertEquals($frenchTranslator->translate('USERNAME'), 'Nom d\'utilisateur tabarnak');
     }
 
     /**
      * Run more complex translations outside the provider.
      */
-    public function testTranslate_withNested()
+    public function testTranslate_withNested(): void
     {
         // English translator
         $translator = $this->getTranslator();
@@ -71,7 +145,7 @@ class MessageTranslatorTest extends TestCase
         ]), 'I drive a red plug-in hybrid');
 
         // FRENCH version
-        $frenchTranslator = $this->getTranslator(['en_US', 'fr_FR']);
+        $frenchTranslator = $this->getTranslator('fr_FR');
 
         // Example of a lang key in a placeholder
         // N.B.: In a real life situation, it's recommended to create a new Top level plural instead
@@ -87,9 +161,9 @@ class MessageTranslatorTest extends TestCase
     /**
      * DataProvider for testTranslateEN.
      *
-     * @return array [$key, $placeholders, $expectedResultEnglish, $expectedResultFrench]
+     * @return mixed[] [$key, $placeholders, $expectedResultEnglish, $expectedResultFrench]
      */
-    public function localeStringProvider()
+    public function localeStringProvider(): array
     {
         return [
             // Test most basic functionality
@@ -202,7 +276,7 @@ class MessageTranslatorTest extends TestCase
     /**
      * Test the readme examples.
      */
-    public function testReadme()
+    public function testReadme(): void
     {
         // Create the $translator object
         $translator = $this->getTranslator();
@@ -234,7 +308,7 @@ class MessageTranslatorTest extends TestCase
     /**
      * Test for placeholder applied to `$key` if it doesn't match any languages keys.
      */
-    public function testWithoutKeys()
+    public function testWithoutKeys(): void
     {
         $translator = $this->getTranslator();
         $this->assertEquals($translator->translate('You are {{status}}', ['status' => 'dumb']), 'You are dumb');
@@ -243,45 +317,22 @@ class MessageTranslatorTest extends TestCase
     /**
      * @dataProvider twigProvider
      *
-     * @param string $key
-     * @param array  $placeholders
-     * @param string $expectedResult
+     * @param string       $key
+     * @param string[]|int $placeholders
+     * @param string       $expectedResult
      */
-    public function testTwigFilters($key, $placeholders, $expectedResult)
+    public function testTwigFilters(string $key, $placeholders, string $expectedResult): void
     {
         $translator = $this->getTranslator();
         $this->assertEquals($translator->translate($key, $placeholders), $expectedResult);
     }
 
     /**
-     * @expectedException \OutOfRangeException
-     */
-    public function testGetPluralFormWithException()
-    {
-        $this->getTranslator()->getPluralForm(1, 132);
-    }
-
-    /**
-     * Test locale wihtout a `@PLURAL_RULE`.
-     */
-    public function testGetPluralFormWithNoDefineRule()
-    {
-        $translator = $this->getTranslator(['es_ES']);
-        $foo = $translator->getPluralForm(1);
-        $this->assertSame(1, $foo);
-
-        // Test with 0. If `@PLURAL_RULE` 1 is applied, it will return `X_CARS.2` (zero is plural)
-        // With `@PLURAL_RULE` 0, it would have been `X_CARS.1` (no plurals)
-        // and with `@PLURAL_RULE` 2, would have been `X_CARS.1` also (0 is singular)
-        $this->assertEquals($translator->translate('X_CARS', 0), '0 coches');
-    }
-
-    /**
      * Data Provider for testTwigFilters.
      *
-     * @return array
+     * @return mixed[]
      */
-    public function twigProvider()
+    public function twigProvider(): array
     {
         return [
 
@@ -321,17 +372,15 @@ class MessageTranslatorTest extends TestCase
     }
 
     /**
-     * @param array $language Default to ['en_US'], use ['en_US', 'fr_FR'] to french
+     * @param string $language Default to 'en_US'. Use 'fr_FR' for french
      *
-     * @return MessageTranslator
+     * @return Translator
      */
-    protected function getTranslator($language = ['en_US'])
+    protected function getTranslator(string $language = 'en_US'): Translator
     {
-        $builder = new LocalePathBuilder($this->locator, 'locale://', $language);
-        $paths = $builder->buildPaths();
-        $loader = new ArrayFileLoader($paths);
-
-        $translator = new MessageTranslator($loader->load());
+        $locale = new Locale($language);
+        $dictionary = new Dictionary($locale, $this->locator);
+        $translator = new Translator($dictionary);
 
         return $translator;
     }

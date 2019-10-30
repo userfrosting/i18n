@@ -10,20 +10,22 @@
 
 namespace UserFrosting\I18n;
 
+use Twig_Environment;
+use Twig_Loader_Filesystem;
 use UserFrosting\Support\Repository\Repository;
 
 /**
- * MessageTranslator Class.
+ * Translator Class.
  *
  * Translate message ids to a message in a specified language.
  *
  * @author    Louis Charette
  * @author    Alexander Weissman (https://alexanderweissman.com)
  */
-class MessageTranslator extends Repository
+class Translator extends Repository
 {
     /**
-     * @var \Twig_Environment A Twig environment used to replace placeholders.
+     * @var Twig_Environment A Twig environment used to replace placeholders.
      */
     protected $twig;
 
@@ -33,16 +35,23 @@ class MessageTranslator extends Repository
     protected $defaultPluralKey = 'plural';
 
     /**
+     * @var DictionaryInterface
+     */
+    protected $dictionary;
+
+    /**
      * Create the translator.
      *
-     * @param array $items
+     * @param DictionaryInterface $dictionary
      */
-    public function __construct(array $items = [])
+    public function __construct(DictionaryInterface $dictionary)
     {
-        $this->items = $items;
+        $this->dictionary = $dictionary;
+        $this->items = $dictionary->getDictionary();
 
-        $loader = new \Twig_Loader_Filesystem();
-        $this->twig = new \Twig_Environment($loader);
+        // Preapre Twig Environment
+        $loader = new Twig_Loader_Filesystem();
+        $this->twig = new Twig_Environment($loader);
     }
 
     /**
@@ -297,20 +306,16 @@ class MessageTranslator extends Repository
     /**
      * Return the correct rule number to use.
      *
-     * @param bool|int $forceRule Force to use a particular rule. Otherwise, use the language defined one
+     * @param int|bool $forceRule Force to use a particular rule. Otherwise, use the language defined one
      *
      * @return int
      */
-    protected function getPluralRuleNumber($forceRule)
+    protected function getPluralRuleNumber($forceRule): int
     {
         if ($forceRule !== false) {
             return $forceRule;
         }
 
-        if ($this->has('@PLURAL_RULE')) {
-            return $this->get('@PLURAL_RULE');
-        }
-
-        return 1;
+        return $this->dictionary->getLocale()->getPluralRule();
     }
 }
