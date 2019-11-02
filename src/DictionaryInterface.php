@@ -10,14 +10,18 @@
 
 namespace UserFrosting\I18n;
 
+use Illuminate\Contracts\Config\Repository;
+
 /**
  * Locale Dictionary.
  *
  * Used to return all "Key => translation" data matrix
+ * Extend the Config repository to have acess to all the standard `has`, `get`,
+ * etc. public methods on the dictionnay array
  *
  * @author Louis Charette
  */
-interface DictionaryInterface
+interface DictionaryInterface extends Repository
 {
     /**
      * Returns all loaded locale Key => Translation data dictionary.

@@ -12,7 +12,6 @@ namespace UserFrosting\I18n;
 
 use Twig_Environment;
 use Twig_Loader_Filesystem;
-use UserFrosting\Support\Repository\Repository;
 
 /**
  * Translator Class.
@@ -22,7 +21,7 @@ use UserFrosting\Support\Repository\Repository;
  * @author    Louis Charette
  * @author    Alexander Weissman (https://alexanderweissman.com)
  */
-class Translator extends Repository
+class Translator
 {
     /**
      * @var Twig_Environment A Twig environment used to replace placeholders.
@@ -46,8 +45,9 @@ class Translator extends Repository
      */
     public function __construct(DictionaryInterface $dictionary)
     {
+        // Make sure dictionary is loaded
         $this->dictionary = $dictionary;
-        $this->items = $dictionary->getDictionary();
+        $this->dictionary->getDictionary();
 
         // Preapre Twig Environment
         $loader = new Twig_Loader_Filesystem();
@@ -88,12 +88,12 @@ class Translator extends Repository
     protected function getMessageFromKey(string $messageKey, &$placeholders): string
     {
         // If we can't find a match, return $messageKey
-        if (!$this->has($messageKey)) {
+        if (!$this->dictionary->has($messageKey)) {
             return $messageKey;
         }
 
         // Get message from items
-        $message = $this->get($messageKey);
+        $message = $this->dictionary->get($messageKey);
 
         // If message is an array, we'll need to go depper to get the actual string. Otherwise we're good to move on.
         if (!is_array($message)) {
@@ -114,8 +114,8 @@ class Translator extends Repository
             if (is_null($pluralValue)) {
 
                 // If we have a `@TRANSLATION` instruction, return this
-                if ($this->has($messageKey.'.@TRANSLATION') && !is_null($this->get($messageKey.'.@TRANSLATION'))) {
-                    return $this->get($messageKey.'.@TRANSLATION');
+                if ($this->dictionary->has($messageKey.'.@TRANSLATION') && !is_null($this->dictionary->get($messageKey.'.@TRANSLATION'))) {
+                    return $this->dictionary->get($messageKey.'.@TRANSLATION');
                 }
 
                 // Otherwise fallback to singular version
@@ -143,8 +143,8 @@ class Translator extends Repository
         }
 
         // If we didn't find a plural form, we try to find the "@TRANSLATION" form.
-        if ($this->has($messageKey.'.@TRANSLATION')) {
-            return $this->get($messageKey.'.@TRANSLATION');
+        if ($this->dictionary->has($messageKey.'.@TRANSLATION')) {
+            return $this->dictionary->get($messageKey.'.@TRANSLATION');
         }
 
         // If the message is an array, but we can't find a plural form or a "@TRANSLATION" instruction, we can't go further.
