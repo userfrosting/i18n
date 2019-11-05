@@ -10,9 +10,9 @@
 
 namespace UserFrosting\I18n;
 
-use UserFrosting\Support\Repository\Repository;
 use UserFrosting\Support\Repository\Loader\ArrayFileLoader;
 use UserFrosting\Support\Repository\Loader\FileRepositoryLoader;
+use UserFrosting\Support\Repository\Repository;
 use UserFrosting\UniformResourceLocator\ResourceLocatorInterface;
 
 /**
