@@ -429,3 +429,5 @@ There's a child and no adults in the white Honda Civic 1993
 ## [Style Guide](STYLE-GUIDE.md)
 
 ## [Testing](RUNNING_TESTS.md)
+
+## [API docs](docs/api.md)
