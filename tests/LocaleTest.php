@@ -177,17 +177,21 @@ class LocaleTest extends TestCase
         $this->assertInstanceOf(LocaleInterface::class, $result[0]);
     }
 
-    /*
-     * @depends testConstructor
-     * @depends testGetConfig
-     */
-    /*public function testGetDictionary(Locale $locale)
+    public function testConstructorWithCustomFile()
     {
-        $dictionary = $locale->getDictionary();
-        $this->assertInternalType('array', $dictionary);
+        $locale = new Locale('de_DE', 'locale://de_DE/foo.yaml');
+        $this->assertInstanceOf(LocaleInterface::class, $locale);
 
-
-    }*/
+        $this->assertSame([], $locale->getAuthors());
+        $this->assertSame('locale://de_DE/foo.yaml', $locale->getConfigFile());
+        $this->assertSame('de_DE', $locale->getIndentifier());
+        $this->assertSame([], $locale->getConfig());
+        $this->assertSame([], $locale->getDependentLocales());
+        $this->assertSame([], $locale->getDependentLocalesIdentifier());
+        $this->assertSame('', $locale->getName());
+        $this->assertSame(1, $locale->getPluralRule());
+        $this->assertSame('de_DE', $locale->getLocalizedName());
+    }
 
     /*
     TODO :

@@ -69,7 +69,11 @@ class Locale implements LocaleInterface
      */
     public function getAuthors(): array
     {
-        return $this->config['authors'];
+        if (!isset($this->config['authors'])) {
+            return [];
+        } else {
+            return $this->config['authors'];
+        }
     }
 
     /**
@@ -140,7 +144,11 @@ class Locale implements LocaleInterface
      */
     public function getName(): string
     {
-        return $this->config['name'];
+        if (!isset($this->config['name'])) {
+            return '';
+        } else {
+            return $this->config['name'];
+        }
     }
 
     /**
@@ -164,6 +172,12 @@ class Locale implements LocaleInterface
      */
     public function getLocalizedName(): string
     {
-        return $this->config['localized_name'];
+        if (isset($this->config['localized_name'])) {
+            return $this->config['localized_name'];
+        } elseif(isset($this->config['name'])) {
+            return $this->config['name'];
+        } else {
+            return $this->identifier;
+        }
     }
 }
