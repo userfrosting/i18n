@@ -131,7 +131,6 @@ class Dictionary implements DictionaryInterface
         }
 
         // Now load dependent dictionnaries
-        // TODO : Split this in a sub method
         foreach ($this->locale->getDependentLocales() as $locale) {
 
             // Stop if locale already loaded to prevent recursion
@@ -179,7 +178,8 @@ class Dictionary implements DictionaryInterface
     /**
      * Determine if the given configuration value exists.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return bool
      */
     public function has($key)
@@ -190,8 +190,9 @@ class Dictionary implements DictionaryInterface
     /**
      * Get the specified configuration value.
      *
-     * @param  array|string  $key
-     * @param  mixed   $default
+     * @param array|string $key
+     * @param mixed        $default
+     *
      * @return mixed
      */
     public function get($key, $default = null)
@@ -206,7 +207,8 @@ class Dictionary implements DictionaryInterface
     /**
      * Get many configuration values.
      *
-     * @param  array  $keys
+     * @param array $keys
+     *
      * @return array
      */
     public function getMany($keys)
@@ -227,8 +229,9 @@ class Dictionary implements DictionaryInterface
     /**
      * Set a given configuration value.
      *
-     * @param  array|string  $key
-     * @param  mixed   $value
+     * @param array|string $key
+     * @param mixed        $value
+     *
      * @return void
      */
     public function set($key, $value = null)
@@ -244,8 +247,9 @@ class Dictionary implements DictionaryInterface
     /**
      * Prepend a value onto an array configuration value.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return void
      */
     public function prepend($key, $value)
@@ -260,8 +264,9 @@ class Dictionary implements DictionaryInterface
     /**
      * Push a value onto an array configuration value.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return void
      */
     public function push($key, $value)
@@ -286,7 +291,8 @@ class Dictionary implements DictionaryInterface
     /**
      * Determine if the given configuration option exists.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return bool
      */
     public function offsetExists($key)
@@ -297,7 +303,8 @@ class Dictionary implements DictionaryInterface
     /**
      * Get a configuration option.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return mixed
      */
     public function offsetGet($key)
@@ -308,8 +315,9 @@ class Dictionary implements DictionaryInterface
     /**
      * Set a configuration option.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return void
      */
     public function offsetSet($key, $value)
@@ -320,7 +328,8 @@ class Dictionary implements DictionaryInterface
     /**
      * Unset a configuration option.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return void
      */
     public function offsetUnset($key)

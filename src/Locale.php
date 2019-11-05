@@ -174,7 +174,7 @@ class Locale implements LocaleInterface
     {
         if (isset($this->config['localized_name'])) {
             return $this->config['localized_name'];
-        } elseif(isset($this->config['name'])) {
+        } elseif (isset($this->config['name'])) {
             return $this->config['name'];
         } else {
             return $this->identifier;

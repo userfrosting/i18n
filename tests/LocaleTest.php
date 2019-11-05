@@ -146,6 +146,15 @@ class LocaleTest extends TestCase
     }
 
     /**
+     * @depends testGetDetails
+     */
+    public function testGetLocalizedNameWithNoLocalizedConfig(): void
+    {
+        $locale = new Locale('es_ES');
+        $this->assertSame('Spanish', $locale->getLocalizedName());
+    }
+
+    /**
      * @depends testConstructor
      * @depends testGetConfig
      */
