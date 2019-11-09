@@ -28,7 +28,6 @@
 
 Louis Charette & Alexander Weissman, 2016-2019
 
-<hr />
 
 The I18n module handles translation tasks for UserFrosting.
 
