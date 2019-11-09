@@ -97,7 +97,7 @@ class LocaleTest extends TestCase
                 'Bar Foo', // Not available in `core` version
             ],
             'plural_rule' => 2,
-            'parents' => [
+            'parents'     => [
                 'en_US',
             ],
         ], $data);
