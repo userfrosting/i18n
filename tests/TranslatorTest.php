@@ -58,6 +58,20 @@ class TranslatorTest extends TestCase
     /**
      * Test locale with a plural option.
      */
+    public function testGetDictionaryAndLocale(): void
+    {
+        $locale = new Locale('en_US');
+        $dictionary = new Dictionary($locale, $this->locator);
+        $translator = new Translator($dictionary);
+
+        $this->assertSame($dictionary, $translator->getDictionary());
+        $this->assertSame($locale, $translator->getLocale());
+        $this->assertSame($dictionary->getLocale(), $translator->getLocale());
+    }
+
+    /**
+     * Test locale with a plural option.
+     */
     public function testGetPluralForm(): void
     {
         $translator = $this->getTranslator('en_US');
@@ -75,7 +89,7 @@ class TranslatorTest extends TestCase
 
     /**
      * @depends testGetPluralForm
-     * Test locale wihtout a `@PLURAL_RULE`.
+     * Test locale wihtout a plural rule.
      */
     public function testGetPluralFormWithNoDefineRule(): void
     {

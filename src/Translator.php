@@ -12,6 +12,8 @@ namespace UserFrosting\I18n;
 
 use Twig_Environment;
 use Twig_Loader_Filesystem;
+use UserFrosting\I18n\LocaleInterface;
+use UserFrosting\I18n\DictionaryInterface;
 
 /**
  * Translator Class.
@@ -52,6 +54,26 @@ class Translator
         // Preapre Twig Environment
         $loader = new Twig_Loader_Filesystem();
         $this->twig = new Twig_Environment($loader);
+    }
+
+    /**
+     * Returned the associated dictionary
+     *
+     * @return DictionaryInterface
+     */
+    public function getDictionary(): DictionaryInterface
+    {
+        return $this->dictionary;
+    }
+
+    /**
+     * Returns the associated locale for the specified dictionary
+     *
+     * @return LocaleInterface
+     */
+    public function getLocale(): LocaleInterface
+    {
+        return $this->dictionary->getLocale();
     }
 
     /**
