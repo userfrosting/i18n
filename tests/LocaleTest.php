@@ -96,9 +96,7 @@ class LocaleTest extends TestCase
                 'Foo Bar',
                 'Bar Foo', // Not available in `core` version
             ],
-            'options' => [
-                'plural' => 2,
-            ],
+            'plural_rule' => 2,
             'parents' => [
                 'en_US',
             ],

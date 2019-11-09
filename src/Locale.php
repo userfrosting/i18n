@@ -158,8 +158,8 @@ class Locale implements LocaleInterface
      */
     public function getPluralRule(): int
     {
-        if (isset($this->config['options']['plural'])) {
-            return $this->config['options']['plural'];
+        if (isset($this->config['plural_rule'])) {
+            return $this->config['plural_rule'];
         } else {
             return 1;
         }

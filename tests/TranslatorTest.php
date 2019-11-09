@@ -79,9 +79,9 @@ class TranslatorTest extends TestCase
         $this->assertSame(2, $translator->getPluralForm(2));
         $this->assertSame(2, $translator->getPluralForm(20));
 
-        // Test with 0. If `@PLURAL_RULE` 1 is applied, it will return `X_CARS.2` (zero is plural)
-        // With `@PLURAL_RULE` 0, it would have been `X_CARS.1` (no plurals)
-        // and with `@PLURAL_RULE` 2, would have been `X_CARS.1` also (0 is singular)
+        // Test with 0. If `plural_rule` 1 is applied, it will return `X_CARS.2` (zero is plural)
+        // With `plural_rule` 0, it would have been `X_CARS.1` (no plurals)
+        // and with `plural_rule` 2, would have been `X_CARS.1` also (0 is singular)
         $this->assertEquals($translator->translate('X_CARS', 0), 'no cars');
         $this->assertEquals($translator->translate('X_CARS', 1), 'a car');
         $this->assertEquals($translator->translate('X_CARS', 2), '2 cars');
