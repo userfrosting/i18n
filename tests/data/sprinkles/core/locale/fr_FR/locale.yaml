@@ -1,0 +1,7 @@
+name: French
+localized_name: Français
+authors:
+  - Foo Bar
+plural_rule: 2
+parents:
+- en_US

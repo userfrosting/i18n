@@ -10,20 +10,21 @@
 
 namespace UserFrosting\I18n;
 
-use UserFrosting\Support\Repository\Repository;
+use Twig_Environment;
+use Twig_Loader_Filesystem;
 
 /**
- * MessageTranslator Class.
+ * Translator Class.
  *
  * Translate message ids to a message in a specified language.
  *
  * @author    Louis Charette
  * @author    Alexander Weissman (https://alexanderweissman.com)
  */
-class MessageTranslator extends Repository
+class Translator
 {
     /**
-     * @var \Twig_Environment A Twig environment used to replace placeholders.
+     * @var Twig_Environment A Twig environment used to replace placeholders.
      */
     protected $twig;
 
@@ -33,16 +34,44 @@ class MessageTranslator extends Repository
     protected $defaultPluralKey = 'plural';
 
     /**
+     * @var DictionaryInterface
+     */
+    protected $dictionary;
+
+    /**
      * Create the translator.
      *
-     * @param array $items
+     * @param DictionaryInterface $dictionary
      */
-    public function __construct(array $items = [])
+    public function __construct(DictionaryInterface $dictionary)
     {
-        $this->items = $items;
+        // Make sure dictionary is loaded
+        $this->dictionary = $dictionary;
+        $this->dictionary->getDictionary();
 
-        $loader = new \Twig_Loader_Filesystem();
-        $this->twig = new \Twig_Environment($loader);
+        // Preapre Twig Environment
+        $loader = new Twig_Loader_Filesystem();
+        $this->twig = new Twig_Environment($loader);
+    }
+
+    /**
+     * Returned the associated dictionary.
+     *
+     * @return DictionaryInterface
+     */
+    public function getDictionary(): DictionaryInterface
+    {
+        return $this->dictionary;
+    }
+
+    /**
+     * Returns the associated locale for the specified dictionary.
+     *
+     * @return LocaleInterface
+     */
+    public function getLocale(): LocaleInterface
+    {
+        return $this->dictionary->getLocale();
     }
 
     /**
@@ -55,7 +84,7 @@ class MessageTranslator extends Repository
      *
      * @return string The translated message.
      */
-    public function translate($messageKey, $placeholders = [])
+    public function translate(string $messageKey, $placeholders = []): string
     {
         // Get the correct message from the specified key
         $message = $this->getMessageFromKey($messageKey, $placeholders);
@@ -76,15 +105,15 @@ class MessageTranslator extends Repository
      *
      * @return string The message string
      */
-    protected function getMessageFromKey($messageKey, &$placeholders)
+    protected function getMessageFromKey(string $messageKey, &$placeholders): string
     {
         // If we can't find a match, return $messageKey
-        if (!$this->has($messageKey)) {
+        if (!$this->dictionary->has($messageKey)) {
             return $messageKey;
         }
 
         // Get message from items
-        $message = $this->get($messageKey);
+        $message = $this->dictionary->get($messageKey);
 
         // If message is an array, we'll need to go depper to get the actual string. Otherwise we're good to move on.
         if (!is_array($message)) {
@@ -105,8 +134,8 @@ class MessageTranslator extends Repository
             if (is_null($pluralValue)) {
 
                 // If we have a `@TRANSLATION` instruction, return this
-                if ($this->has($messageKey.'.@TRANSLATION') && !is_null($this->get($messageKey.'.@TRANSLATION'))) {
-                    return $this->get($messageKey.'.@TRANSLATION');
+                if ($this->dictionary->has($messageKey.'.@TRANSLATION') && !is_null($this->dictionary->get($messageKey.'.@TRANSLATION'))) {
+                    return $this->dictionary->get($messageKey.'.@TRANSLATION');
                 }
 
                 // Otherwise fallback to singular version
@@ -134,8 +163,8 @@ class MessageTranslator extends Repository
         }
 
         // If we didn't find a plural form, we try to find the "@TRANSLATION" form.
-        if ($this->has($messageKey.'.@TRANSLATION')) {
-            return $this->get($messageKey.'.@TRANSLATION');
+        if ($this->dictionary->has($messageKey.'.@TRANSLATION')) {
+            return $this->dictionary->get($messageKey.'.@TRANSLATION');
         }
 
         // If the message is an array, but we can't find a plural form or a "@TRANSLATION" instruction, we can't go further.
@@ -151,7 +180,7 @@ class MessageTranslator extends Repository
      *
      * @return string
      */
-    protected function getPluralKey(array $messageArray)
+    protected function getPluralKey(array $messageArray): string
     {
         if (isset($messageArray['@PLURAL'])) {
             return $messageArray['@PLURAL'];
@@ -168,7 +197,7 @@ class MessageTranslator extends Repository
      *
      * @return int|null The number, null if not found
      */
-    protected function getPluralValue($placeholders, $pluralKey)
+    protected function getPluralValue($placeholders, string $pluralKey): ?int
     {
         if (isset($placeholders[$pluralKey])) {
             return (int) $placeholders[$pluralKey];
@@ -179,6 +208,7 @@ class MessageTranslator extends Repository
         }
 
         // Null will be returned
+        return null;
     }
 
     /**
@@ -188,9 +218,9 @@ class MessageTranslator extends Repository
      * @param array $messageArray The array with all the form inside ($pluralRule => $message)
      * @param int   $pluralValue  The numeric value used to select the correct message
      *
-     * @return int Returns which key from $messageArray to use
+     * @return int|null Returns which key from $messageArray to use
      */
-    protected function getPluralMessageKey(array $messageArray, $pluralValue)
+    protected function getPluralMessageKey(array $messageArray, int $pluralValue): ?int
     {
         // Bypass the rules for a value of "0" so that "0 users" may be displayed as "No users".
         if ($pluralValue == 0 && isset($messageArray[0])) {
@@ -216,6 +246,7 @@ class MessageTranslator extends Repository
         }
 
         // If no key was found, null will be returned
+        return null;
     }
 
     /**
@@ -227,7 +258,7 @@ class MessageTranslator extends Repository
      *
      * @return string The message with replaced placeholders
      */
-    protected function parsePlaceHolders($message, array $placeholders)
+    protected function parsePlaceHolders(string $message, array $placeholders): string
     {
         // Interpolate translatable placeholders values. This allows to
         // pre-translate placeholder which value starts with the `&` caracter
@@ -295,20 +326,16 @@ class MessageTranslator extends Repository
     /**
      * Return the correct rule number to use.
      *
-     * @param bool|int $forceRule Force to use a particular rule. Otherwise, use the language defined one
+     * @param int|bool $forceRule Force to use a particular rule. Otherwise, use the language defined one
      *
      * @return int
      */
-    protected function getPluralRuleNumber($forceRule)
+    protected function getPluralRuleNumber($forceRule): int
     {
         if ($forceRule !== false) {
             return $forceRule;
         }
 
-        if ($this->has('@PLURAL_RULE')) {
-            return $this->get('@PLURAL_RULE');
-        }
-
-        return 1;
+        return $this->dictionary->getLocale()->getPluralRule();
     }
 }

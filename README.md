@@ -28,66 +28,142 @@
 
 Louis Charette & Alexander Weissman, 2016-2019
 
-The I18n module handles translation tasks for UserFrosting.  The `MessageTranslator` class can be used as follows:
+
+The I18n module handles translation tasks for UserFrosting.
+
+The translator uses a Dictionary, which is itself tied to a Locale. The basic structure of the system can be represented this way :
+
+```
+    |------------|
+    |   Locale   |
+    |------------|
+          |
+          V
+    |------------|     |---------|     |-------------|
+    | Dictionary | <-- | Locator | <-- | Definitions |
+    |------------|     |---------|     |-------------|
+          |
+          V
+    |------------|
+    | Translator |
+    |------------|               
+```
+
+The **Locale** knows all there is to know about the locale itself. The name of the locale, the authors, the plural rules, etc.
+
+The **Dictionary** is tied to a specific locale. It's purpose is to return a data matrix composed of keys shared between all locales (called _message keys_) and the translated string (called _localized messages_). The system uses a `KEY` and `VALUE` system, which can be stored in standard PHP files.
+
+The **translator** use the data from the Dictionary to perform the actual translation, aka finding the proper key and replacing the placeholder with the specified values.  
+
+<hr />
+
+Table of Contents
+=================
+
+   * [Documentation](#documentation)
+      * [Basic usage](#basic-usage)
+         * [Step 1 - Set up language file(s).](#step-1---set-up-language-files)
+         * [Step 2 - Set up the Locale:](#step-2---set-up-the-locale)
+         * [Step 3 - Set up UniformResourceLocator and the Dictionary:](#step-3---set-up-uniformresourcelocator-and-the-dictionary)
+         * [Step 4 - Initialize a Translator object:](#step-4---initialize-a-translator-object)
+         * [Step 5 - Do a translation!](#step-5---do-a-translation)
+         * [Wrap up](#wrap-up)
+      * [Locale configuration file](#locale-configuration-file)
+         * [Config values](#config-values)
+            * [name](#name)
+            * [localized_name](#localized_name)
+            * [authors](#authors)
+            * [plural_rule](#plural_rule)
+            * [parents](#parents)
+      * [Pluralization](#pluralization)
+         * [Plural value with placeholders](#plural-value-with-placeholders)
+         * [Multiple plural in a string](#multiple-plural-in-a-string)
+         * [Numbers are rules, not limits !](#numbers-are-rules-not-limits-)
+         * [One last thing about pluralization...](#one-last-thing-about-pluralization)
+      * [Sub keys](#sub-keys)
+      * [Handles](#handles)
+         * [@TRANSLATION](#translation)
+         * [@PLURAL](#plural)
+         * [The &amp; placeholder](#the--placeholder)
+      * [Example of a complex translation](#example-of-a-complex-translation)
+         * [Language file](#language-file)
+         * [Translate function](#translate-function)
+         * [Result](#result)
+      * [Style Guide](STYLE-GUIDE.md)
+      * [Testing](RUNNING_TESTS.md)
+      * [API docs](docs/api.md)
+
+# Documentation
 
 ## Basic usage
 
 ### Step 1 - Set up language file(s).
 
-A language file returns an array mapping _message keys_ to _localized messages_.  Messages may optionally have placeholders.  For example:
+A language file returns an array mapping _message keys_ to _localized messages_. Messages may optionally have placeholders. For example:
 
-**locale/es_ES/main.php**
-
-```
-return array(
-    //MESSAGE_KEY => Localized message
-	"ACCOUNT_SPECIFY_USERNAME" => "Introduce tu nombre de usuario.",
-	"ACCOUNT_SPECIFY_DISPLAY_NAME" => "Introduce tu nombre público.",
-	"ACCOUNT_USER_CHAR_LIMIT" => "Tu nombre de usuario debe estar entre {{min}} y {{max}} caracteres de longitud."
-);
-```
 
 **locale/en_US/main.php**
-
 ```
 return array(
-    //LANGUAGE_KEY => Localized message
-	"ACCOUNT_SPECIFY_USERNAME" => "Please enter your user name.",
+    //LANGUAGE_KEY                 => Localized message
+
+	"ACCOUNT_SPECIFY_USERNAME"     => "Please enter your user name.",
 	"ACCOUNT_SPECIFY_DISPLAY_NAME" => "Please enter your display name.",
-	"ACCOUNT_USER_CHAR_LIMIT" => "Your user name must be between {{min}} and {{max}} characters in length."
+	"ACCOUNT_USER_CHAR_LIMIT"      => "Your user name must be between {{min}} and {{max}} characters in length."
 );
 ```
 
-### Step 2 - Set up UniformResourceLocator and LocalePathBuilder classes:
+**locale/es_ES/main.php**
+```
+return array(
+    //MESSAGE_KEY                  => Localized message
 
+    "ACCOUNT_SPECIFY_USERNAME"     => "Introduce tu nombre de usuario.",
+	"ACCOUNT_SPECIFY_DISPLAY_NAME" => "Introduce tu nombre público.",
+	"ACCOUNT_USER_CHAR_LIMIT"      => "Tu nombre de usuario debe estar entre {{min}} y {{max}} caracteres de longitud."
+);
+```
+
+### Step 2 - Set up the Locale:
+
+The `Locale` class will load all [configuration value](#locale-configuration-file) for the specified locale. All you need to do is specify the locale identifier as a string :
+
+```
+$locale = new Locale('en_US');
+```
+
+This will load all the English (`en_US`) locale config. When passed to the Dictionary, this will load all the English definitions.
+
+### Step 3 - Set up UniformResourceLocator and the Dictionary:
+
+The `Dictionary` will load all definitions for the specified locale. To achieve this, the dictionary will build a list of the files located in the locale identifier directory (eg. `en_US`) for the specified locator path. The [UniformResourceLocator](https://github.com/userfrosting/uniformresourcelocator) will be used to get the file list.
+
+First, you'll need to setup the Locator. See the [UniformResourceLocator documentation](https://github.com/userfrosting/UniformResourceLocator/tree/master/docs) for more information on this.
 ```
 // Set up a locator class
 $locator = new UniformResourceLocator(__DIR__);
-$locator->addPath('locale', '', 'locale');
+$locator->registerStream('locale');
+$locator->registerLocation('core');
 
-// Build paths to the desired languages
-$builder = new LocalePathBuilder($locator, 'locale://', ['en_US']);
+// Register the `__DIR__/core/locale/` path
 ```
 
-The `LocalePathBuilder` will build a list of the files located in the `locale/en_US` directory. You can also load paths for more than one language in the array passed to the constructor, or using the `addLocales` method. The languages will be merged together in the order in which they were added. For example:
+With the locator and the locale, we can now create the Dictionary instance.
 
 ```
-$builder = new LocalePathBuilder($locator, 'locale://', ['en_US', 'es_ES']);
+$dictionary = new Dictionary($locale, $this->locator);
 ```
 
-This will use the English (`en_US`) translation as a base and load the Spanish (`es_ES`) translation on top. All keys not found in the Spanish translation will fallback to the English one.
+### Step 4 - Initialize a `Translator` object:
 
-### Step 3 - Initialize a `MessageTranslator` object:
+The translator can now be initiated with the Dictionary. The Locale will be inherited from the Dictionary.
 
 ```
-// Load and combine translation data from the locale files
-$loader = new ArrayFileLoader($builder->buildPaths());
-
-// Create the MessageTranslator object
-$translator = new MessageTranslator($loader->load());
+// Create the Translator object
+$translator = new Translator($dictionary);
 ```
 
-### Step 4 - Do a translation!
+### Step 5 - Do a translation!
 
 ```
 echo $translator->translate("ACCOUNT_USER_CHAR_LIMIT", [
@@ -98,11 +174,70 @@ echo $translator->translate("ACCOUNT_USER_CHAR_LIMIT", [
 // Returns "Tu nombre de usuario debe estar entre 4 y 200 caracteres de longitud."
 ```
 
+### Wrap up
+
+```
+$locator = new UniformResourceLocator(__DIR__);
+$locator->addPath('locale', '', 'locale');
+
+$locale = new Locale('en_US');
+$dictionary = new Dictionary($locale, $locator);
+$translator = new Translator($dictionary);
+
+echo $translator->translate("ACCOUNT_USER_CHAR_LIMIT", [
+    "min" => 4,
+    "max" => 200
+]);
+```
+
+## Locale configuration file
+
+Each locale have it's own configuration file. Theses options are required to be saved in a `locale.yaml` file, located in the locale folder, accessible accessible using the `locale://en_US/locale.yaml` URI.
+
+The configuration file can contain multiple options. For example :
+
+```
+name: French Canadian
+localized_name: Français Canadien
+authors:
+  - Foo Bar
+  - Bar Foo
+plural_rule: 2
+parents:
+  - fr_FR
+```
+
+### Config values
+
+#### `name`
+
+The name of the locale. Should be the English version of the name.
+
+#### `localized_name`
+
+The localized name of the locale. For example, for the French locale, the name of the locale in French.
+
+#### `authors`
+
+A list of authors for the locale.
+
+#### `plural_rule`
+
+The plural rule number associated with the locale. See [Pluralization](#Pluralization) for more details.
+
+#### `parents`
+
+A list of parents locales for this locale. Each locale data will be loaded on top of the parents one, including all dictionary definitions.
+
+For example, if the `fr_CA` locale has `fr_FR` as parent, all config and all keys not found in the `CA` translation will fallback to the `FR` one. If the `fr_FR` locale has `en_US` as parent itself, all keys not found in `CA` and `FR` will fallback to the English keys.
+
+It is recommended all locale have at least `en_US` as a top parent, so undefined keys in your locale will fallback to the English version.
+
 ## Pluralization
 
-The plural system allow for easy pluralization of strings. This whole system is based on Mozilla plural rules (See : https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals). For a given language, there is a grammatical rule on how to change words depending on the number qualifying the word. Different languages can have different rules. For example, in English you say `no cars` (note the plural `cars`) while in French you say `Aucune voiture` (note the singular `voiture`).
+The plural system allow for easy pluralization of strings. This whole system is based on [Mozilla plural rules](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals). For a given language, there is a grammatical rule on how to change words depending on the number qualifying the word. Different languages can have different rules. For example, in English you say `no cars` (note the plural `cars`) while in French you say `Aucune voiture` (note the singular `voiture`).
 
-The rule associated with a particular language ([see link above](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals)) is defined in the `@PLURAL_RULE` key. So in the `english` file, you should find `"@PLURAL_RULE" => 1` and in the `french` file `"@PLURAL_RULE" => 2`.
+The rule associated with a particular language ([see link above](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals)) is defined in the [locale configuration metadata](#locale-configuration-file). So for the `english` locale, you should find `plural_rule: 1` and in the `french` file `"plural_rule: 2`.
 
 Strings with plural forms are defined as sub arrays with the rules as the key. The right plural form is determined by the plural value passed as the second parameter of the `translate` function :
 ```
@@ -206,7 +341,6 @@ In some cases, it could be faster and easier to directly access the plural value
 In this example, `$translator->translate("COLOR", 2);` and `$translator->translate("COLORS");` will return the same value. This is true for English, but not necessarily for all languages. While languages without any form of plural definitions will define something like `"COLOR" => "Color"` and `"COLORS" => "Color"`, some will have even more complicated rules. That's why it's always best to avoid keys like `COLORS` if you plan to translate to more than one language. This is also true with the `0` value that can be different across different language, but can also be handle differently depending of the message you want to display (Ex.: `No colors` instead of `0 colors`).
 
 
-
 ## Sub keys
 Sub keys can be defined in language files for easier navigation of lists or to distinguish two items with common keys. For example:
 
@@ -254,9 +388,6 @@ Of courses, sub keys and plural rules can live together inside the same master k
 ## Handles
 Some special handles can be defined in the languages files to modify the default behavior of the translator. These handle uses the `@` prefix.
 
-### `@PLURAL_RULE`
-See [Pluralization](#Pluralization).
-
 ### `@TRANSLATION`
 If you want to give a value for the top level key, you can use the `@TRANSLATION` (handle)[#handles] which will create an alias `TOP_KEY` and point it to `TOP_KEY.@TRANSLATION`:
 ```
@@ -273,7 +404,7 @@ $translator->translate('ACCOUNT.@TRANSLATION') //Return "Account"
 $translator->translate('ACCOUNT.ALT'); //Return "Profile"
 ```
 
-N.B.: When `@TRANSLATION` is used with plural rules, omiting the second argument of the `translate` function will change the result. `1` will not be used as a plural value to determine which rule we chose. The `@TRANSLATION` value will be returned instead. For example:
+N.B.: When `@TRANSLATION` is used with plural rules, omitting the second argument of the `translate` function will change the result. `1` will not be used as a plural value to determine which rule we chose. The `@TRANSLATION` value will be returned instead. For example:
 
 ```
 "X_HUNGRY_CATS" => [
@@ -302,7 +433,7 @@ echo $translator->translate("NB_HUNGRY_CATS", ['nb': 5]); // Return "5 hungry ca
 ```
 
 ### The `&` placeholder
-When a placeholder name starts with the `&` character in translation files or the value of a placeholder starts with this same `&` character, it tells the translator to directly replace the placeholder with the message mapped by that message key (if found). Note that this is CASE SENSITIVE and, as with the other handles, all placeholders defined in the main translation function are passed to all child translations. This is useful when you don't want to translate the same word over and over again in the same language file or with complex translations with plural values. Be caureful when using this with plurals as the plural value is passed to all child translation and can cause conflict (See [Example of a complex translation](#example-of-a-complex-translation)).
+When a placeholder name starts with the `&` character in translation files or the value of a placeholder starts with this same `&` character, it tells the translator to directly replace the placeholder with the message mapped by that message key (if found). Note that this is CASE SENSITIVE and, as with the other handles, all placeholders defined in the main translation function are passed to all child translations. This is useful when you don't want to translate the same word over and over again in the same language file or with complex translations with plural values. Be careful when using this with plurals as the plural value is passed to all child translation and can cause conflict (See [Example of a complex translation](#example-of-a-complex-translation)).
 
 Example:
 ```
@@ -317,19 +448,19 @@ $translator->translate('I_LOVE_MY_CATS', 3); //Return "I love my 3 cats"
 In this example, `{{&MY_CATS}}` gets replaced with the `MY_CATS` and since there's 3 cats, the n° 2 rule is selected. So the string becomes `I love my {{plural}} cats` which then becomes `I love my 3 cats`.
 
 
-N.B.: Since this is the last thing handled by the translator, this behaviour can be overwritten by the function call:
+N.B.: Since this is the last thing handled by the translator, this behavior can be overwritten by the function call:
 ```
 $translator->translate('I_LOVE_MY_CATS', ["plural" => 3, "&MY_CATS" => "my 3 dogs"); //Return "I love my 3 dogs"
 ```
 
-Since the other placeholders, including the plural value(s) are also be passed to the sub translation, it can be useful for languages like french where the adjectives can also be pluralizable. Consider this sentence : `I have 3 white catS`. In french, we would say `J'ai 3 chatS blancS`. Notice the `S` on the color `blanc`? One developer could be tempted to do this in an English context :
+Since the other placeholders, including the plural value(s) are also be passed to the sub translation, it can be useful for languages like french where the adjectives can also be "pluralizable". Consider this sentence : `I have 3 white catS`. In french, we would say `J'ai 3 chatS blancS`. Notice the `S` on the color `blanc`? One developer could be tempted to do this in an English context :
 
 ```
 $colorString = $translator->translate('COLOR.WHITE');
 echo $translator->translate('MY_CATS', ["plural" => 3, "color" => $colorString);
 ```
 
-While this would work in english because the color isn't pluralizable, it won't in french. We'll end up with `J'ai 3 chatS blanc` (No `S` on the color). What we need is the php code to call the translation and passing the color key as a placeholder using the `&` prefix : `$translator->translate('MY_CATS', ["plural" => 3, "color" => "&COLOR.WHITE"]);`. The languages files for both languages in this case would be:
+While this would work in english because the color isn't "pluralizable", it won't in french. We'll end up with `J'ai 3 chatS blanc` (No `S` on the color). What we need is the php code to call the translation and passing the color key as a placeholder using the `&` prefix : `$translator->translate('MY_CATS', ["plural" => 3, "color" => "&COLOR.WHITE"]);`. The languages files for both languages in this case would be:
 
 _English_
 ```
@@ -409,6 +540,7 @@ return [
 ```
 
 ### Translate function
+
 ```
 $carMake = "Honda";
 echo $translator->translate("COMPLEX_STRING", [
@@ -429,3 +561,5 @@ There's a child and no adults in the white Honda Civic 1993
 ## [Style Guide](STYLE-GUIDE.md)
 
 ## [Testing](RUNNING_TESTS.md)
+
+## [API docs](docs/api.md)
