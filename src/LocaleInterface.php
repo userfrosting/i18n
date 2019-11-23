@@ -32,11 +32,11 @@ interface LocaleInterface
     public function getConfigFile(): string;
 
     /**
-     * Returns the locale indentifier.
+     * Returns the locale identifier.
      *
      * @return string
      */
-    public function getIndentifier(): string;
+    public function getIdentifier(): string;
 
     /**
      * Return the raw configuration data.

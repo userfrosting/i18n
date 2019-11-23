@@ -36,7 +36,7 @@
 | public | <strong>getConfigFile()</strong> : <em>string</em><br /><em>Returns defined configuration file.</em> |
 | public | <strong>getDependentLocales()</strong> : <em>[\UserFrosting\I18n\LocaleInterface](#interface-userfrostingi18nlocaleinterface)[]</em><br /><em>Return an array of parent locales.</em> |
 | public | <strong>getDependentLocalesIdentifier()</strong> : <em>string[]</em><br /><em>Return a list of parent locale identifier (eg. [fr_FR, en_US]).</em> |
-| public | <strong>getIndentifier()</strong> : <em>string</em><br /><em>Returns the locale indentifier.</em> |
+| public | <strong>getIdentifier()</strong> : <em>string</em><br /><em>Returns the locale identifier.</em> |
 | public | <strong>getLocalizedName()</strong> : <em>string</em><br /><em>Return the localized version of the locale name.</em> |
 | public | <strong>getName()</strong> : <em>string</em><br /><em>Return the name of the locale, in English form.</em> |
 | public | <strong>getPluralRule()</strong> : <em>int</em><br /><em>Return the number representing the plural rule to use for this locale.</em> |
@@ -84,8 +84,8 @@
 | Visibility | Function |
 |:-----------|:---------|
 | public | <strong>__construct(</strong><em>[\UserFrosting\I18n\DictionaryInterface](#interface-userfrostingi18ndictionaryinterface)</em> <strong>$dictionary</strong>)</strong> : <em>void</em><br /><em>Create the translator.</em> |
-| public | <strong>getDictionary()</strong> : <em>[\UserFrosting\I18n\DictionaryInterface](#interface-userfrostingi18ndictionaryinterface)</em><br /><em>Returned the associated dictionary</em> |
-| public | <strong>getLocale()</strong> : <em>[\UserFrosting\I18n\LocaleInterface](#interface-userfrostingi18nlocaleinterface)</em><br /><em>Returns the associated locale for the specified dictionary</em> |
+| public | <strong>getDictionary()</strong> : <em>[\UserFrosting\I18n\DictionaryInterface](#interface-userfrostingi18ndictionaryinterface)</em><br /><em>Returned the associated dictionary.</em> |
+| public | <strong>getLocale()</strong> : <em>[\UserFrosting\I18n\LocaleInterface](#interface-userfrostingi18nlocaleinterface)</em><br /><em>Returns the associated locale for the specified dictionary.</em> |
 | public | <strong>getPluralForm(</strong><em>int/float</em> <strong>$number</strong>, <em>bool/mixed</em> <strong>$forceRule=false</strong>)</strong> : <em>int The plural-case we need to use for the number plural-rule combination</em><br /><em>Determine which plural form we should use. For some languages this is not as simple as for English.</em> |
 | public | <strong>translate(</strong><em>\string</em> <strong>$messageKey</strong>, <em>array/array/int</em> <strong>$placeholders=array()</strong>)</strong> : <em>string The translated message.</em><br /><em>Translate the given message id into the currently configured language, substituting any placeholders that appear in the translated string. Return the $messageKey if not match is found</em> |
 | protected | <strong>getMessageFromKey(</strong><em>\string</em> <strong>$messageKey</strong>, <em>array/int</em> <strong>$placeholders</strong>)</strong> : <em>string The message string</em><br /><em>Get the message from key. Go throught all registered language keys avaiable and find the correct one to use, using the placeholders to select the correct plural form.</em> |
@@ -109,7 +109,7 @@
 | public | <strong>getConfigFile()</strong> : <em>string</em><br /><em>Returns defined configuration file.</em> |
 | public | <strong>getDependentLocales()</strong> : <em>[\UserFrosting\I18n\Locale](#class-userfrostingi18nlocale)[]</em><br /><em>Return an array of parent locales.</em> |
 | public | <strong>getDependentLocalesIdentifier()</strong> : <em>string[]</em><br /><em>Return a list of parent locale identifier (eg. [fr_FR, en_US]).</em> |
-| public | <strong>getIndentifier()</strong> : <em>string</em><br /><em>Returns the locale indentifier.</em> |
+| public | <strong>getIdentifier()</strong> : <em>string</em><br /><em>Returns the locale identifier.</em> |
 | public | <strong>getLocalizedName()</strong> : <em>string</em><br /><em>Return the localized version of the locale name.</em> |
 | public | <strong>getName()</strong> : <em>string</em><br /><em>Return the name of the locale, in English form.</em> |
 | public | <strong>getPluralRule()</strong> : <em>int</em><br /><em>Return the number representing the plural rule to use for this locale.</em> |

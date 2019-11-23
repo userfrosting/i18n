@@ -87,11 +87,11 @@ class Locale implements LocaleInterface
     }
 
     /**
-     * Returns the locale indentifier.
+     * Returns the locale identifier.
      *
      * @return string
      */
-    public function getIndentifier(): string
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }

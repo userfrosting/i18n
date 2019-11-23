@@ -73,9 +73,9 @@ class LocaleTest extends TestCase
     /**
      * @depends testConstructor
      */
-    public function testGetIndentifier(Locale $locale): void
+    public function testGetIdentifier(Locale $locale): void
     {
-        $data = $locale->getIndentifier();
+        $data = $locale->getIdentifier();
         $this->assertIsString($data);
 
         $this->assertSame('fr_FR', $data);
@@ -191,7 +191,7 @@ class LocaleTest extends TestCase
 
         $this->assertSame([], $locale->getAuthors());
         $this->assertSame('locale://de_DE/foo.yaml', $locale->getConfigFile());
-        $this->assertSame('de_DE', $locale->getIndentifier());
+        $this->assertSame('de_DE', $locale->getIdentifier());
         $this->assertSame([], $locale->getConfig());
         $this->assertSame([], $locale->getDependentLocales());
         $this->assertSame([], $locale->getDependentLocalesIdentifier());
