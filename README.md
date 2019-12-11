@@ -563,3 +563,9 @@ There's a child and no adults in the white Honda Civic 1993
 ## [Testing](RUNNING_TESTS.md)
 
 ## [API docs](docs/api.md)
+
+To build docs :
+
+```
+vendor/bin/phpdoc-md generate src/ > docs/README.md
+```
