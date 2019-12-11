@@ -91,7 +91,7 @@ class LocaleTest extends TestCase
 
         $this->assertSame([
             'name'           => 'French',
-            'localized_name' => 'Français',
+            'regional'       => 'Français',
             'authors'        => [
                 'Foo Bar',
                 'Bar Foo', // Not available in `core` version
@@ -130,9 +130,9 @@ class LocaleTest extends TestCase
         $this->assertIsString($locale->getName());
         $this->assertSame('French', $locale->getName());
 
-        //getLocalizedName
-        $this->assertIsString($locale->getLocalizedName());
-        $this->assertSame('Français', $locale->getLocalizedName());
+        //getRegionalName
+        $this->assertIsString($locale->getRegionalName());
+        $this->assertSame('Français', $locale->getRegionalName());
 
         //getDependentLocalesIdentifier
         $this->assertIsArray($locale->getDependentLocalesIdentifier());
@@ -149,7 +149,7 @@ class LocaleTest extends TestCase
     public function testGetLocalizedNameWithNoLocalizedConfig(): void
     {
         $locale = new Locale('es_ES');
-        $this->assertSame('Spanish', $locale->getLocalizedName());
+        $this->assertSame('Spanish', $locale->getRegionalName());
     }
 
     /**
@@ -197,7 +197,7 @@ class LocaleTest extends TestCase
         $this->assertSame([], $locale->getDependentLocalesIdentifier());
         $this->assertSame('', $locale->getName());
         $this->assertSame(1, $locale->getPluralRule());
-        $this->assertSame('de_DE', $locale->getLocalizedName());
+        $this->assertSame('de_DE', $locale->getRegionalName());
     }
 
     /*

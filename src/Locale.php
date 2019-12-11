@@ -170,10 +170,10 @@ class Locale implements LocaleInterface
      *
      * @return string
      */
-    public function getLocalizedName(): string
+    public function getRegionalName(): string
     {
-        if (isset($this->config['localized_name'])) {
-            return $this->config['localized_name'];
+        if (isset($this->config['regional'])) {
+            return $this->config['regional'];
         } elseif (isset($this->config['name'])) {
             return $this->config['name'];
         } else {

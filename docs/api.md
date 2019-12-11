@@ -37,7 +37,7 @@
 | public | <strong>getDependentLocales()</strong> : <em>[\UserFrosting\I18n\LocaleInterface](#interface-userfrostingi18nlocaleinterface)[]</em><br /><em>Return an array of parent locales.</em> |
 | public | <strong>getDependentLocalesIdentifier()</strong> : <em>string[]</em><br /><em>Return a list of parent locale identifier (eg. [fr_FR, en_US]).</em> |
 | public | <strong>getIdentifier()</strong> : <em>string</em><br /><em>Returns the locale identifier.</em> |
-| public | <strong>getLocalizedName()</strong> : <em>string</em><br /><em>Return the localized version of the locale name.</em> |
+| public | <strong>getRegionalName()</strong> : <em>string</em><br /><em>Return the localized version of the locale name.</em> |
 | public | <strong>getName()</strong> : <em>string</em><br /><em>Return the name of the locale, in English form.</em> |
 | public | <strong>getPluralRule()</strong> : <em>int</em><br /><em>Return the number representing the plural rule to use for this locale.</em> |
 
@@ -110,7 +110,7 @@
 | public | <strong>getDependentLocales()</strong> : <em>[\UserFrosting\I18n\Locale](#class-userfrostingi18nlocale)[]</em><br /><em>Return an array of parent locales.</em> |
 | public | <strong>getDependentLocalesIdentifier()</strong> : <em>string[]</em><br /><em>Return a list of parent locale identifier (eg. [fr_FR, en_US]).</em> |
 | public | <strong>getIdentifier()</strong> : <em>string</em><br /><em>Returns the locale identifier.</em> |
-| public | <strong>getLocalizedName()</strong> : <em>string</em><br /><em>Return the localized version of the locale name.</em> |
+| public | <strong>getRegionalName()</strong> : <em>string</em><br /><em>Return the localized version of the locale name.</em> |
 | public | <strong>getName()</strong> : <em>string</em><br /><em>Return the name of the locale, in English form.</em> |
 | public | <strong>getPluralRule()</strong> : <em>int</em><br /><em>Return the number representing the plural rule to use for this locale.</em> |
 | protected | <strong>loadConfig()</strong> : <em>mixed</em><br /><em>Loads the config into the class property.</em> |

@@ -78,5 +78,5 @@ interface LocaleInterface
      *
      * @return string
      */
-    public function getLocalizedName(): string;
+    public function getRegionalName(): string;
 }

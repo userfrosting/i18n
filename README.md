@@ -71,7 +71,7 @@ Table of Contents
       * [Locale configuration file](#locale-configuration-file)
          * [Config values](#config-values)
             * [name](#name)
-            * [localized_name](#localized_name)
+            * [regional](#regional)
             * [authors](#authors)
             * [plural_rule](#plural_rule)
             * [parents](#parents)
@@ -198,7 +198,7 @@ The configuration file can contain multiple options. For example :
 
 ```
 name: French Canadian
-localized_name: Français Canadien
+regional: Français Canadien
 authors:
   - Foo Bar
   - Bar Foo
@@ -213,7 +213,7 @@ parents:
 
 The name of the locale. Should be the English version of the name.
 
-#### `localized_name`
+#### `regional`
 
 The localized name of the locale. For example, for the French locale, the name of the locale in French.
 
