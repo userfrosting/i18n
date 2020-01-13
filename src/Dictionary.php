@@ -78,7 +78,7 @@ class Dictionary extends Repository implements DictionaryInterface
     }
 
     /**
-     * Return the dictionnary as a flatten array, using dot notation
+     * Return the dictionnary as a flatten array, using dot notation.
      *
      * @return string[]
      */
