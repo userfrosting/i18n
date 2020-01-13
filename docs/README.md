@@ -52,6 +52,7 @@
 | public | <strong>__construct(</strong><em>[\UserFrosting\I18n\LocaleInterface](#interface-userfrostingi18nlocaleinterface)</em> <strong>$locale</strong>, <em>\UserFrosting\UniformResourceLocator\ResourceLocatorInterface</em> <strong>$locator</strong>, <em>\UserFrosting\Support\Repository\Loader\FileRepositoryLoader</em> <strong>$fileLoader=null</strong>)</strong> : <em>void</em> |
 | public | <strong>getDictionary()</strong> : <em>string[] The locale dictionary</em><br /><em>Returns all loaded locale Key => Translation data dictionary. Won't load the whole thing twice if already loaded in the class.</em> |
 | public | <strong>getFileLoader()</strong> : <em>\UserFrosting\Support\Repository\Loader\FileRepositoryLoader</em><br /><em>Return the file repository loader used to load.</em> |
+| public | <strong>getFlattenDictionary()</strong> : <em>string[]</em><br /><em>Return the dictionnary as a flatten array, using dot notation</em> |
 | public | <strong>getLocale()</strong> : <em>[\UserFrosting\I18n\LocaleInterface](#interface-userfrostingi18nlocaleinterface)</em><br /><em>Return the associate locale.</em> |
 | public | <strong>setUri(</strong><em>\string</em> <strong>$uri</strong>)</strong> : <em>void</em><br /><em>Set the locator base URI (default 'locale://').</em> |
 | protected | <strong>filterDictionaryFiles(</strong><em>\UserFrosting\UniformResourceLocator\ResourceInterface[]</em> <strong>$files</strong>)</strong> : <em>string[]</em><br /><em>Remove config files from locator results and convert ResourceInterface to path/string.</em> |

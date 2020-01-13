@@ -11,8 +11,9 @@
 return [
     'Bar'  => 'Foo',
     'test' => [
-        'bbb' => 'BBB',
-        'ccc' => 'CCC', // Overwriten by ""
-        'ddd' => '', //Overwriten by "DDD"
+        '@TRANSLATION' => 'Test',
+        'bbb'          => 'BBB',
+        'ccc'          => 'CCC', // Overwriten by ""
+        'ddd'          => '', //Overwriten by "DDD"
     ],
 ];

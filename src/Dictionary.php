@@ -10,6 +10,7 @@
 
 namespace UserFrosting\I18n;
 
+use Illuminate\Support\Arr;
 use UserFrosting\Support\Repository\Loader\ArrayFileLoader;
 use UserFrosting\Support\Repository\Loader\FileRepositoryLoader;
 use UserFrosting\Support\Repository\Repository;
@@ -74,6 +75,16 @@ class Dictionary extends Repository implements DictionaryInterface
         }
 
         return $this->items;
+    }
+
+    /**
+     * Return the dictionnary as a flatten array, using dot notation
+     *
+     * @return string[]
+     */
+    public function getFlattenDictionary(): array
+    {
+        return Arr::dot($this->getDictionary());
     }
 
     /**

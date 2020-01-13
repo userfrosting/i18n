@@ -561,10 +561,11 @@ class DictionaryTest extends TestCase
         $expectedResult = [
             'Foo'  => 'Bar',
             'test' => [
-                'aaa' => 'AAA',
-                'ccc' => '',
-                'ddd' => 'DDD',
-                'bbb' => 'BBB',
+                'aaa'          => 'AAA',
+                'ccc'          => '',
+                'ddd'          => 'DDD',
+                'bbb'          => 'BBB',
+                '@TRANSLATION' => 'Test',
             ],
             'Bar'  => 'Foo',
         ];
@@ -573,6 +574,34 @@ class DictionaryTest extends TestCase
         $locale = new Locale('fr_FR');
         $dictionary = new Dictionary($locale, $this->locator);
         $data = $dictionary->getDictionary();
+
+        // Perform assertions
+        $this->assertIsArray($data);
+        $this->assertEquals($expectedResult, $data);
+    }
+
+    /**
+     * @ depends testConstructor
+     */
+    public function testGetDictionary_forFlat(): void
+    {
+        // Set expectations
+        // fr_FR depends on en_US. So FR data will be loaded over EN data
+        // Replicate testGetDictionary_withDependentLocaleDataOnBoth result
+        $expectedResult = [
+            'Foo'               => 'Bar',
+            'test.@TRANSLATION' => 'Test',
+            'test.aaa'          => 'AAA',
+            'test.ccc'          => '',
+            'test.ddd'          => 'DDD',
+            'test.bbb'          => 'BBB',
+            'Bar'               => 'Foo',
+        ];
+
+        // Get dictionary
+        $locale = new Locale('fr_FR');
+        $dictionary = new Dictionary($locale, $this->locator);
+        $data = $dictionary->getFlattenDictionary();
 
         // Perform assertions
         $this->assertIsArray($data);
@@ -588,10 +617,11 @@ class DictionaryTest extends TestCase
         $expectedResult = [
             'Foo'  => 'Tabarnak',
             'test' => [
-                'aaa' => 'AAA',
-                'ccc' => '',
-                'ddd' => 'DDD',
-                'bbb' => 'BBB',
+                'aaa'          => 'AAA',
+                'ccc'          => '',
+                'ddd'          => 'DDD',
+                'bbb'          => 'BBB',
+                '@TRANSLATION' => 'Test',
             ],
             'Bar'  => 'Foo',
         ];
