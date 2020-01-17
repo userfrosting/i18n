@@ -46,7 +46,7 @@ class Dictionary extends Repository implements DictionaryInterface
     protected $fileLoader;
 
     /**
-     * @var array Locale "Key => translation" data matrix cache
+     * @var (string|array)[] Locale "Key => translation" data matrix cache
      */
     protected $items = [];
 
@@ -63,10 +63,7 @@ class Dictionary extends Repository implements DictionaryInterface
     }
 
     /**
-     * Returns all loaded locale Key => Translation data dictionary.
-     * Won't load the whole thing twice if already loaded in the class.
-     *
-     * @return string[] The locale dictionary
+     * {@inheritdoc}
      */
     public function getDictionary(): array
     {
@@ -78,9 +75,7 @@ class Dictionary extends Repository implements DictionaryInterface
     }
 
     /**
-     * Return the dictionnary as a flatten array, using dot notation.
-     *
-     * @return string[]
+     * {@inheritdoc}
      */
     public function getFlattenDictionary(): array
     {
@@ -98,9 +93,7 @@ class Dictionary extends Repository implements DictionaryInterface
     }
 
     /**
-     * Return the associate locale.
-     *
-     * @return LocaleInterface
+     * {@inheritdoc}
      */
     public function getLocale(): LocaleInterface
     {
