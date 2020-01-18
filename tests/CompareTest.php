@@ -43,15 +43,18 @@ class CompareTest extends TestCase
             'test.ccc'          => 'CCC',
             'test.ddd'          => 'DDD',
             'Bar'               => 'Foo',
+            'color'             => 'Color',
         ]);
 
         $this->right = Mockery::mock(DictionaryInterface::class);
         $this->right->shouldReceive('getFlattenDictionary')->andReturn([
-            'Foo'               => 'Bar',
-            'test.@TRANSLATION' => 'Test',
-            'test.aaa'          => 'AAA',
-            'test.ccc'          => '',
-            'test.bbb'          => 'BBB',
+            'Foo'                => 'Bar',
+            'test.@TRANSLATION'  => 'Test',
+            'test.aaa'           => 'AAA',
+            'test.ccc'           => '',
+            'test.bbb'           => 'BBB',
+            'color.@TRANSLATION' => 'Color',
+            'color.red'          => 'Red',
         ]);
     }
 
@@ -71,27 +74,35 @@ class CompareTest extends TestCase
             'test.ccc' => 'CCC',
             'test.ddd' => 'DDD',
             'Bar'      => 'Foo',
+            'color'    => 'Color',
         ], Compare::dictionaries($this->left, $this->right));
 
         // R -> L
         $this->assertSame([
-            'test.ccc' => '',
+            'test.ccc'           => '',
+            'color.@TRANSLATION' => 'Color',
+            'color.red'          => 'Red',
         ], Compare::dictionaries($this->right, $this->left));
 
         // Compare direct dictionaries
         // L -> R
         $this->assertSame([
-            'test'     => [
+            'test' => [
                 'ccc' => 'CCC',
                 'ddd' => 'DDD',
             ],
-            'Bar'      => 'Foo',
+            'Bar'   => 'Foo',
+            'color' => 'Color',
         ], Compare::dictionaries($this->left, $this->right, true));
 
         // R -> L
         $this->assertSame([
             'test'     => [
                 'ccc' => '',
+            ],
+            'color' => [
+                '@TRANSLATION' => 'Color',
+                'red'          => 'Red',
             ],
         ], Compare::dictionaries($this->right, $this->left, true));
     }
@@ -102,10 +113,14 @@ class CompareTest extends TestCase
         $this->assertSame([
             'test.ddd',
             'Bar',
+            'color',
         ], Compare::dictionariesKeys($this->left, $this->right));
 
         // R -> L
-        $this->assertSame([], Compare::dictionariesKeys($this->right, $this->left));
+        $this->assertSame([
+            'color.@TRANSLATION',
+            'color.red',
+        ], Compare::dictionariesKeys($this->right, $this->left));
     }
 
     public function testDictionariesValues(): void

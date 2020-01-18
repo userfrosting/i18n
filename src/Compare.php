@@ -71,7 +71,7 @@ class Compare
      */
     public static function dictionariesValues(DictionaryInterface $leftDictionary, DictionaryInterface $rightDictionary, bool $undot = false): array
     {
-        $diff = array_intersect($leftDictionary->getFlattenDictionary(), $rightDictionary->getFlattenDictionary());
+        $diff = array_intersect_assoc($leftDictionary->getFlattenDictionary(), $rightDictionary->getFlattenDictionary());
 
         if ($undot) {
             return self::undot($diff);
