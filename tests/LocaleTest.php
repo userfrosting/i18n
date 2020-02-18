@@ -18,8 +18,10 @@ use UserFrosting\UniformResourceLocator\ResourceLocator;
 
 class LocaleTest extends TestCase
 {
+    /** @var string */
     protected $basePath;
 
+    /** @var ResourceLocator */
     protected $locator;
 
     public function setUp()
@@ -32,7 +34,7 @@ class LocaleTest extends TestCase
         // Add them one at a time to simulate how they are added in SprinkleManager
         $this->locator->registerLocation('core');
         $this->locator->registerLocation('account');
-        $this->locator->registerLocation('admin');
+        $this->locator->registerLocation('fr_CA');
     }
 
     public function testConstructor(): Locale
@@ -137,10 +139,6 @@ class LocaleTest extends TestCase
         //getDependentLocalesIdentifier
         $this->assertIsArray($locale->getDependentLocalesIdentifier());
         $this->assertSame(['en_US'], $locale->getDependentLocalesIdentifier());
-
-        //getPluralRule
-        $this->assertIsInt($locale->getPluralRule());
-        $this->assertSame(2, $locale->getPluralRule());
     }
 
     /**
@@ -174,6 +172,41 @@ class LocaleTest extends TestCase
     }
 
     /**
+     * @depends testGetDetails
+     * @depends testGetAuthors
+     */
+    public function testGetDetailsWithInheritance(): void
+    {
+        $locale = new Locale('fr_CA');
+
+        //getName
+        $this->assertIsString($locale->getName());
+        $this->assertSame('French Canadian', $locale->getName());
+
+        //getRegionalName
+        $this->assertIsString($locale->getRegionalName());
+        $this->assertSame('Français Canadien', $locale->getRegionalName());
+
+        //getDependentLocalesIdentifier
+        $this->assertIsArray($locale->getDependentLocalesIdentifier());
+        $this->assertSame(['fr_FR'], $locale->getDependentLocalesIdentifier());
+
+        //getAuthors
+        $this->assertSame(['Foo Bar', 'Bar Foo'], $locale->getAuthors());
+    }
+
+    /**
+     * @depends testConstructorWithNotPath
+     * @depends testGetPluralRule
+     */
+    public function testGetPluralRuleWithInheritance(): void
+    {
+        $locale = new Locale('fr_CA');
+        $this->assertIsInt($locale->getPluralRule());
+        $this->assertSame(2, $locale->getPluralRule());
+    }
+
+    /**
      * @depends testConstructor
      * @depends testGetDetails
      */
@@ -184,7 +217,19 @@ class LocaleTest extends TestCase
         $this->assertInstanceOf(LocaleInterface::class, $result[0]);
     }
 
-    public function testConstructorWithCustomFile()
+    /**
+     * @depends testGetDependentLocales
+     */
+    public function testGetDependentLocalesWithNullParent(): void
+    {
+        $locale = new Locale('es_ES');
+
+        $result = $locale->getDependentLocales();
+        $this->assertIsArray($result);
+        $this->assertEmpty($result);
+    }
+
+    public function testConstructorWithCustomFile(): void
     {
         $locale = new Locale('de_DE', 'locale://de_DE/foo.yaml');
         $this->assertInstanceOf(LocaleInterface::class, $locale);
@@ -199,10 +244,4 @@ class LocaleTest extends TestCase
         $this->assertSame(1, $locale->getPluralRule());
         $this->assertSame('de_DE', $locale->getRegionalName());
     }
-
-    /*
-    TODO :
-        - fr_CA
-        - Null Parent
-     */
 }

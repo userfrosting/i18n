@@ -32,7 +32,7 @@ class Locale implements LocaleInterface
     protected $configFile = '';
 
     /**
-     * @var array Locale config data, loaded from the locale YAML file
+     * @var string[] Locale config data, loaded from the locale YAML file
      */
     protected $config;
 
@@ -60,6 +60,11 @@ class Locale implements LocaleInterface
     {
         $loader = new YamlFileLoader($this->configFile);
         $this->config = $loader->load(false);
+
+        // Load nested locales config
+        foreach ($this->getDependentLocales() as $locale) {
+            $this->config = array_merge($locale->getConfig(), $this->config);
+        }
     }
 
     /**
@@ -72,7 +77,7 @@ class Locale implements LocaleInterface
         if (!isset($this->config['authors'])) {
             return [];
         } else {
-            return $this->config['authors'];
+            return (array) $this->config['authors'];
         }
     }
 
@@ -99,7 +104,7 @@ class Locale implements LocaleInterface
     /**
      * Return the raw configuration data.
      *
-     * @return (array|string)[]
+     * @return string[]
      */
     public function getConfig(): array
     {
@@ -159,7 +164,7 @@ class Locale implements LocaleInterface
     public function getPluralRule(): int
     {
         if (isset($this->config['plural_rule'])) {
-            return $this->config['plural_rule'];
+            return (int) $this->config['plural_rule'];
         } else {
             return 1;
         }
