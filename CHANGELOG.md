@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.4.0]
+Complete rewrite of the Translator.
+
+Instead of `LocalePathBuilder -> MessageTranslator`, the new translator introduce the concept of `Locale`, `Dictionary` and `Translator`. So now you create a locale, which enables you to create a dictionary for that locale, which finally allows you to create a translator which will used that dictionary.
+
+Instead of loading multiple locale on top of each other, a locale can depend on other locale using the configuration file (ie. `locale.yaml`). See the updated doc for more information.
+
+Plural rule are now defined in the locale configuration file instead of the special `@PLURAL_RULE` key.
+
+All methods of the `Translator` are the same for backward compatibility. The only change is the constructor, which now requires a `DictionaryInterface` instance.
+
+**Detailed changes** :
+- `MessageTranslator` is now `Translator`.
+- `Translator` requires a `DictionaryInterface` as some constructor argument instead of paths.
+- `LocalePathBuilder` removed.
+- `DictionaryInterface` now extends `UserFrosting\Support\Repository\Repository` instead of the `Translator`. The raw data can be accessed using the Dictionary methods.
+- `@PLURAL_RULE` special key removed. Use the Locale configuration file (`locale.yaml`) `plural_rule` attribute instead.
+- Translator can't load multiple locale anymore. Use the Locale configuration file `parents` attribute instead.
+
+See updated [documentation](README.md) for more details on how to use the new Translator, Locale and Dictionary. 
+
 ## [4.3.0]
 - Dropping support for PHP 5.6 & 7.0
 - Updated Twig to 2.x
@@ -36,6 +57,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## 4.0.0
 - Initial release
 
+[4.4.0]: https://github.com/userfrosting/i18n/compare/4.3.0...4.4.0
 [4.3.0]: https://github.com/userfrosting/i18n/compare/4.2.1...4.3.0
 [4.2.1]: https://github.com/userfrosting/i18n/compare/4.2.0...4.2.1
 [4.2.0]: https://github.com/userfrosting/i18n/compare/4.1.0...4.2.0
