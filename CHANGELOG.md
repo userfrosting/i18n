@@ -61,6 +61,7 @@ See updated [documentation](README.md) for more details on how to use the new Tr
 ## 4.0.0
 - Initial release
 
+[4.4.1]: https://github.com/userfrosting/i18n/compare/4.4.0...4.4.1
 [4.4.0]: https://github.com/userfrosting/i18n/compare/4.3.0...4.4.0
 [4.3.0]: https://github.com/userfrosting/i18n/compare/4.2.1...4.3.0
 [4.2.1]: https://github.com/userfrosting/i18n/compare/4.2.0...4.2.1
