@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.4.1]
+- Throws an exception if `translate` placeholder are not numeric or array.
+- Fix issue with numeric placeholder with non plural keys. See [userfrosting#1090](https://github.com/userfrosting/UserFrosting/issues/1090#issuecomment-620832985).
+
 ## [4.4.0]
 Complete rewrite of the Translator.
 
@@ -23,7 +27,7 @@ All methods of the `Translator` are the same for backward compatibility. The onl
 - `@PLURAL_RULE` special key removed. Use the Locale configuration file (`locale.yaml`) `plural_rule` attribute instead.
 - Translator can't load multiple locale anymore. Use the Locale configuration file `parents` attribute instead.
 
-See updated [documentation](README.md) for more details on how to use the new Translator, Locale and Dictionary. 
+See updated [documentation](README.md) for more details on how to use the new Translator, Locale and Dictionary.
 
 ## [4.3.0]
 - Dropping support for PHP 5.6 & 7.0
@@ -57,6 +61,7 @@ See updated [documentation](README.md) for more details on how to use the new Tr
 ## 4.0.0
 - Initial release
 
+[4.4.1]: https://github.com/userfrosting/i18n/compare/4.4.0...4.4.1
 [4.4.0]: https://github.com/userfrosting/i18n/compare/4.3.0...4.4.0
 [4.3.0]: https://github.com/userfrosting/i18n/compare/4.2.1...4.3.0
 [4.2.1]: https://github.com/userfrosting/i18n/compare/4.2.0...4.2.1

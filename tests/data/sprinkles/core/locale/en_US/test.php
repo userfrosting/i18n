@@ -11,6 +11,8 @@
 return [
     'USERNAME' => 'Username',
 
+    'X_FOO' => '{{plural}}x foos',
+
     'BASE_FALLBACK' => 'Base fallback',
 
     'ACCOUNT' => [

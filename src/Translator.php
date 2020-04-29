@@ -79,13 +79,17 @@ class Translator
      *
      * Return the $messageKey if not match is found
      *
-     * @param string    $messageKey   The id of the message id to translate. can use dot notation for array
-     * @param array|int $placeholders An optional hash of placeholder names => placeholder values to substitute (default : [])
+     * @param string      $messageKey   The id of the message id to translate. can use dot notation for array
+     * @param mixed[]|int $placeholders An optional hash of placeholder names => placeholder values to substitute (default : [])
      *
      * @return string The translated message.
      */
     public function translate(string $messageKey, $placeholders = []): string
     {
+        if (!is_numeric($placeholders) && !is_array($placeholders)) {
+            throw new \InvalidArgumentException('Placeholders must be array or numeric value.');
+        }
+
         // Get the correct message from the specified key
         $message = $this->getMessageFromKey($messageKey, $placeholders);
 
@@ -100,8 +104,8 @@ class Translator
      * Go throught all registered language keys avaiable and find the correct
      * one to use, using the placeholders to select the correct plural form.
      *
-     * @param string    $messageKey   The key to find the message for
-     * @param array|int $placeholders Passed by reference, since plural placeholder will be added for later processing
+     * @param string      $messageKey   The key to find the message for
+     * @param mixed[]|int $placeholders Passed by reference, since plural placeholder will be added for later processing
      *
      * @return string The message string
      */
@@ -176,7 +180,7 @@ class Translator
      * Return the plural key from a translation array.
      * If no plural key is defined in the `@PLURAL` instruction of the message array, we fallback to the default one.
      *
-     * @param array $messageArray
+     * @param mixed[] $messageArray
      *
      * @return string
      */
@@ -192,14 +196,14 @@ class Translator
     /**
      * Return the plural value, aka the nummber to display, from the placeholder values.
      *
-     * @param array|int $placeholders Placeholder
-     * @param string    $pluralKey    The plural key, for key => value match
+     * @param mixed[]|int $placeholders Placeholder
+     * @param string      $pluralKey    The plural key, for key => value match
      *
      * @return int|null The number, null if not found
      */
     protected function getPluralValue($placeholders, string $pluralKey): ?int
     {
-        if (isset($placeholders[$pluralKey])) {
+        if (is_array($placeholders) && isset($placeholders[$pluralKey])) {
             return (int) $placeholders[$pluralKey];
         }
 
@@ -215,8 +219,8 @@ class Translator
      * Return the correct plural message form to use.
      * When multiple plural form are available for a message, this method will return the correct oen to use based on the numeric value.
      *
-     * @param array $messageArray The array with all the form inside ($pluralRule => $message)
-     * @param int   $pluralValue  The numeric value used to select the correct message
+     * @param mixed[] $messageArray The array with all the form inside ($pluralRule => $message)
+     * @param int     $pluralValue  The numeric value used to select the correct message
      *
      * @return int|null Returns which key from $messageArray to use
      */
@@ -253,13 +257,18 @@ class Translator
      * Parse Placeholder.
      * Replace placeholders in the message with their values from the passed argument.
      *
-     * @param string $message      The message to replace placeholders in
-     * @param array  $placeholders An optional hash of placeholder (names => placeholder) values to substitute (default : [])
+     * @param string      $message      The message to replace placeholders in
+     * @param mixed[]|int $placeholders An optional hash of placeholder (names => placeholder) values to substitute (default : [])
      *
      * @return string The message with replaced placeholders
      */
-    protected function parsePlaceHolders(string $message, array $placeholders): string
+    protected function parsePlaceHolders(string $message, $placeholders): string
     {
+        // If $placeholders is not an array at this point, we make it an array, using `plural` as the key
+        if (!is_array($placeholders)) {
+            $placeholders = [$this->defaultPluralKey => $placeholders];
+        }
+
         // Interpolate translatable placeholders values. This allows to
         // pre-translate placeholder which value starts with the `&` caracter
         foreach ($placeholders as $name => $value) {
@@ -304,15 +313,18 @@ class Translator
      * @see https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_and_Plurals
      *
      * @param int|float $number    The number we want to get the plural case for. Float numbers are floored.
-     * @param mixed     $forceRule False to use the plural rule of the language package
+     * @param int|bool  $forceRule False to use the plural rule of the language package
      *                             or an integer to force a certain plural rule
      *
      * @return int The plural-case we need to use for the number plural-rule combination
      */
     public function getPluralForm($number, $forceRule = false)
     {
-        // Default to English rule (1) or the forced one
-        $ruleNumber = $this->getPluralRuleNumber($forceRule);
+        if (is_int($forceRule)) {
+            $ruleNumber = $forceRule;
+        } else {
+            $ruleNumber = $this->dictionary->getLocale()->getPluralRule();
+        }
 
         // Get the rule class
         $class = "\UserFrosting\I18n\PluralRules\Rule$ruleNumber";
@@ -321,21 +333,5 @@ class Translator
         }
 
         return $class::getRule((int) $number);
-    }
-
-    /**
-     * Return the correct rule number to use.
-     *
-     * @param int|bool $forceRule Force to use a particular rule. Otherwise, use the language defined one
-     *
-     * @return int
-     */
-    protected function getPluralRuleNumber($forceRule): int
-    {
-        if ($forceRule !== false) {
-            return $forceRule;
-        }
-
-        return $this->dictionary->getLocale()->getPluralRule();
     }
 }
