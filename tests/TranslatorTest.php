@@ -154,7 +154,8 @@ class TranslatorTest extends TestCase
     }
 
     /**
-     * Force test a non-array / non-int placeholder
+     * Force test a non-array / non-int placeholder.
+     *
      * @depends testTranslate
      */
     public function testTranslateKeyWithBadPlaceholder(): void
