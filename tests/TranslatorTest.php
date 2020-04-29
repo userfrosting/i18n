@@ -89,6 +89,15 @@ class TranslatorTest extends TestCase
 
     /**
      * @depends testGetPluralForm
+     */
+    public function testGetPluralFormForced(): void
+    {
+        $translator = $this->getTranslator('en_US');
+        $this->assertSame(1, $translator->getPluralForm(2, 0));
+    }
+
+    /**
+     * @depends testGetPluralForm
      * Test locale wihtout a plural rule.
      */
     public function testGetPluralFormWithNoDefineRule(): void
@@ -129,6 +138,30 @@ class TranslatorTest extends TestCase
 
         $frenchTranslator = $this->getTranslator('fr_FR');
         $this->assertEquals($expectedResultFrench, $frenchTranslator->translate($key, $placeholders));
+    }
+
+    /**
+     * @depends testTranslate
+     */
+    public function testTranslateKeyWithNoPlural(): void
+    {
+        $translator = $this->getTranslator();
+        $this->assertEquals($translator->translate('USERNAME', 123), 'Username');
+        $this->assertEquals($translator->translate('X_FOO'), 'x foos');
+        $this->assertEquals($translator->translate('X_FOO', ['plural' => 1]), '1x foos');
+        $this->assertEquals($translator->translate('X_FOO', 1), '1x foos');
+        $this->assertEquals($translator->translate('X_FOO', 123), '123x foos');
+    }
+
+    /**
+     * Force test a non-array / non-int placeholder
+     * @depends testTranslate
+     */
+    public function testTranslateKeyWithBadPlaceholder(): void
+    {
+        $translator = $this->getTranslator();
+        $this->expectException(\InvalidArgumentException::class);
+        $this->assertEquals($translator->translate('X_FOO', 'xx'), 'xxx foos');
     }
 
     /**
