@@ -180,33 +180,32 @@ class DictionaryTest extends TestCase
 
         // Prepare mocked locale - aa_bb
         $locale = Mockery::mock(Locale::class);
-        $locale->shouldReceive('getDependentLocales')->andReturn([]);
-        $locale->shouldReceive('getDependentLocalesIdentifier')->andReturn([]);
-        $locale->shouldReceive('getIdentifier')->andReturn('aa_bb');
+        $locale->shouldReceive('getDependentLocales')->once()->andReturn([]);
+        $locale->shouldReceive('getIdentifier')->twice()->andReturn('aa_bb');
 
         // Prepare first mock Resource - File `Foo/Bar/File1.php`
         $file1 = Mockery::mock(Resource::class);
-        $file1->shouldReceive('getExtension')->andReturn('php');
-        $file1->shouldReceive('__toString')->andReturn('Foo/Bar/File1.php');
+        $file1->shouldReceive('getExtension')->once()->andReturn('php');
+        $file1->shouldReceive('__toString')->once()->andReturn('Foo/Bar/File1.php');
 
         // Prepare second mock Resource - File `Bar/Foo/File2.php`
         $file2 = Mockery::mock(Resource::class);
-        $file2->shouldReceive('getExtension')->andReturn('php');
-        $file2->shouldReceive('__toString')->andReturn('Bar/Foo/File2.php');
+        $file2->shouldReceive('getExtension')->once()->andReturn('php');
+        $file2->shouldReceive('__toString')->once()->andReturn('Bar/Foo/File2.php');
 
         // Prepare Third mock Resource - non `.php` file
         $file3 = Mockery::mock(Resource::class);
-        $file3->shouldReceive('getExtension')->andReturn('txt');
+        $file3->shouldReceive('getExtension')->once()->andReturn('txt');
         $file3->shouldNotReceive('__toString');
 
         // Prepare mock Locator - Return the file
         $locator = Mockery::mock(ResourceLocator::class);
-        $locator->shouldReceive('listResources')->with('locale://aa_bb', true)->andReturn([$file1, $file2, $file3]);
+        $locator->shouldReceive('listResources')->with('locale://aa_bb', true)->once()->andReturn([$file1, $file2, $file3]);
 
         // Prepare mock FileLoader - Will return the mock file, with a mock data
         $fileLoader = Mockery::mock(ArrayFileLoader::class);
-        $fileLoader->shouldReceive('setPaths')->with(['Foo/Bar/File1.php', 'Bar/Foo/File2.php']);
-        $fileLoader->shouldReceive('load')->andReturn($expectedResult);
+        $fileLoader->shouldReceive('setPaths')->once();
+        $fileLoader->shouldReceive('load')->once()->andReturn($expectedResult);
 
         // Get dictionary
         $dictionary = new Dictionary($locale, $locator, $fileLoader);
@@ -539,9 +538,9 @@ class DictionaryTest extends TestCase
         $dictionary = new Dictionary($locale, $this->locator);
 
         $expectedResult = [
-            'FOO' => 'Foo',  // bar/bar.php file will be loaded first
+            'FOO' => 'BAR',  // bar/bar.php file will be loaded first
             'CAR' => 'Coche',
-            'BAR' => 'FooFoo', // ...but zzz/bar.php will be loaded LAST because of alphabetical order !
+            'BAR' => 'Bar', // ...but zzz/bar.php will be loaded LAST because of alphabetical order !
         ];
 
         $data = $dictionary->getDictionary();
