@@ -14,12 +14,12 @@
 [i18n]: https://github.com/userfrosting/i18n
 [i18n-develop]: https://github.com/userfrosting/i18n/tree/develop
 [i18n-version]: https://img.shields.io/github/release/userfrosting/i18n.svg
-[i18n-master-build]: https://travis-ci.org/userfrosting/i18n.svg?branch=master
+[i18n-master-build]: https://github.com/userfrosting/i18n/workflows/Build/badge.svg?branch=master
 [i18n-master-codecov]: https://codecov.io/gh/userfrosting/i18n/branch/master/graph/badge.svg
-[i18n-develop-build]: https://travis-ci.org/userfrosting/i18n.svg?branch=develop
+[i18n-develop-build]: https://github.com/userfrosting/i18n/workflows/Build/badge.svg?branch=develop
 [i18n-develop-codecov]: https://codecov.io/gh/userfrosting/i18n/branch/develop/graph/badge.svg
 [i18n-releases]: https://github.com/userfrosting/i18n/releases
-[i18n-travis]: https://travis-ci.org/userfrosting/i18n
+[i18n-travis]: https://github.com/userfrosting/i18n/actions?query=workflow%3ABuild
 [i18n-codecov]: https://codecov.io/gh/userfrosting/i18n
 [i18n-style-master]: https://github.styleci.io/repos/60137335/shield?branch=master&style=flat
 [i18n-style-develop]: https://github.styleci.io/repos/60137335/shield?branch=develop&style=flat

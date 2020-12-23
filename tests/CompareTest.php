@@ -30,7 +30,7 @@ class CompareTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
 
@@ -61,7 +61,7 @@ class CompareTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
     }

@@ -26,7 +26,7 @@ class DictionaryTest extends TestCase
 
     protected $locator;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->basePath = __DIR__.'/data/dictionary';
         $this->locator = new ResourceLocator($this->basePath);
@@ -34,7 +34,7 @@ class DictionaryTest extends TestCase
         $this->locator->registerStream('locale', '', null, true);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
     }

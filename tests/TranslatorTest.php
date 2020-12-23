@@ -24,7 +24,7 @@ class TranslatorTest extends TestCase
     /** @var ResourceLocator */
     protected $locator;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->locator = new ResourceLocator($this->basePath);
 

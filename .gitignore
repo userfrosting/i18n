@@ -6,3 +6,4 @@ composer.lock
 _meta
 .serenata
 .vscode
+.phpunit.result.cache
