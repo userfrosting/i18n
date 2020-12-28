@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [4.4.3]
+- Replaced Travis with GitHub Action for build
+- Upgrade deprecation in tests
+
 ## [4.4.2]
 - Fixed issue where locale files from higher priority locations would not overwrite files from lower priority locations. (N.B.: This fix means the files withing the same locations will be loaded in BACKWARD order. Having the location order is more important in this case.)
 
@@ -64,6 +68,7 @@ See updated [documentation](README.md) for more details on how to use the new Tr
 ## 4.0.0
 - Initial release
 
+[4.4.2]: https://github.com/userfrosting/i18n/compare/4.4.2...4.4.3
 [4.4.2]: https://github.com/userfrosting/i18n/compare/4.4.1...4.4.2
 [4.4.1]: https://github.com/userfrosting/i18n/compare/4.4.0...4.4.1
 [4.4.0]: https://github.com/userfrosting/i18n/compare/4.3.0...4.4.0
