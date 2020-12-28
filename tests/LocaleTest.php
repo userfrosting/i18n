@@ -24,7 +24,7 @@ class LocaleTest extends TestCase
     /** @var ResourceLocator */
     protected $locator;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->basePath = __DIR__.'/data/sprinkles';
         $this->locator = new ResourceLocator($this->basePath);
