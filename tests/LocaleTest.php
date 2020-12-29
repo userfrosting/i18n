@@ -28,10 +28,9 @@ class LocaleTest extends TestCase
     {
         $this->basePath = __DIR__.'/data/sprinkles';
         $this->locator = new ResourceLocator($this->basePath);
-
         $this->locator->registerStream('locale');
 
-        // Add them one at a time to simulate how they are added in SprinkleManager
+        // Add locations one at a time to simulate how they are added in SprinkleManager
         $this->locator->registerLocation('core');
         $this->locator->registerLocation('account');
         $this->locator->registerLocation('fr_CA');
@@ -39,7 +38,7 @@ class LocaleTest extends TestCase
 
     public function testConstructor(): Locale
     {
-        $locale = new Locale('fr_FR', 'locale://fr_FR/locale.yaml');
+        $locale = new Locale('fr_FR');
         $this->assertInstanceOf(LocaleInterface::class, $locale);
 
         return $locale;
@@ -48,7 +47,7 @@ class LocaleTest extends TestCase
     public function testConstructorWithNotFoundPath(): void
     {
         $this->expectException(FileNotFoundException::class);
-        $locale = new Locale('fr_FR', 'locale://fr_FR/dontexist.yaml');
+        new Locale('fr_FR', 'locale://fr_FR/dontexist.yaml');
     }
 
     /**
@@ -243,5 +242,23 @@ class LocaleTest extends TestCase
         $this->assertSame('', $locale->getName());
         $this->assertSame(1, $locale->getPluralRule());
         $this->assertSame('de_DE', $locale->getRegionalName());
+    }
+
+    /**
+     * @see https://github.com/userfrosting/UserFrosting/issues/1133
+     */
+    public function testWithSharedLocation(): void 
+    {
+        /** @var \UserFrosting\UniformResourceLocator\ResourceLocator $locator */
+        $locator = new ResourceLocator(__DIR__);
+        $locator->registerStream('locale', '', 'data/shared', true);
+
+        $locale = new Locale('fr_FR');
+        $this->assertInstanceOf(LocaleInterface::class, $locale);
+        $this->assertSame('Tomato', $locale->getName());
+
+        $locale = new Locale('en_US');
+        $this->assertInstanceOf(LocaleInterface::class, $locale);
+        $this->assertSame('English', $locale->getName());
     }
 }
