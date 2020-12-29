@@ -269,7 +269,7 @@ class LocaleTest extends TestCase
     public function locationProvider(): array
     {
         return [
-            [__DIR__ . '/data/shared'],
+            [__DIR__.'/data/shared'],
             ['data/shared'],
         ];
     }
