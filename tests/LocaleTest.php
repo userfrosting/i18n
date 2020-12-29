@@ -246,11 +246,13 @@ class LocaleTest extends TestCase
 
     /**
      * @see https://github.com/userfrosting/UserFrosting/issues/1133
+     *
+     * @dataProvider locationProvider
      */
-    public function testWithSharedLocation(): void
+    public function testWithSharedLocation(string $path): void
     {
         $locator = new ResourceLocator(__DIR__);
-        $locator->registerStream('locale', '', 'data/shared', true);
+        $locator->registerStream('locale', '', $path, true);
 
         $locale = new Locale('fr_FR');
         $this->assertInstanceOf(LocaleInterface::class, $locale);
@@ -259,5 +261,16 @@ class LocaleTest extends TestCase
         $locale = new Locale('en_US');
         $this->assertInstanceOf(LocaleInterface::class, $locale);
         $this->assertSame('English', $locale->getName());
+    }
+
+    /**
+     * @return string[]
+     */
+    public function locationProvider(): array
+    {
+        return [
+            [__DIR__ . '/data/shared'],
+            ['data/shared'],
+        ];
     }
 }
