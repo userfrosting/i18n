@@ -247,9 +247,8 @@ class LocaleTest extends TestCase
     /**
      * @see https://github.com/userfrosting/UserFrosting/issues/1133
      */
-    public function testWithSharedLocation(): void 
+    public function testWithSharedLocation(): void
     {
-        /** @var \UserFrosting\UniformResourceLocator\ResourceLocator $locator */
         $locator = new ResourceLocator(__DIR__);
         $locator->registerStream('locale', '', 'data/shared', true);
 
