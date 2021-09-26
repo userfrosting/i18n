@@ -176,7 +176,7 @@ class Dictionary extends Repository implements DictionaryInterface
      */
     protected function getFiles(): array
     {
-        $ressources = $this->locator->listResources($this->uri.$this->locale->getIdentifier(), true);
+        $ressources = $this->locator->listResources($this->uri.$this->locale->getIdentifier(), true, false);
         $ressources = array_reverse($ressources);
 
         return $ressources;
